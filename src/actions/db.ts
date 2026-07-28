@@ -1,9 +1,6 @@
 'use server';
 
-import { PrismaClient } from '@prisma/client';
-
-// Initialize Prisma Client
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // --- Chat Actions ---
 

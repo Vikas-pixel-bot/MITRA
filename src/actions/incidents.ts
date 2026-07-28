@@ -1,8 +1,6 @@
 'use server';
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // Fetch the most recent unresolved incident
 export async function getUnresolvedIncident() {

@@ -28,10 +28,11 @@ export default function ChatView() {
     fetchHistory();
   }, []);
 
-  const { messages, append, isLoading } = useChat({
+  const { messages, sendMessage, status } = useChat({
     id: 'mitra-chat',
-    initialMessages,
-  }) as any;
+    messages: initialMessages,
+  });
+  const isLoading = status === 'submitted' || status === 'streaming';
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +52,7 @@ export default function ChatView() {
       }
 
       // Automatically append the AI's first question without waiting for the user
-      append({
+      sendMessage({
         role: 'assistant',
         content: promptText,
       });
@@ -59,7 +60,7 @@ export default function ChatView() {
       // Also save it to the DB so it persists
       saveChatMessage('assistant', promptText);
     }
-  }, [isHistoryLoaded, messages.length, append]);
+  }, [isHistoryLoaded, messages.length, sendMessage]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -70,7 +71,7 @@ export default function ChatView() {
     e.preventDefault();
     if (localInput.trim() === '') return;
     
-    append({
+    sendMessage({
       role: 'user',
       content: localInput,
     });
