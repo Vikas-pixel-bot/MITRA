@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  role      String   // "user", "assistant", or "system"
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Habit {
+  id          String     @id @default(cuid())
+  title       String
+  icon        String     // e.g., "Droplets", "Utensils", etc. (reference to lucide-react component name)
+  createdAt   DateTime   @default(now())
+  logs        HabitLog[]
+}
+
+model HabitLog {
+  id        String   @id @default(cuid())
+  habitId   String
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  date      String   // Stored as YYYY-MM-DD
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([habitId, date]) // A habit can only have one log entry per day
+}
+
+model Incident {
+  id              String   @id @default(cuid())
+  description     String
+  suggestedAction String?  // AI's suggested measure
+  status          String   @default("UNRESOLVED") // UNRESOLVED or RESOLVED
+  resolutionNotes String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

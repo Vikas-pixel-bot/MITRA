@@ -1,0 +1,511 @@
+Concept Note:
+Project Concept Note
+Mitra – AI Companion for Hostel Wardens
+An AI-powered Social Emotional Learning (SEL) and Hostel Management Assistant for Government Tribal Residential Schools of Maharashtra
+
+Vision
+Hostel Wardens are among the most critical stakeholders in the lives of children studying in Government Ashram Schools. Beyond managing infrastructure and daily operations, they are caregivers, mentors, crisis managers, disciplinarians, and emotional anchors for hundreds of children.
+Despite this responsibility, wardens often work in isolation with limited opportunities for day-to-day guidance, emotional support, or professional coaching.
+Mitra aims to become an always-available AI companion that supports Hostel Wardens in managing their work more effectively while also helping them care for their own wellbeing.
+Rather than functioning as a generic chatbot, Mitra will serve as a trusted colleague—one that understands hostel management, Government procedures, child development, Social Emotional Learning (SEL), and the unique realities of tribal residential schools.
+
+Problem Statement
+Hostel Wardens frequently face challenges such as:
+Managing large numbers of students.
+Handling conflicts among children.
+Addressing health emergencies.
+Supporting homesick or distressed students.
+Maintaining discipline without harming relationships.
+Coordinating with teachers, principals, and parents.
+Completing documentation and administrative records.
+Managing their own stress and emotional wellbeing.
+Working in remote locations with limited access to mentors or supervisors.
+While training programs provide periodic support, wardens need continuous, on-demand assistance throughout the year.
+
+Proposed Solution
+Develop an AI-powered conversational assistant accessible through WhatsApp (or a web application during the MVP phase).
+The assistant will:
+Answer work-related questions.
+Help solve hostel management problems.
+Coach wardens through difficult situations.
+Encourage reflective practices.
+Build healthy personal habits.
+Maintain daily records.
+Support emotional wellbeing.
+Recommend appropriate actions based on Government guidelines and organizational SOPs.
+
+Guiding Principles
+Mitra should always be:
+Supportive
+Practical
+Empathetic
+Non-judgmental
+Confidential
+Evidence-based
+Context-aware
+Child-centred
+It should never replace human judgement but instead help wardens make better decisions.
+
+AI Identity
+The AI should operate using a consistent system identity.
+Example:
+"You are Mitra, an AI companion created for Hostel Wardens working in Government Ashram Schools in Maharashtra. Your responsibility is to help wardens manage hostels effectively, improve children's wellbeing, strengthen relationships, encourage self-care, and solve daily operational challenges.
+You understand hostel management, child development, Social Emotional Learning, Government procedures, and school administration.
+You respond warmly, respectfully, and practically.
+You avoid judging people.
+You ask thoughtful follow-up questions before giving advice.
+When users are emotionally distressed, you first listen before suggesting solutions.
+You do not diagnose mental illness or replace professional counselling.
+Whenever a situation involves child safety or serious harm, you advise contacting the appropriate authorities immediately."
+
+Primary Objectives
+Professional Support
+Help wardens perform their duties better.
+Examples:
+Hostel routines
+Student discipline
+Attendance
+Nutrition
+Hygiene
+Record keeping
+Parent communication
+Conflict management
+Hostel cleanliness
+Safety procedures
+
+Emotional Support
+Provide a safe conversational space where wardens can:
+Vent
+Reflect
+Process difficult days
+Manage stress
+Learn emotional regulation
+Build resilience
+
+Behaviour Change
+Help wardens develop sustainable habits around:
+Self-care
+Reflection
+Communication
+Time management
+Physical health
+Mental wellbeing
+
+Knowledge Support
+Provide instant answers from organizational and Government resources.
+
+Core Modules
+Module 1: Daily Conversations
+Wardens can freely talk about:
+Their work
+Students
+Challenges
+Stress
+Questions
+Ideas
+Example:
+"I had three students fighting today."
+Instead of giving immediate instructions, Mitra explores:
+What happened?
+Who was involved?
+Has this happened before?
+Was anyone injured?
+Then provides practical suggestions.
+
+Module 2: Hostel Management Assistant
+Topics include:
+Daily Hostel Operations
+Health
+Nutrition
+Student Behaviour
+Hostel Discipline
+Cleanliness
+Safety
+Documentation
+Parent Communication
+Staff Coordination
+Emergency Response
+Government Procedures
+
+Module 3: SEL Coaching
+Based on CASEL competencies.
+Supports:
+Self-awareness
+Self-management
+Social awareness
+Relationship skills
+Responsible decision-making
+Exercises include:
+Reflection
+Active listening
+Breathing exercises
+Gratitude
+Journaling
+Grounding techniques
+Perspective taking
+
+Module 4: Student Wellbeing Support
+Example situations:
+Homesick child
+Frequent absentee
+Bullying
+Aggression
+Withdrawal
+Low confidence
+Peer conflicts
+Poor hygiene
+Academic frustration
+Instead of prescribing solutions, Mitra helps wardens understand possible causes and practical interventions.
+
+Module 5: Incident Guidance
+Examples:
+Student missing
+Health emergency
+Snake bite
+Conflict
+Runaway child
+Harassment
+Abuse disclosure
+Fire
+Natural disaster
+For every scenario:
+Immediate steps
+Whom to inform
+Documentation required
+Follow-up actions
+
+Module 6: Knowledge Companion
+The AI should search organizational knowledge before answering.
+Knowledge sources include:
+MSMS training material
+Hostel Management SOP
+Government circulars
+Child Protection Guidelines
+Nutrition Guidelines
+Health Protocols
+SEL Manual
+Happiness Club resources
+Disaster Management SOP
+Emergency Contact Lists
+Frequently Asked Questions
+The AI should answer only after retrieving relevant sections.
+
+Module 7: Daily Digital Register
+Instead of filling lengthy forms later, wardens simply chat.
+Example:
+"Today two children had fever. One child fought with another after dinner. Water supply was interrupted for two hours."
+The AI converts this into structured records.
+Possible categories:
+Attendance
+Health
+Meals
+Discipline
+Visitors
+Maintenance
+Activities
+Safety
+Observations
+
+Module 8: Reflection Journal
+Daily prompts:
+How was your day?
+What challenged you?
+What went well?
+Who made you smile today?
+Which child needs more attention tomorrow?
+Weekly reflections help wardens become more mindful practitioners.
+
+Module 9: Habit Builder
+Daily habits
+Drink enough water
+Eat meals on time
+Walk for 10 minutes
+Practice gratitude
+Sleep on time
+Talk positively with one student
+Notice one child's progress
+Record observations
+Weekly habits
+Student Circle
+Hostel Cleanliness Audit
+Kitchen Review
+Parent Interaction
+Health Review
+Monthly habits
+Safety Drill
+Hostel Inspection
+Community Meeting
+Student Happiness Activity
+
+Module 10: Self-Care Companion
+Morning
+Good morning.
+How are you feeling today?
+Evening
+How was your energy today?
+Would you like to talk?
+Stress Tracking
+Mood Tracking
+Burnout Indicators
+Sleep Tracking
+Mindfulness
+Breathing
+Relaxation
+Positive Reflection
+
+Long-Term Memory
+The AI should remember relevant professional context.
+Examples:
+Hostel Name
+District
+Number of students
+Girls/Boys hostel
+Frequent challenges
+Student concerns
+Recent incidents
+Pending actions
+Important reminders
+The AI should use memory naturally.
+Example:
+"You mentioned yesterday that Rani was homesick.
+How is she today?"
+
+Voice-First Experience
+Many wardens may find speaking easier than typing.
+Future workflow:
+Voice message
+↓
+Speech-to-text
+↓
+AI understanding
+↓
+Response in Marathi
+↓
+Automatic documentation
+The user should not have to type long reports.
+
+Languages
+Priority:
+Marathi
+Hindi
+English
+The AI should understand code-mixed conversations.
+Example:
+"आज hostel मध्ये दोन मुलं भांडली."
+
+Personalisation
+The AI should adapt based on:
+Experience level
+Hostel size
+Location
+Language preference
+Interaction history
+Habit completion
+Stress trends
+Frequently asked questions
+
+Safety Principles
+The AI must:
+Never shame users.
+Never diagnose mental illness.
+Avoid giving medical diagnoses.
+Avoid legal advice.
+Escalate serious situations.
+Encourage human support where needed.
+Prioritize child safety above all else.
+
+Data Dashboard (Future)
+Individual Dashboard
+Mood trends
+Habit completion
+Daily reflections
+Common challenges
+Hostel Dashboard
+Health incidents
+Conflict frequency
+Attendance
+Cleanliness
+Student wellbeing
+Supervisor Dashboard
+Anonymous trends
+Support needs
+Training recommendations
+Common issues
+Program insights
+
+Suggested Technology Stack
+Frontend
+Next.js
+Tailwind CSS
+Backend
+Supabase
+Authentication
+Supabase Auth
+Database
+PostgreSQL
+Knowledge Base
+Vector Database
+Embeddings
+Gemini Embeddings or equivalent
+LLM
+Gemini
+OpenAI
+Claude
+OpenRouter
+Deployment
+Vercel
+Communication
+WhatsApp (future)
+Telegram (optional MVP)
+Voice
+Whisper or Gemini Speech
+
+Product Roadmap
+Phase 1 — MVP
+Web-based chatbot
+AI conversations
+Knowledge base
+Daily journal
+Mood tracking
+Habit tracker
+
+Phase 2
+Voice conversations
+Memory
+Daily registers
+Reflection reports
+
+Phase 3
+WhatsApp integration
+Supervisor dashboards
+Incident reporting
+Smart reminders
+
+Phase 4
+Predictive insights
+Risk detection
+Personalized coaching
+Organization-wide analytics
+
+Expected Impact
+For Hostel Wardens
+Reduced stress
+Better decision making
+Improved confidence
+Better documentation
+Stronger emotional wellbeing
+For Students
+Better care
+Faster response to problems
+Stronger relationships
+Safer hostels
+Improved emotional climate
+For Program Teams
+Better visibility
+Better monitoring
+Better support
+Data-driven interventions
+
+Long-Term Vision
+Mitra is not intended to replace supervisors, trainers, or counsellors.
+Its purpose is to ensure that every Hostel Warden—regardless of location—has access to a knowledgeable, empathetic, and practical companion at any time of the day.
+Over time, Mitra can evolve into an AI-powered operating system for hostel management, combining operational guidance, Social Emotional Learning, wellbeing coaching, knowledge retrieval, documentation support, and continuous professional development into one unified platform.
+The ultimate vision is to strengthen the wellbeing of wardens so that they are better equipped to create safe, nurturing, and joyful residential environments where every child can thrive.
+
+
+PRD:
+ps.
+Wireframes.
+
+PART 13 — WhatsApp Experience
+How WhatsApp behaves.
+Buttons.
+Lists.
+Quick replies.
+Voice.
+Media.
+Documents.
+Photos.
+Reminders.
+Templates.
+
+PART 14 — Voice Experience
+Speech
+↓
+Transcription
+↓
+Emotion Detection
+↓
+LLM
+↓
+Voice Response
+Latency goals.
+
+PART 15 — Notifications
+Morning
+Evening
+Medicine
+Reflection
+Habit
+Safety
+Reports
+Weekly summaries
+Everything.
+
+PART 16 — Analytics
+For Program Managers.
+Mood trends.
+Hostel issues.
+Conflict frequency.
+Burnout prediction.
+Support requests.
+Usage.
+Engagement.
+
+PART 17 — AI Models
+Gemini
+Claude
+GPT
+OpenRouter
+Fallback strategy.
+Costs.
+Latency.
+When to switch.
+
+PART 18 — Development Plan
+Sprint 1
+Sprint 2
+Sprint 3
+Sprint 4
+Sprint 5
+Sprint 6
+Deliverables.
+Acceptance Criteria.
+
+PART 19 — Future Vision
+Student Companion
+Teacher Companion
+Principal Companion
+District Dashboard
+Government Dashboard
+AI Insights
+Offline AI
+Predictive Risk
+
+But here's the part I think will make Mitra truly different
+Most AI chatbots are reactive.
+User asks.
+AI answers.
+That's it.
+I think Mitra should instead have a daily operating rhythm, almost like a supportive colleague.
+For example:
+6:30 AM: "Good morning! Did all students wake up on time? How are you feeling today?"
+8:00 AM: "Any students absent from breakfast?"
+2:00 PM: "Anything unusual happened since morning?"
+7:30 PM: "How was dinner? Any health concerns?"
+9:30 PM: "Before you rest, let's spend two minutes reflecting on today."
+The AI isn't waiting for a problem—it helps wardens notice patterns, document events, and care for themselves consistently.
+
+One more recommendation
+Because I know your work on MSMS already includes structured training content, SOPs, Happiness Club resources, and hostel management capacity-building, I would not build Mitra as "just an AI chatbot." I would build it as the AI layer on top of the entire MSMS ecosystem. Every manual, training presentation, circular, and toolkit becomes part of its knowledge base, so wardens receive guidance that is consistent with the program rather than generic internet advice. That makes the product much more defensible and genuinely useful.
+I believe this project is substantial enough that it deserves to be treated like a real software product from day one. A well-written PRD of this depth won't just guide development—it can also support funding proposals, stakeholder presentations, pilot planning with the Tribal Development Department, and eventually become the blueprint for an AI platform that supports not only wardens, but teachers, principals, and the wider school ecosystem.
