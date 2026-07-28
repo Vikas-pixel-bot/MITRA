@@ -40,6 +40,8 @@ export default function IncidentTrackerView() {
     if (!newDescription.trim()) return;
 
     setIsSubmitting(true);
+    let suggestedAction = "Please follow standard protocol. Evaluate the situation calmly.";
+    
     try {
       // Get AI suggestion
       const response = await fetch('/api/incident', {
@@ -47,17 +49,30 @@ export default function IncidentTrackerView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ description: newDescription }),
       });
-      const data = await response.json();
-      const suggestedAction = data.suggestedAction || "Please follow standard protocol.";
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.suggestedAction) {
+          suggestedAction = data.suggestedAction;
+        }
+      }
+    } catch (error) {
+      console.error('Error getting AI advice for incident:', error);
+      // fallback advice already set
+    }
 
-      // Save to DB
+    try {
+      // Save to DB even if AI failed
       const res = await logIncident(newDescription, suggestedAction);
       if (res.success && res.incident) {
         setJustLoggedIncident(res.incident);
         setNewDescription('');
+      } else {
+        alert("Failed to save the incident to the database. Please try again.");
       }
     } catch (error) {
-      console.error('Error logging incident:', error);
+      console.error('Error saving incident to DB:', error);
+      alert("A network error occurred while saving. Please check your connection.");
     } finally {
       setIsSubmitting(false);
     }

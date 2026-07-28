@@ -20,7 +20,11 @@ const IconMap: Record<string, React.ReactNode> = {
   Moon: <Moon className="w-5 h-5 text-indigo-500" />,
 };
 
-export default function JournalView() {
+interface JournalViewProps {
+  setActiveTab?: (tab: 'home' | 'chat' | 'journal' | 'incident') => void;
+}
+
+export default function JournalView({ setActiveTab }: JournalViewProps) {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -127,7 +131,10 @@ export default function JournalView() {
           <p className="text-indigo-100 text-sm mb-4 relative z-10 leading-relaxed">
             Take a moment to process your day. What challenged you today, and what went well?
           </p>
-          <button className="bg-white text-indigo-600 px-5 py-2 rounded-full text-sm font-bold shadow-sm active:scale-95 transition-transform relative z-10">
+          <button 
+            onClick={() => setActiveTab && setActiveTab('chat')}
+            className="bg-white text-indigo-600 px-5 py-2 rounded-full text-sm font-bold shadow-sm active:scale-95 transition-transform relative z-10"
+          >
             Start Journal Entry
           </button>
         </section>

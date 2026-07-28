@@ -15,9 +15,9 @@ export default function PlatformShell() {
       
       {/* Main Content Area */}
       <div className="flex-1 overflow-hidden pb-16">
-        {activeTab === 'home' && <HomeView />}
+        {activeTab === 'home' && <HomeView setActiveTab={setActiveTab} />}
         {activeTab === 'chat' && <ChatView />}
-        {activeTab === 'journal' && <JournalView />}
+        {activeTab === 'journal' && <JournalView setActiveTab={setActiveTab} />}
         {activeTab === 'incident' && <IncidentTrackerView />}
       </div>
 
