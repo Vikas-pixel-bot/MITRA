@@ -13,7 +13,13 @@ const globalForPrisma = globalThis as unknown as {
 
 const connectionString = process.env.DATABASE_URL || "";
 
-const pool = globalForPrisma.prisma ? undefined : new Pool({ connectionString });
+// Supabase connection poolers require SSL. We explicitly pass ssl config to the pg Pool.
+const pool = globalForPrisma.prisma 
+  ? undefined 
+  : new Pool({ 
+      connectionString, 
+      ssl: { rejectUnauthorized: false } 
+    });
 const adapter = pool ? new PrismaPg(pool) : undefined;
 
 export const prisma =
