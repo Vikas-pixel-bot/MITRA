@@ -1,22 +1,27 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Noto_Sans, Noto_Sans_Devanagari } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const notoSans = Noto_Sans({ subsets: ['latin'], variable: '--font-noto-sans' });
+const notoSansDevanagari = Noto_Sans_Devanagari({
+  subsets: ['devanagari'],
+  variable: '--font-noto-sans-devanagari',
+});
 
 export const metadata: Metadata = {
-  title: 'MITRA AI | Hostel Warden Companion',
-  description: 'Mentoring Intelligence for Tribal Residential Ashramshalas',
+  title: 'MITRA — Always by your side',
+  description: 'Mentoring Intelligence for Tribal Residential Ashramshala',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
-    title: 'MITRA AI',
+    statusBarStyle: 'default',
+    title: 'MITRA',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#020617',
+  themeColor: '#faf6ee',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -29,8 +34,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body className={`${inter.className} bg-slate-950 text-slate-100 antialiased selection:bg-blue-500 selection:text-white`}>
+    <html
+      lang="en"
+      className={`scroll-smooth ${inter.variable} ${notoSans.variable} ${notoSansDevanagari.variable}`}
+    >
+      <body className="bg-cloud text-moon antialiased selection:bg-morning-sun selection:text-white">
         {children}
       </body>
     </html>

@@ -2,13 +2,13 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'MITRA AI - Warden Companion',
+    name: 'MITRA — Always by your side',
     short_name: 'MITRA',
-    description: 'Mentoring Intelligence for Tribal Residential Ashramshalas',
+    description: 'Mentoring Intelligence for Tribal Residential Ashramshala',
     start_url: '/',
     display: 'standalone',
-    background_color: '#020617',
-    theme_color: '#020617',
+    background_color: '#faf6ee',
+    theme_color: '#faf6ee',
     icons: [
       {
         src: '/favicon.ico',
