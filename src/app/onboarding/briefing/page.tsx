@@ -13,9 +13,15 @@ export default function BriefingPage() {
   const honorific = data.honorific ? ` ${data.honorific}` : '';
 
   useEffect(() => {
-    saveOnboardingUser(data).catch((err) => {
-      console.error('Failed to sync onboarding to database:', err);
-    });
+    saveOnboardingUser(data)
+      .then((result) => {
+        if (result.success && result.userId) {
+          window.localStorage.setItem('mitra:userId', result.userId);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to sync onboarding to database:', err);
+      });
   }, [data]);
 
   return (
