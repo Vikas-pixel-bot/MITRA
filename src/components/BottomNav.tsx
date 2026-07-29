@@ -10,10 +10,10 @@ interface BottomNavProps {
 
 export default function BottomNav({ activeTab, onChangeTab }: BottomNavProps) {
   const tabs = [
-    { id: 'home', label: 'Home', icon: Home },
+    { id: 'home', label: 'Home', icon: Home, badge: false },
     { id: 'chat', label: 'Mitra AI', icon: MessageCircle, badge: true },
-    { id: 'journal', label: 'Journal', icon: ClipboardList },
-    { id: 'incident', label: 'Incidents', icon: AlertTriangle },
+    { id: 'journal', label: 'Journal', icon: ClipboardList, badge: false },
+    { id: 'incident', label: 'Incidents', icon: AlertTriangle, badge: false },
   ] as const;
 
   return (
