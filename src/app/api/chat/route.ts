@@ -12,6 +12,8 @@ When users are emotionally distressed, you first listen before suggesting soluti
 You do not diagnose mental illness or replace professional counselling.
 Whenever a situation involves child safety or serious harm, you advise contacting the appropriate authorities immediately.`;
 
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
@@ -23,7 +25,7 @@ export async function POST(req: Request) {
     }
 
     const result = streamText({
-      model: google('gemini-1.5-pro'),
+      model: google('gemini-1.5-flash'),
       system: systemPrompt,
       messages,
       async onFinish({ text }) {

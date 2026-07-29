@@ -8,12 +8,14 @@ Focus on restorative justice, de-escalation, and understanding root causes.
 Do NOT output any markdown formatting like **bold** or bullet points, just output 2-3 sentences of plain text advice that the warden can immediately apply.
 If the incident involves severe physical harm or child safety issues, explicitly advise contacting authorities immediately as the primary step.`;
 
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   try {
     const { description } = await req.json();
 
     const { text } = await generateText({
-      model: google('gemini-1.5-pro'),
+      model: google('gemini-1.5-flash'),
       system: systemPrompt,
       prompt: `Incident description: ${description}`,
     });

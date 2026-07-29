@@ -31,7 +31,7 @@ export async function synthesizeAndSaveDailyLog(rawInput: string) {
 
     // 2. Use Gemini to extract structured JSON from the raw text
     const { object } = await generateObject({
-      model: google('gemini-1.5-pro'),
+      model: google('gemini-1.5-flash'),
       schema: DailyLogSchema,
       prompt: `Analyze the following daily log from a hostel warden at a Government Ashram School and extract structured data: attendance numbers, health issues, activities, and an estimated mood index (1-5).
       
