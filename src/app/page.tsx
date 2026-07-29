@@ -1,247 +1,213 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, Heart, Brain, Users, BookOpen, UserCheck, ShieldCheck, Clock, Lightbulb, AlertTriangle } from 'lucide-react';
-import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
+import { 
+  Sparkles, 
+  Clock, 
+  ShieldAlert, 
+  MessageSquare, 
+  HeartHandshake, 
+  Home, 
+  FileText, 
+  CheckCircle2,
+  ChevronRight,
+  Sun,
+  Moon,
+  Sunset
+} from 'lucide-react';
 
-export default function LandingPage() {
-  const fadeInUp: any = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } }
-  };
+export default function MitraPwaShell() {
+  const [activeTab, setActiveTab] = useState<'home' | 'ai' | 'incidents' | 'journal'>('home');
+  const [timeState, setTimeState] = useState<{ period: string; title: string; subtitle: string; icon: any }>({
+    period: 'Morning Routine',
+    title: '6:30 AM Wake-Up & Breakfast',
+    subtitle: '120 Students Expected • Check Sick Bay Log',
+    icon: Sun,
+  });
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) {
+      setTimeState({
+        period: 'Morning Routine',
+        title: 'Morning Attendance & Breakfast',
+        subtitle: 'Focus: Verify student headcount and sick bay check',
+        icon: Sun,
+      });
+    } else if (hour >= 12 && hour < 17) {
+      setTimeState({
+        period: 'Mid-Day Checkpoint',
+        title: 'Afternoon Health & Meal Audit',
+        subtitle: 'Focus: Review student fever logs & dining hygiene',
+        icon: Sun,
+      });
+    } else if (hour >= 17 && hour < 21) {
+      setTimeState({
+        period: 'Evening Duty',
+        title: 'Study Hour & Restorative Resolution',
+        subtitle: 'Focus: Check evening study hall & resolve pending incidents',
+        icon: Sunset,
+      });
+    } else {
+      setTimeState({
+        period: 'Night Reflection',
+        title: 'Warden Wellbeing & Quiet Check-in',
+        subtitle: 'Focus: 2-minute personal reflection before sleep',
+        icon: Moon,
+      });
+    }
+  }, []);
+
+  const TimeIcon = timeState.icon;
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 overflow-x-hidden">
+    <div className="relative min-h-[100dvh] w-full max-w-md mx-auto bg-slate-950 text-slate-100 flex flex-col justify-between overflow-hidden shadow-2xl border-x border-slate-900 font-sans pb-24">
       
-      {/* Navbar */}
-      <nav className="w-full px-6 py-4 flex justify-between items-center fixed top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-50 border-b border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-2 group relative cursor-help">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">M</div>
-          <span className="font-bold text-xl tracking-tight">MITRA</span>
-          
-          {/* Tooltip on Hover */}
-          <div className="absolute top-full left-0 mt-2 w-64 p-3 bg-slate-800 text-white text-sm rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-            <strong>M</strong>entoring <strong>I</strong>ntelligence for <strong>T</strong>ribal <strong>R</strong>esidential <strong>A</strong>shramshalas
-            <div className="absolute -top-2 left-4 w-4 h-4 bg-slate-800 rotate-45"></div>
+      {/* Top Ambient Glow */}
+      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-600/15 blur-3xl rounded-full pointer-events-none" />
+
+      {/* Header Bar */}
+      <header className="px-6 pt-6 pb-4 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-20 border-b border-slate-900/80 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 p-0.5 shadow-lg shadow-blue-500/20">
+            <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-blue-400" />
+            </div>
+          </div>
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Ashram School PWA</span>
+            <h1 className="text-base font-black text-white tracking-tight">MITRA Companion</h1>
           </div>
         </div>
-        <Link 
-          href="/platform" 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-semibold transition-transform active:scale-95 shadow-sm"
-        >
-          Open App
-        </Link>
+
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Live Sync
+          </span>
+        </div>
+      </header>
+
+      {/* Main Content Body */}
+      <main className="flex-1 px-6 py-6 overflow-y-auto space-y-6 z-10">
+        
+        {/* 15-SECOND RULE PRIORITY CARD */}
+        <section className="bg-gradient-to-br from-slate-900 via-slate-900/90 to-blue-950/40 p-6 rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-2xl rounded-full" />
+          
+          <div className="flex items-center justify-between text-slate-400 mb-3">
+            <div className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-wider">
+              <TimeIcon className="w-4 h-4" />
+              <span>{timeState.period}</span>
+            </div>
+            <span className="text-[10px] font-semibold text-slate-500 bg-slate-800/80 px-2.5 py-0.5 rounded-full">
+              15-Sec Priority
+            </span>
+          </div>
+
+          <h2 className="text-xl font-black text-white tracking-tight leading-snug">
+            {timeState.title}
+          </h2>
+          <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+            {timeState.subtitle}
+          </p>
+
+          <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+            <button 
+              onClick={() => setActiveTab('ai')}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs py-3.5 px-4 rounded-2xl transition-all shadow-lg shadow-blue-950/50 flex items-center justify-center gap-2 group"
+            >
+              <span>Talk to Mitra to Log Progress</span>
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+          </div>
+        </section>
+
+        {/* PROACTIVE AI LAW HIGHLIGHT: "Humans Over Forms" */}
+        <section className="bg-slate-900/50 p-5 rounded-3xl border border-slate-800/80 backdrop-blur-lg space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+              MITRA Law 2 • Humans Over Forms
+            </span>
+            <Clock className="w-3.5 h-3.5 text-slate-500" />
+          </div>
+
+          <p className="text-xs font-medium text-slate-300 leading-relaxed">
+            "No 12-field forms here. Simply tell Mitra what happened at the hostel, and AI will synthesize the official records for you."
+          </p>
+
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            <button 
+              onClick={() => setActiveTab('incidents')}
+              className="p-3.5 bg-slate-950/80 hover:bg-slate-900 rounded-2xl border border-slate-800/80 text-left transition-all group"
+            >
+              <ShieldAlert className="w-5 h-5 text-amber-400 mb-2 group-hover:scale-110 transition-transform" />
+              <span className="text-xs font-bold text-white block">Log Incident</span>
+              <span className="text-[10px] text-slate-500 block">Restorative advice</span>
+            </button>
+
+            <button 
+              onClick={() => setActiveTab('journal')}
+              className="p-3.5 bg-slate-950/80 hover:bg-slate-900 rounded-2xl border border-slate-800/80 text-left transition-all group"
+            >
+              <HeartHandshake className="w-5 h-5 text-rose-400 mb-2 group-hover:scale-110 transition-transform" />
+              <span className="text-xs font-bold text-white block">Quiet Reflection</span>
+              <span className="text-[10px] text-slate-500 block">2-min Warden check-in</span>
+            </button>
+          </div>
+        </section>
+
+        {/* ACTIVE CONTEXT & MEMORY CARD (MITRA Law 6) */}
+        <section className="bg-gradient-to-r from-indigo-950/30 to-purple-950/20 p-5 rounded-3xl border border-indigo-500/20 space-y-2">
+          <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-indigo-400">
+            <span>Mitra Memory Active</span>
+            <CheckCircle2 className="w-3.5 h-3.5" />
+          </div>
+          <p className="text-xs text-slate-300 font-medium">
+            "Last week you flagged concerns about student homesickness. Mitra will follow up during your evening reflection."
+          </p>
+        </section>
+
+      </main>
+
+      {/* FLOATING GLASSMOBILE NAVBAR */}
+      <nav className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[92%] max-w-md bg-slate-900/90 backdrop-blur-xl border border-slate-800/80 rounded-3xl p-1.5 shadow-2xl shadow-blue-950/50 z-50">
+        <div className="flex items-center justify-between">
+          {[
+            { id: 'home', label: 'Home', icon: Home, badge: false },
+            { id: 'ai', label: 'Mitra AI', icon: MessageSquare, badge: true },
+            { id: 'incidents', label: 'Incidents', icon: ShieldAlert, badge: false },
+            { id: 'journal', label: 'Journal', icon: FileText, badge: false },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`relative flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-2xl transition-all duration-300 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25 scale-[1.02]'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                }`}
+              >
+                <div className="relative">
+                  <Icon className={`w-5 h-5 transition-transform duration-300 ${isActive ? 'scale-110' : ''}`} />
+                  {tab.badge && !isActive && (
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
+                  )}
+                </div>
+                {isActive && (
+                  <span className="text-xs font-bold tracking-wide animate-in fade-in slide-in-from-left-2 duration-300">
+                    {tab.label}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 flex flex-col items-center text-center relative">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl -z-10"></div>
-        <div className="absolute top-40 right-10 w-72 h-72 bg-purple-400/20 rounded-full blur-3xl -z-10"></div>
-        
-        <motion.div initial="hidden" animate="visible" variants={fadeInUp} className="max-w-3xl">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
-            Meet <span className="text-blue-600 dark:text-blue-400 group relative cursor-help border-b-2 border-dashed border-blue-400 inline-block">
-              MITRA
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-[300px] p-3 bg-slate-800 text-white text-sm rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
-                Mentoring Intelligence for Tribal Residential Ashramshalas
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-slate-800 rotate-45"></div>
-              </div>
-            </span>
-          </h1>
-          <p className="text-lg md:text-xl font-semibold text-slate-700 dark:text-slate-300 mb-4">
-            Mentoring Intelligence for Tribal Residential Ashramshalas
-          </p>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 leading-relaxed mx-auto">
-            The AI Companion empowering wardens with instant guidance, daily rhythm structures, and emotional support to create joyful residential environments.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/platform" 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-lg font-semibold flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:-translate-y-1"
-            >
-              Enter Warden Platform <ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Who Uses MITRA Section */}
-      <section className="py-20 px-6 bg-slate-100 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={fadeInUp} className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Who is MITRA for?</h2>
-            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg">
-              Designed specifically for the dedicated staff of Government Ashram Schools, ensuring they are never alone in their duties.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800">
-              <UserCheck className="w-10 h-10 text-blue-600 mb-4" />
-              <h3 className="text-xl font-bold mb-2">Hostel Wardens</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                Primary caregivers managing daily routines, student emotional wellbeing, and conflict resolution in residential setups.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800">
-              <ShieldCheck className="w-10 h-10 text-green-600 mb-4" />
-              <h3 className="text-xl font-bold mb-2">Headmasters</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                School leaders overseeing the alignment of hostel management with the broader educational and Happiness Curriculum goals.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800">
-              <BookOpen className="w-10 h-10 text-purple-600 mb-4" />
-              <h3 className="text-xl font-bold mb-2">Teachers & Staff</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                Educators collaborating with wardens to maintain consistent Social Emotional Learning environments outside classroom hours.
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* What can MITRA do (Features) Section */}
-      <section className="py-20 px-6 bg-white dark:bg-slate-950">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={fadeInUp} className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Core Platform Features</h2>
-            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg">
-              A comprehensive toolkit that moves beyond tracking, moving towards proactive coaching and mentoring.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-3xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 flex gap-4">
-              <div className="mt-1"><Brain className="w-8 h-8 text-blue-600 dark:text-blue-400" /></div>
-              <div>
-                <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-slate-100">Proactive AI Companion</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm">Mitra reaches out to you based on the time of day, reminding you of routine checks and providing a private space to discuss hostel challenges securely.</p>
-              </div>
-            </div>
-            <div className="p-6 rounded-3xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 flex gap-4">
-              <div className="mt-1"><AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" /></div>
-              <div>
-                <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-slate-100">Intelligent Incident Tracker</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm">Log student conflicts or issues. Mitra immediately generates restorative, SEL-aligned advice and ensures you follow up on unresolved incidents.</p>
-              </div>
-            </div>
-            <div className="p-6 rounded-3xl bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 flex gap-4">
-              <div className="mt-1"><Heart className="w-8 h-8 text-green-600 dark:text-green-400" /></div>
-              <div>
-                <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-slate-100">Daily Habit Builder</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm">Track your own daily wellbeing routines. You can't pour from an empty cup; Mitra ensures wardens prioritize their own basic self-care.</p>
-              </div>
-            </div>
-            <div className="p-6 rounded-3xl bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-900/30 flex gap-4">
-              <div className="mt-1"><Lightbulb className="w-8 h-8 text-purple-600 dark:text-purple-400" /></div>
-              <div>
-                <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-slate-100">Happiness Curriculum Integration</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm">All AI responses and suggested measures are strictly aligned with the principles of the Happiness Curriculum and trauma-informed care.</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Why SEL Matters */}
-      <section className="py-20 px-6 bg-slate-50 dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
-        <motion.div 
-          initial="hidden" 
-          whileInView="visible" 
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeInUp}
-          className="max-w-4xl mx-auto"
-        >
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Why Social Emotional Learning (SEL)?</h2>
-            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg">
-              Hostel wardens are more than administrators; they are emotional anchors. Understanding SEL transforms conflict into connection.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-slate-950 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mb-6">
-                <Heart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Self-Awareness</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                Helping wardens and students recognize their emotions, understand their triggers, and build a foundation for emotional regulation.
-              </p>
-            </div>
-            
-            <div className="bg-white dark:bg-slate-950 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mb-6">
-                <Users className="w-8 h-8 text-green-600 dark:text-green-400" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Relationship Skills</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                Fostering empathy, active listening, and conflict resolution without relying solely on punitive discipline.
-              </p>
-            </div>
-            
-            <div className="bg-white dark:bg-slate-950 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center mb-6">
-                <Brain className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Responsible Decisions</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                Coaching students through difficult moments to make choices that benefit their future and the community.
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Happiness Curriculum Corner */}
-      <section className="py-20 px-6 overflow-hidden relative">
-        <div className="absolute inset-0 bg-blue-600 -skew-y-3 transform origin-top-left -z-10"></div>
-        <motion.div 
-          initial="hidden" 
-          whileInView="visible" 
-          viewport={{ once: true }}
-          variants={fadeInUp}
-          className="max-w-4xl mx-auto text-white text-center"
-        >
-          <div className="inline-block p-4 bg-white/20 rounded-2xl backdrop-blur-md mb-6 border border-white/30">
-            <BookOpen className="w-10 h-10 text-white" />
-          </div>
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">The Happiness Curriculum Corner</h2>
-          <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed mb-10">
-            Mitra isn't just a generic chatbot. It is built as an interactive layer on top of the established MSMS ecosystem, training materials, and the Happiness Curriculum. It provides guidance consistent with your exact program goals.
-          </p>
-          <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 text-left grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <h3 className="text-2xl font-bold mb-4">Core Principles:</h3>
-              <ul className="space-y-4">
-                <li className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-400 flex items-center justify-center text-sm font-bold">1</div>
-                  <span>Mindful Awareness (ध्यान)</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-400 flex items-center justify-center text-sm font-bold">2</div>
-                  <span>Critical Thinking & Storytelling</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-400 flex items-center justify-center text-sm font-bold">3</div>
-                  <span>Activity-Based Reflection</span>
-                </li>
-              </ul>
-            </div>
-            <div className="bg-blue-800/50 p-6 rounded-2xl border border-blue-500/30">
-              <p className="italic text-blue-50">
-                "Over time, Mitra evolves into an AI-powered operating system for hostel management, combining operational guidance, Social Emotional Learning, and wellbeing coaching."
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-10 text-center text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 mt-auto">
-        <p className="font-semibold text-slate-800 dark:text-slate-200">MITRA</p>
-        <p className="text-sm mt-2">Mentoring Intelligence for Tribal Residential Ashramshalas</p>
-      </footer>
     </div>
   );
 }

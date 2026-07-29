@@ -1,37 +1,26 @@
-import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata, Viewport } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ['latin'] });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+export const metadata: Metadata = {
+  title: 'MITRA AI | Hostel Warden Companion',
+  description: 'Mentoring Intelligence for Tribal Residential Ashramshalas',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'MITRA AI',
+  },
+};
 
 export const viewport: Viewport = {
-  themeColor: "#3b82f6",
-  width: "device-width",
+  themeColor: '#020617',
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-};
-
-export const metadata: Metadata = {
-  title: "MITRA",
-  description: "Mentoring Intelligence for Tribal Residential Ashramshalas",
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Mitra",
-  },
-  formatDetection: {
-    telephone: false,
-  },
 };
 
 export default function RootLayout({
@@ -40,11 +29,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className="dark scroll-smooth">
+      <body className={`${inter.className} bg-slate-950 text-slate-100 antialiased selection:bg-blue-500 selection:text-white`}>
+        {children}
+      </body>
     </html>
   );
 }

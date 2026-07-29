@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mitra – AI Companion for Hostel Wardens</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind Custom Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            500: '#f59e0b', // Amber
+                            600: '#d97706',
+                            700: '#b45309',
+                            DEFAULT: '#0f172a', // Deep Slate
+                            accent: '#e11d48' // Rose for emergencies
+                        },
+                        indigoCustom: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#1e1b4b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .chat-bubble-warden {
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble-mitra {
+            border-bottom-left-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 selection:bg-brand-100 selection:text-brand-700">
+
+    <!-- Top Banner: Context -->
+    <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 text-white text-xs md:text-sm font-medium py-2.5 px-4 text-center sticky top-0 z-50 shadow-sm flex items-center justify-center gap-2">
+        <span class="bg-white/20 px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider">Project Concept Note & PRD</span>
+        <span>Empowering Government Tribal Residential Schools of Maharashtra with Social Emotional Learning (SEL) AI</span>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="border-b border-slate-200/80 bg-white/90 backdrop-blur sticky top-[40px] z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-amber-500 flex items-center justify-center text-white font-extrabold shadow-md shadow-amber-500/20">
+                    M
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-slate-900 flex items-center gap-2">
+                        Mitra <span class="text-xs px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">AI Layer v1.0</span>
+                    </h1>
+                    <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Ashram School Guardian Companion</p>
+                </div>
+            </div>
+            <nav class="hidden lg:flex items-center gap-6">
+                <a href="#vision" class="text-sm font-semibold text-slate-600 hover:text-brand-600 transition">Vision</a>
+                <a href="#chat-simulator" class="text-sm font-semibold text-slate-600 hover:text-brand-600 transition">Interactive Demo</a>
+                <a href="#modules" class="text-sm font-semibold text-slate-600 hover:text-brand-600 transition">Core Modules</a>
+                <a href="#dashboard-preview" class="text-sm font-semibold text-slate-600 hover:text-brand-600 transition">Analytics Preview</a>
+                <a href="#architecture" class="text-sm font-semibold text-slate-600 hover:text-brand-600 transition">Architect Blueprint</a>
+            </nav>
+            <div class="flex items-center gap-2">
+                <a href="#chat-simulator" class="inline-flex items-center gap-1.5 bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-slate-800 transition">
+                    <i data-lucide="play" class="w-3.5 h-3.5"></i> Launch Live Simulator
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Showcase Section -->
+    <section class="relative overflow-hidden bg-gradient-to-b from-amber-50/70 via-white to-slate-50 py-16 md:py-24 border-b border-slate-200/50">
+        <!-- Abstract Background Glows -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-amber-200/30 to-rose-200/20 rounded-full blur-3xl -z-10"></div>
+        <div class="absolute bottom-0 right-10 w-[300px] h-[300px] bg-indigoCustom-100/30 rounded-full blur-2xl -z-10"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Hand Side: Narrative & Pitch -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-200/60 text-orange-800 text-xs font-semibold">
+                        <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+                        Empathetic AI Intervention
+                    </div>
+                    
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-950 tracking-tight leading-[1.1]">
+                        The AI Companion For <span class="bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 bg-clip-text text-transparent">Hostel Wardens</span>
+                    </h2>
+                    
+                    <p class="text-lg text-slate-600 leading-relaxed max-w-2xl">
+                        Hostel Wardens in Government Ashram Schools are caregivers, mentors, and crisis managers working in isolation. 
+                        <strong>Mitra</strong> serves as a trusted colleague—providing instant, compassionate support in hostel management, 
+                        Social Emotional Learning (SEL), and Maharashtra government SOPs.
+                    </p>
+
+                    <!-- Fast Facts Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 py-4">
+                        <div class="p-4 rounded-xl bg-white border border-slate-200/80 shadow-sm">
+                            <span class="text-xs text-slate-500 font-medium uppercase tracking-wider block mb-1">Target Schools</span>
+                            <span class="text-lg font-bold text-slate-900 block">Govt. Ashram Schools</span>
+                            <span class="text-xs text-brand-600 font-semibold">Maharashtra State</span>
+                        </div>
+                        <div class="p-4 rounded-xl bg-white border border-slate-200/80 shadow-sm">
+                            <span class="text-xs text-slate-500 font-medium uppercase tracking-wider block mb-1">AI Interface</span>
+                            <span class="text-lg font-bold text-slate-900 block">WhatsApp & Voice</span>
+                            <span class="text-xs text-brand-600 font-semibold">Code-Mixed Support</span>
+                        </div>
+                        <div class="p-4 rounded-xl bg-white border border-slate-200/80 shadow-sm col-span-2 md:col-span-1">
+                            <span class="text-xs text-slate-500 font-medium uppercase tracking-wider block mb-1">Key Framework</span>
+                            <span class="text-lg font-bold text-slate-900 block">CASEL SEL Model</span>
+                            <span class="text-xs text-brand-600 font-semibold">Well-being Centric</span>
+                        </div>
+                    </div>
+
+                    <!-- CTA Actions -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <a href="#chat-simulator" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-slate-900 to-indigoCustom-900 hover:from-slate-800 hover:to-indigoCustom-800 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-slate-900/10 transition">
+                            <i data-lucide="message-square" class="w-5 h-5 text-amber-400"></i> Open Mitra Interactive Chat
+                        </a>
+                        <a href="#architecture" class="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-100 text-slate-800 font-bold px-6 py-3.5 rounded-xl border border-slate-200 transition">
+                            <i data-lucide="book-open" class="w-5 h-5 text-slate-400"></i> Read System Blueprints
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Hand Side: Visual Mockup / Core Vision Details -->
+                <div class="lg:col-span-5 relative">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+                        <!-- Top header of the concept visualizer -->
+                        <div class="bg-slate-900 p-4 text-white flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                            </div>
+                            <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Project Paradigm Shift</span>
+                            <div class="w-5"></div>
+                        </div>
+
+                        <!-- Core Contrast Table -->
+                        <div class="p-6 space-y-4">
+                            <h3 class="text-sm font-extrabold uppercase text-slate-500 tracking-wider">Why Mitra is Different</h3>
+                            
+                            <div class="space-y-3">
+                                <div class="p-3 rounded-lg bg-red-50/50 border border-red-100 flex items-start gap-3">
+                                    <div class="p-1 rounded bg-red-100 text-red-700 mt-0.5">
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-red-950">Traditional AI Chatbots</h4>
+                                        <p class="text-xs text-red-800 mt-0.5">Entirely reactive. Waits for the warden to type structured questions. Offers generic internet answers.</p>
+                                    </div>
+                                </div>
+
+                                <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-100 flex items-start gap-3">
+                                    <div class="p-1 rounded bg-emerald-100 text-emerald-700 mt-0.5">
+                                        <i data-lucide="check" class="w-4 h-4"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-emerald-950">Mitra's Operating Rhythm</h4>
+                                        <p class="text-xs text-emerald-800 mt-0.5">Proactive companion. Initiates gentle daily checkpoints (6:30 AM, 8:00 AM, 7:30 PM, 9:30 PM) to catch patterns early, structure logs, and check on warden well-being.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-slate-100 pt-4 mt-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 text-sm font-bold">
+                                        <i data-lucide="heart" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold text-slate-900">Empathy-First Safety Rule</p>
+                                        <p class="text-[11px] text-slate-500">Never replace human judgment. Automatically flags emergencies and child safety risks to authorities instantly.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: Interactive Mitra Simulator -->
+    <section id="chat-simulator" class="py-16 bg-slate-900 text-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="max-w-3xl mx-auto text-center mb-10 space-y-4">
+                <span class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold uppercase tracking-widest">Interactive Prototype</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">Experience Mitra In Action</h2>
+                <p class="text-slate-400 text-sm md:text-base">
+                    Select a core scenario below to simulate how Mitra supports, tracks, and assists a warden through an average day using warm, empathetic, code-mixed language.
+                </p>
+            </div>
+
+            <!-- Simulator Workspace Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                
+                <!-- Left Block: Navigation & Scenario Selection -->
+                <div class="lg:col-span-4 space-y-4 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">Choose simulated scenario:</h3>
+                        
+                        <!-- Scenario 1 -->
+                        <button onclick="activateScenario(1)" id="scen-btn-1" class="w-full text-left p-4 rounded-xl border border-slate-800 bg-slate-800/50 hover:bg-slate-800 transition block group relative overflow-hidden active-scenario">
+                            <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-500"></div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold text-amber-400 uppercase tracking-wide">Module 1: Daily Conflict</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:translate-x-1 transition"></i>
+                            </div>
+                            <h4 class="font-bold text-sm text-white">Student Altercation</h4>
+                            <p class="text-xs text-slate-400 mt-1">Resolving peer conflict gracefully instead of harsh punishment.</p>
+                        </button>
+
+                        <!-- Scenario 2 -->
+                        <button onclick="activateScenario(2)" id="scen-btn-2" class="w-full text-left p-4 rounded-xl border border-slate-800 bg-slate-800/30 hover:bg-slate-800 transition block group relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-1 bg-transparent"></div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold text-amber-400 uppercase tracking-wide">Module 7: Daily register</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:translate-x-1 transition"></i>
+                            </div>
+                            <h4 class="font-bold text-sm text-white">Digital Record Logging</h4>
+                            <p class="text-xs text-slate-400 mt-1">Converting informal, messy messages into clean register entries.</p>
+                        </button>
+
+                        <!-- Scenario 3 -->
+                        <button onclick="activateScenario(3)" id="scen-btn-3" class="w-full text-left p-4 rounded-xl border border-slate-800 bg-slate-800/30 hover:bg-slate-800 transition block group relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-1 bg-transparent"></div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold text-amber-400 uppercase tracking-wide">Module 10: Warden Self-Care</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:translate-x-1 transition"></i>
+                            </div>
+                            <h4 class="font-bold text-sm text-white">Late-Night Venting</h4>
+                            <p class="text-xs text-slate-400 mt-1">Supporting the warden's own emotional well-being & stress.</p>
+                        </button>
+
+                        <!-- Scenario 4 -->
+                        <button onclick="activateScenario(4)" id="scen-btn-4" class="w-full text-left p-4 rounded-xl border border-rose-950 bg-rose-950/20 hover:bg-rose-950/40 transition block group relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-1 bg-transparent"></div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold text-rose-400 uppercase tracking-wide">Module 5: Critical Incident</span>
+                                <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-400"></i>
+                            </div>
+                            <h4 class="font-bold text-sm text-white">Snake Bite Protocol</h4>
+                            <p class="text-xs text-rose-300 mt-1">Safety response steps, reporting and escalation guidance.</p>
+                        </button>
+                    </div>
+
+                    <!-- Tech Prompt Context Indicator -->
+                    <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                        <div class="flex items-center gap-1.5 text-xs text-amber-400 font-bold">
+                            <i data-lucide="cpu" class="w-4 h-4"></i>
+                            Active AI Persona Core:
+                        </div>
+                        <p class="text-[11px] text-slate-400 italic leading-normal">
+                            "You are Mitra, a trusted, warm colleague who understands tribal ashram environments, does not judge, listens first, and advises on guidelines."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Block: High-Fidelity WhatsApp UI Mockup -->
+                <div class="lg:col-span-8 flex flex-col justify-between rounded-2xl bg-slate-950 border border-slate-800 shadow-2xl min-h-[500px]">
+                    <!-- Simulated WhatsApp Top Bar -->
+                    <div class="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between rounded-t-2xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-emerald-700 flex items-center justify-center font-extrabold text-white text-sm relative">
+                                M
+                                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-slate-900"></span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+                                    Mitra (AI Colleague) <i data-lucide="verified" class="w-4 h-4 text-emerald-400 fill-emerald-400/10"></i>
+                                </h4>
+                                <p class="text-[10px] text-emerald-400 font-semibold tracking-wide">Always Available • Online</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 text-slate-400">
+                            <i data-lucide="phone" class="w-4 h-4 cursor-pointer hover:text-white"></i>
+                            <i data-lucide="video" class="w-4 h-4 cursor-pointer hover:text-white"></i>
+                            <i data-lucide="more-vertical" class="w-4 h-4 cursor-pointer hover:text-white"></i>
+                        </div>
+                    </div>
+
+                    <!-- Chat Log Container -->
+                    <div id="simulated-chat-box" class="flex-1 p-6 space-y-4 overflow-y-auto max-h-[400px] bg-slate-900/40">
+                        <!-- Messages dynamically load here -->
+                    </div>
+
+                    <!-- Input Bar Mockup -->
+                    <div class="p-4 bg-slate-900 border-t border-slate-800 rounded-b-2xl flex items-center gap-3">
+                        <button class="text-slate-400 hover:text-white">
+                            <i data-lucide="paperclip" class="w-5 h-5"></i>
+                        </button>
+                        <div class="flex-1 bg-slate-950 rounded-xl px-4 py-3 border border-slate-800 flex items-center justify-between">
+                            <span id="simulator-placeholder-input" class="text-xs text-slate-500">Wait for simulator response...</span>
+                            <div class="flex items-center gap-2 text-slate-500">
+                                <i data-lucide="smile" class="w-4 h-4 cursor-pointer"></i>
+                            </div>
+                        </div>
+                        <button id="sim-action-btn" class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg hover:bg-emerald-500 transition">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Modules Interactive Explorer Section -->
+    <section id="modules" class="py-16 bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="max-w-3xl mx-auto text-center mb-12 space-y-3">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-slate-500">System Blueprint</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-950">The Ten Core Modules</h2>
+                <p class="text-slate-600 text-sm">
+                    Mitra is designed with a specialized framework divided into 10 structured, interconnected service modules.
+                </p>
+            </div>
+
+            <!-- Modules Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Module 1 -->
+                <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">01</div>
+                        <h3 class="text-base font-bold text-slate-900">Daily Conversations</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            A completely non-judgmental space for wardens to explore conflicts, daily events, or queries. Avoids cold instruction, uses open exploration.
+                        </p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold text-amber-700 tracking-wider block mt-4">Module 1 • Conversation</span>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center font-bold">02</div>
+                        <h3 class="text-base font-bold text-slate-900">Hostel Management Assistant</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Practical, real-time guidance on routines, discipline, nutrition, health, parental communication, and local facility cleanliness.
+                        </p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold text-orange-700 tracking-wider block mt-4">Module 2 • Operations</span>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center font-bold">03</div>
+                        <h3 class="text-base font-bold text-slate-900">SEL Coaching</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Aligned with CASEL competencies (Self-Awareness, Relationship Skills). Recommends journaling, breathing exercises, and active listening.
+                        </p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold text-red-700 tracking-wider block mt-4">Module 3 • Emotional</span>
+                </div>
+
+                <!-- Module 4 -->
+                <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">04</div>
+                        <h3 class="text-base font-bold text-slate-900">Student Wellbeing Support</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Deals proactively with homesickness, absenteeism, peer aggression, bullying, and hygiene without defaulting to standard punitive action.
+                        </p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold text-indigo-700 tracking-wider block mt-4">Module 4 • Child Care</span>
+                </div>
+
+                <!-- Module 5 -->
+                <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">05</div>
+                        <h3 class="text-base font-bold text-slate-900">Critical Incident Guidance</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Step-by-step guidance for extreme scenarios (missing child, fire, snake bites, abuse disclosure) detailing exactly who to contact.
+                        </p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold text-rose-700 tracking-wider block mt-4">Module 5 • Critical SOPs</span>
+                </div>
+
+                <!-- Module 6 -->
+                <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold">06</div>
+                        <h3 class="text-base font-bold text-slate-900">Knowledge Companion</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Instant, citation-backed access to Government circulars, child protection guidelines, MSMS training handbooks, and nutrition files.
+                        </p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold text-teal-700 tracking-wider block mt-4">Module 6 • Knowledge</span>
+                </div>
+
+                <!-- Module 7 -->
+                <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center font-bold">07</div>
+                        <h3 class="text-base font-bold text-slate-900">Daily Digital Register</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            No complex structures. Wardens simply chat about what happened ("2 kids have fever..."), and Mitra structures the record automatically.
+                        </p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold text-cyan-700 tracking-wider block mt-4">Module 7 • Registry Logs</span>
+                </div>
+
+                <!-- Module 8 -->
+                <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center font-bold">08</div>
+                        <h3 class="text-base font-bold text-slate-900">Reflection Journal</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Prompts weekly deep thoughts: "Who made you smile today?", "Which child needs more attention tomorrow?" promoting mindful practice.
+                        </p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold text-violet-700 tracking-wider block mt-4">Module 8 • Self-Mindfulness</span>
+                </div>
+
+                <!-- Module 9 -->
+                <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">09</div>
+                        <h3 class="text-base font-bold text-slate-900">Habit Builder</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Keeps track of vital habits (hydration, sleeping on time, observing positive progress in one student) with weekly micro-challenges.
+                        </p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold text-emerald-700 tracking-wider block mt-4">Module 9 • Habit Loops</span>
+                </div>
+
+                <!-- Module 10 (Centered on Large) -->
+                <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition duration-300 flex flex-col justify-between md:col-span-2 lg:col-span-3">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center font-bold">10</div>
+                        <h3 class="text-base font-bold text-slate-900">Self-Care Companion</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Ensures wardens check on their own mental status. Mitigates burnout and tracks local isolation-induced anxiety with grounding routines.
+                        </p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold text-pink-700 tracking-wider block mt-4">Module 10 • Wellbeing</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Future Data Dashboard Preview -->
+    <section id="dashboard-preview" class="py-16 bg-slate-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-4">
+                <div class="space-y-3">
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-indigoCustom-700">Warden & District Portals</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-950">Administrative & Wellbeing Dashboard</h2>
+                    <p class="text-slate-600 text-sm max-w-2xl">
+                        Synthesizing unstructured chats into anonymous high-level district insights and personal habit summaries. This mockup preview models our future monitoring capabilities.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 bg-white p-1.5 rounded-lg border border-slate-200">
+                    <button class="px-3 py-1.5 text-xs font-bold bg-slate-900 text-white rounded">Warden View</button>
+                    <button class="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800">District Supervisor</button>
+                </div>
+            </div>
+
+            <!-- Dashboard Visual Interface -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Dashboard Left Metric Grid -->
+                <div class="lg:col-span-8 space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="p-5 bg-white border border-slate-200 rounded-xl space-y-2">
+                            <div class="flex items-center justify-between text-slate-400">
+                                <span class="text-xs font-semibold uppercase tracking-wider">Average Warden Stress Index</span>
+                                <i data-lucide="heart" class="w-4 h-4 text-rose-500"></i>
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-2xl font-bold text-slate-900">4.2 / 5.0</span>
+                                <span class="text-xs text-emerald-600 font-bold">Stable</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Based on self-reported Module 10 mood logs</p>
+                        </div>
+
+                        <div class="p-5 bg-white border border-slate-200 rounded-xl space-y-2">
+                            <div class="flex items-center justify-between text-slate-400">
+                                <span class="text-xs font-semibold uppercase tracking-wider">Active Incident Status</span>
+                                <i data-lucide="shield-alert" class="w-4 h-4 text-amber-500"></i>
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-2xl font-bold text-slate-900">12 Logged</span>
+                                <span class="text-xs text-amber-600 font-bold">Actioned</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">9 resolved, 3 tracking via SOPs</p>
+                        </div>
+
+                        <div class="p-5 bg-white border border-slate-200 rounded-xl space-y-2">
+                            <div class="flex items-center justify-between text-slate-400">
+                                <span class="text-xs font-semibold uppercase tracking-wider">Avg. Habit Checklist</span>
+                                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-2xl font-bold text-slate-900">84% Rate</span>
+                                <span class="text-xs text-indigoCustom-600 font-bold">+5% MoM</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Hydration, reflection and parent audits</p>
+                        </div>
+                    </div>
+
+                    <!-- Visual Log Tracker -->
+                    <div class="p-6 bg-white border border-slate-200 rounded-xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-extrabold uppercase text-slate-500 tracking-wider">Daily Register Synthesized Logs</h3>
+                            <span class="text-xs text-slate-400">Last updated: 10 mins ago</span>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="p-3 bg-slate-50 rounded-lg flex items-center justify-between text-xs">
+                                <div class="space-y-1">
+                                    <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold uppercase tracking-wider text-[9px]">Attendance</span>
+                                    <p class="font-bold text-slate-800">Attendance completed with 100% presence</p>
+                                </div>
+                                <span class="text-slate-400">Completed at 8:15 AM</span>
+                            </div>
+
+                            <div class="p-3 bg-slate-50 rounded-lg flex items-center justify-between text-xs">
+                                <div class="space-y-1">
+                                    <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold uppercase tracking-wider text-[9px]">Health Event</span>
+                                    <p class="font-bold text-slate-800">Two student fever cases registered. Meds administered.</p>
+                                </div>
+                                <span class="text-slate-400">Completed at 11:30 AM</span>
+                            </div>
+
+                            <div class="p-3 bg-slate-50 rounded-lg flex items-center justify-between text-xs">
+                                <div class="space-y-1">
+                                    <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 font-bold uppercase tracking-wider text-[9px]">Student Conflict</span>
+                                    <p class="font-bold text-slate-800">Dnyaneshwar & Sandeep resolved post-dinner argument peacefully</p>
+                                </div>
+                                <span class="text-slate-400">Completed at 8:10 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Right Sidebar (Warden Profile Concept) -->
+                <div class="lg:col-span-4 bg-white border border-slate-200 rounded-xl p-6 space-y-6">
+                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                        <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center font-extrabold text-amber-800">
+                            KM
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-sm text-slate-900">Kailash M.</h3>
+                            <p class="text-xs text-slate-500">Government Ashram School, Nandurbar</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-xs">
+                        <h4 class="font-extrabold text-slate-500 uppercase tracking-widest text-[10px]">Warden's Active Memory Context</h4>
+                        
+                        <div class="p-3 bg-indigoCustom-50 border border-indigoCustom-100 rounded-lg space-y-2">
+                            <div class="flex justify-between font-semibold text-indigoCustom-900">
+                                <span>Recent Concern:</span>
+                                <span class="text-amber-700">Rani (Homesick)</span>
+                            </div>
+                            <p class="text-slate-600 text-[11px] leading-relaxed">
+                                AI has flagged this and will ask on next checkpoint: "How is Rani feeling today? Did she talk to her mother?"
+                            </p>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-lg space-y-2">
+                            <div class="flex justify-between font-semibold text-slate-800">
+                                <span>Total Kids Handled:</span>
+                                <span>120 Students</span>
+                            </div>
+                            <div class="flex justify-between font-semibold text-slate-800">
+                                <span>Category:</span>
+                                <span>Boys & Girls Primary</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Technical Architecture & PM Insights Accordion Section -->
+    <section id="architecture" class="py-16 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="max-w-3xl mx-auto text-center mb-12 space-y-3">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-amber-400">The Blueprint & Roadmap</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">Architectural & Project Strategy Panel</h2>
+                <p class="text-slate-400 text-sm">
+                    A look under the hood at the technical specifications, suggested technology stack, and critical PM answers from the PRD analysis.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Left: Interactive Spec Navigation -->
+                <div class="lg:col-span-4 space-y-3">
+                    <button onclick="switchSpecTab('stack')" id="spec-tab-stack" class="w-full text-left p-4 rounded-xl border border-amber-500/20 bg-amber-500/10 text-white transition block">
+                        <h4 class="font-bold text-sm flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-amber-400"></i> Suggested Tech Stack</h4>
+                        <p class="text-xs text-amber-200/70 mt-1">Next.js, Supabase, LLMs & WhatsApp API</p>
+                    </button>
+
+                    <button onclick="switchSpecTab('schema')" id="spec-tab-schema" class="w-full text-left p-4 rounded-xl border border-slate-800 bg-slate-800/20 hover:bg-slate-800/50 text-slate-300 transition block">
+                        <h4 class="font-bold text-sm flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 text-slate-400"></i> Database Schema Design</h4>
+                        <p class="text-xs text-slate-400 mt-1">PostgreSQL DB Relations & Tables</p>
+                    </button>
+
+                    <button onclick="switchSpecTab('qa')" id="spec-tab-qa" class="w-full text-left p-4 rounded-xl border border-slate-800 bg-slate-800/20 hover:bg-slate-800/50 text-slate-300 transition block">
+                        <h4 class="font-bold text-sm flex items-center gap-2"><i data-lucide="help-circle" class="w-4 h-4 text-slate-400"></i> Critical PM Questions</h4>
+                        <p class="text-xs text-slate-400 mt-1">Addressing ambiguities prior to development</p>
+                    </button>
+
+                    <button onclick="switchSpecTab('recommend')" id="spec-tab-recommend" class="w-full text-left p-4 rounded-xl border border-slate-800 bg-slate-800/20 hover:bg-slate-800/50 text-slate-300 transition block">
+                        <h4 class="font-bold text-sm flex items-center gap-2"><i data-lucide="star" class="w-4 h-4 text-slate-400"></i> Technical Recommendations</h4>
+                        <p class="text-xs text-slate-400 mt-1">Optimizing security, cache, and scale</p>
+                    </button>
+                </div>
+
+                <!-- Right: Active Content Display -->
+                <div class="lg:col-span-8 bg-slate-950 border border-slate-800 rounded-2xl p-6 min-h-[400px]">
+                    
+                    <!-- Tab: Tech Stack Content -->
+                    <div id="spec-content-stack" class="space-y-6">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="layers" class="w-5 h-5 text-amber-400"></i> Suggested Technology Stack (As per PRD v1.0)
+                        </h3>
+                        <p class="text-slate-400 text-xs">
+                            We selected an modern architecture to power Mitra, prioritizing reliable integrations, context awareness, and natural voice workflows.
+                        </p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">Frontend & Interface</h4>
+                                <ul class="text-xs space-y-1.5 text-slate-300">
+                                    <li>• Next.js with React 18</li>
+                                    <li>• Tailwind CSS for layout styling</li>
+                                    <li>• WhatsApp API integration</li>
+                                    <li>• Telegram (for rapid MVP deployment)</li>
+                                </ul>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">Backend & Storage</h4>
+                                <ul class="text-xs space-y-1.5 text-slate-300">
+                                    <li>• Supabase Backend Engine</li>
+                                    <li>• PostgreSQL Relational Database</li>
+                                    <li>• PGVector for Knowledge Retrieval</li>
+                                    <li>• Supabase Auth Engine</li>
+                                </ul>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">Generative LLMs</h4>
+                                <ul class="text-xs space-y-1.5 text-slate-300">
+                                    <li>• Google Gemini / OpenAI GPT-4o</li>
+                                    <li>• Claude (for complex SEL tasks)</li>
+                                    <li>• OpenRouter API multiplexing</li>
+                                    <li>• Gemini Text Embeddings</li>
+                                </ul>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">Voice & Analytics</h4>
+                                <ul class="text-xs space-y-1.5 text-slate-300">
+                                    <li>• Whisper API (Marathi-to-Text conversion)</li>
+                                    <li>• Vercel Deployment Server</li>
+                                    <li>• Realtime latency & feedback logs</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Database Schema Design Content -->
+                    <div id="spec-content-schema" class="space-y-6 hidden">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="database" class="w-5 h-5 text-amber-400"></i> Database Schema Model (PostgreSQL Tables)
+                        </h3>
+                        
+                        <div class="space-y-4 text-xs">
+                            <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                                <h4 class="font-bold text-amber-400 mb-2">Table: users & wardens</h4>
+                                <pre class="text-slate-300 overflow-x-auto text-[11px] leading-relaxed">
+CREATE TABLE wardens (
+  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  full_name TEXT NOT NULL,
+  hostel_name TEXT NOT NULL,
+  district TEXT NOT NULL,
+  student_count INTEGER NOT NULL,
+  gender_served TEXT CHECK (gender_served IN ('girls', 'boys', 'co-ed')),
+  experience_level INTEGER,
+  language_preference TEXT DEFAULT 'marathi'
+);</pre>
+                            </div>
+
+                            <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                                <h4 class="font-bold text-amber-400 mb-2">Table: daily_logs & registers</h4>
+                                <pre class="text-slate-300 overflow-x-auto text-[11px] leading-relaxed">
+CREATE TABLE daily_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  warden_id UUID REFERENCES wardens(id),
+  raw_input TEXT NOT NULL,
+  synthesized_records JSONB, -- stores structured health, attendance, activity logs
+  mood_index INTEGER CHECK (mood_index BETWEEN 1 AND 5),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
+);</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Critical PM Questions Content -->
+                    <div id="spec-content-qa" class="space-y-6 hidden">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="help-circle" class="w-5 h-5 text-amber-400"></i> Crucial Pre-Development PM Questions
+                        </h3>
+                        <p class="text-slate-400 text-xs">
+                            As Technical Architects, we must answer these critical ambiguities before releasing Phase 1:
+                        </p>
+
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                                <span class="font-bold text-white block">1. Authentication Flow:</span>
+                                <span class="text-slate-400 block mt-1">How will wardens log in via WhatsApp/Telegram without complex user/pass credentials? We recommend linking phone numbers with simple OTP.</span>
+                            </div>
+
+                            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                                <span class="font-bold text-white block">2. Offline Support Strategy:</span>
+                                <span class="text-slate-400 block mt-1"> Ashram Schools are located in deep rural Maharashtra with spotty network. If there is no network, how do we buffer logs? We recommend offline SQLite sync cache on the MVP mobile container.</span>
+                            </div>
+
+                            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                                <span class="font-bold text-white block">3. Safety & Escalation Triggering:</span>
+                                <span class="text-slate-400 block mt-1">If a warden reports an active emergency (like a Snake Bite), do we trigger direct automated SMS to District Coordinators? Yes, critical workflows need strict fail-safes.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Technical Recommendations Content -->
+                    <div id="spec-content-recommend" class="space-y-6 hidden">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="star" class="w-5 h-5 text-amber-400"></i> Technical Architecture Recommendations
+                        </h3>
+
+                        <div class="space-y-3 text-xs text-slate-300">
+                            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                                <h4 class="font-bold text-amber-400">1. Hybrid Code-Mixed NLP Tokenizer</h4>
+                                <p class="text-slate-400 mt-1">
+                                    Instead of translating Marathi completely to English before reasoning, we suggest keeping fine-tuned custom embeddings on code-mixed words (e.g. "Hostel मध्ये", "mula fighting") to maintain context and emotional safety.
+                                </p>
+                            </div>
+
+                            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                                <h4 class="font-bold text-amber-400">2. Low-Latency Voice Transcription Pipeline</h4>
+                                <p class="text-slate-400 mt-1">
+                                    Since wardens prefer voice messaging over typing, compress voice messages into highly packed WAV files to minimize cellular data consumption prior to uploading to Whisper API.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Product Roadmap Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center mb-12">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-slate-500">Timeline to Impact</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-950">Release Roadmap</h2>
+            </div>
+
+            <!-- Styled Roadmap Timeline Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Phase 1 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 relative overflow-hidden">
+                    <span class="text-xs font-bold text-brand-600 uppercase tracking-widest">Phase 1</span>
+                    <h3 class="text-base font-extrabold text-slate-900 mt-1">MVP Chatbot</h3>
+                    <p class="text-xs text-slate-600 mt-2">
+                        Web-based chat prototype with 10 core modules, standard knowledge retrieval, journal logging, and mood tracks.
+                    </p>
+                    <span class="text-[10px] bg-slate-200 text-slate-800 font-bold px-2 py-0.5 rounded block w-max mt-4">Current Focus</span>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 relative overflow-hidden">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Phase 2</span>
+                    <h3 class="text-base font-extrabold text-slate-900 mt-1">Voice & Memory</h3>
+                    <p class="text-xs text-slate-600 mt-2">
+                        Implementation of Speech-to-Text translation engine (Marathi focus), active long-term database memory, and register conversion.
+                    </p>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 relative overflow-hidden">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Phase 3</span>
+                    <h3 class="text-base font-extrabold text-slate-900 mt-1">WhatsApp & Admin</h3>
+                    <p class="text-xs text-slate-600 mt-2">
+                        Launch of complete WhatsApp business platform integration and specialized dashboards for Maharashtra tribal supervisors.
+                    </p>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 relative overflow-hidden">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Phase 4</span>
+                    <h3 class="text-base font-extrabold text-slate-900 mt-1">Risk Detection</h3>
+                    <p class="text-xs text-slate-600 mt-2">
+                        Predictive analytics for student and warden burnout trends and fully automated local circular compliance updates.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Footer -->
+    <footer class="bg-slate-950 text-slate-400 py-12 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+            <div class="flex justify-center items-center gap-2">
+                <div class="w-8 h-8 rounded bg-amber-500 flex items-center justify-center text-slate-950 font-extrabold">M</div>
+                <span class="font-bold text-white tracking-wider">MITRA PROJECT</span>
+            </div>
+            <p class="text-xs max-w-xl mx-auto text-slate-500 leading-relaxed">
+                Mitra is a social technology initiative designed to support Tribal Ashram Schools of Maharashtra. It is not a clinical mental health diagnosis platform but an AI operating layer for social development.
+            </p>
+            <div class="text-[11px] text-slate-600">
+                &copy; <script>document.write(new Date().getFullYear())</script> Mitra Framework. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Simulation Logic Script -->
+    <script>
+        // Scenarios Dataset
+        const scenarios = {
+            1: [
+                {
+                    sender: "warden",
+                    time: "8:10 PM",
+                    message: "आज hostel मध्ये दोन मुलं भांडली. (Two boys fought in the hostel today. They were screaming and hitting each other. I'm very angry.)"
+                },
+                {
+                    sender: "mitra",
+                    time: "8:11 PM",
+                    message: "काळजी करू नका, मी समजू शकते की हे कठीण आहे. (Don't worry, I understand this can be very stressful.) Let's take a deep breath before reacting."
+                },
+                {
+                    sender: "mitra",
+                    time: "8:11 PM",
+                    message: "They must be calm now. Can you tell me what happened? Who was involved, and did anyone get hurt?"
+                },
+                {
+                    sender: "warden",
+                    time: "8:12 PM",
+                    message: "Nobody got hurt. Just simple argument about playground games."
+                },
+                {
+                    sender: "mitra",
+                    time: "8:13 PM",
+                    message: "Good! Since no one is injured, let's hold a small restorative conversation tomorrow. This will build conflict resolution skills under the CASEL framework instead of punishing them."
+                }
+            ],
+            2: [
+                {
+                    sender: "warden",
+                    time: "2:00 PM",
+                    message: "आज दोन मुलांना ताप आला होता. One child had a conflict with another. Water was also stopped for 2 hours today."
+                },
+                {
+                    sender: "mitra",
+                    time: "2:01 PM",
+                    message: "I am registering this in your daily log automatically. Let me parse this into structured items for your records."
+                },
+                {
+                    sender: "mitra",
+                    time: "2:02 PM",
+                    message: "✅ health_event: 2 fever cases recorded.\n✅ water_issue: Interrupted (2h).\n✅ student_disagreement: Logged.\n\nShould I submit this to the official weekly report file?"
+                },
+                {
+                    sender: "warden",
+                    time: "2:03 PM",
+                    message: "Yes please save it."
+                }
+            ],
+            3: [
+                {
+                    sender: "warden",
+                    time: "9:35 PM",
+                    message: "मला आज खूप थकल्यासारखं वाटतंय. Too many problems today, feeling isolated and helpless here."
+                },
+                {
+                    sender: "mitra",
+                    time: "9:36 PM",
+                    message: "मी समजू शकते, कैलास. (I can understand, Kailash.) Your role is extremely heavy, and you do so much for these children. It is natural to feel burnt out."
+                },
+                {
+                    sender: "mitra",
+                    time: "9:37 PM",
+                    message: "Let's spend just two minutes reflecting on something small that made you smile today. Or would you prefer a simple breathing exercise to help you sleep well tonight?"
+                }
+            ],
+            4: [
+                {
+                    sender: "warden",
+                    time: "4:00 PM",
+                    message: "CRITICAL: A student got bitten by a snake in the playground! Help!"
+                },
+                {
+                    sender: "mitra",
+                    time: "4:00 PM",
+                    message: "⚠️ SNAKE BITE EMERGENCY PROTOCOL ACTIVATED! PLEASE READ IMMEDIATELY ⚠️"
+                },
+                {
+                    sender: "mitra",
+                    time: "4:01 PM",
+                    message: "1. KEEP THE CHILD STILL & CALM (Do not allow walking/running).\n2. IMMOBILIZE the bitten limb below heart level.\n3. CALL AMBULANCE immediately: dial 108.\n4. Call District Superintendent. I am sending emergency contacts directly to your phone now."
+                }
+            ]
+        };
+
+        // Render Scenario Messages
+        function activateScenario(id) {
+            // Highlight active button
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`scen-btn-${i}`);
+                if (btn) {
+                    btn.classList.remove('active-scenario', 'bg-slate-800/50', 'border-amber-500/50');
+                    // Reset left border strip
+                    btn.querySelector('.absolute').classList.remove('bg-amber-500');
+                    btn.querySelector('.absolute').classList.add('bg-transparent');
+                }
+            }
+
+            const activeBtn = document.getElementById(`scen-btn-${id}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active-scenario', 'bg-slate-800/50', 'border-amber-500/50');
+                activeBtn.querySelector('.absolute').classList.remove('bg-transparent');
+                activeBtn.querySelector('.absolute').classList.add('bg-amber-500');
+            }
+
+            // Populate chat box with custom simulation timing
+            const chatBox = document.getElementById('simulated-chat-box');
+            chatBox.innerHTML = '';
+            
+            const messages = scenarios[id];
+            messages.forEach((msg, idx) => {
+                setTimeout(() => {
+                    const isWarden = msg.sender === 'warden';
+                    const container = document.createElement('div');
+                    container.className = `flex flex-col ${isWarden ? 'items-end' : 'items-start'}`;
+
+                    container.innerHTML = `
+                        <div class="max-w-[85%] sm:max-w-[70%] p-3.5 rounded-2xl text-xs leading-relaxed ${isWarden ? 'bg-indigoCustom-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-100 rounded-tl-none'}">
+                            <p class="font-medium">${msg.message.replace(/\n/g, '<br>')}</p>
+                            <span class="text-[9px] text-slate-400 block text-right mt-1.5 font-bold">${msg.time}</span>
+                        </div>
+                    `;
+                    chatBox.appendChild(container);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }, idx * 600);
+            });
+
+            // Set placeholder state
+            const placeholderInput = document.getElementById('simulator-placeholder-input');
+            setTimeout(() => {
+                placeholderInput.textContent = "Simulation finished. Try typing or changing scenarios.";
+            }, messages.length * 600);
+        }
+
+        // Initialize Spec navigation logic
+        function switchSpecTab(tabId) {
+            const tabs = ['stack', 'schema', 'qa', 'recommend'];
+            tabs.forEach(tab => {
+                const btn = document.getElementById(`spec-tab-${tab}`);
+                const block = document.getElementById(`spec-content-${tab}`);
+                if (btn && block) {
+                    if (tab === tabId) {
+                        btn.classList.add('bg-amber-500/10', 'border-amber-500/20', 'text-white');
+                        btn.classList.remove('bg-slate-800/20', 'border-slate-800', 'text-slate-300');
+                        block.classList.remove('hidden');
+                    } else {
+                        btn.classList.remove('bg-amber-500/10', 'border-amber-500/20', 'text-white');
+                        btn.classList.add('bg-slate-800/20', 'border-slate-800', 'text-slate-300');
+                        block.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        // Initial launch
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            activateScenario(1);
+        });
+    </script>
+</body>
+</html>
