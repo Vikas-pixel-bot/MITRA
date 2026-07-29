@@ -1,14 +1,22 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Mic, Sun } from 'lucide-react';
 import { useOnboarding } from '../_context';
+import { saveOnboardingUser } from '@/actions/user';
 
 export default function BriefingPage() {
   const { data, resolvedGoal } = useOnboarding();
   const name = data.name.trim() || 'there';
   const honorific = data.honorific ? ` ${data.honorific}` : '';
+
+  useEffect(() => {
+    saveOnboardingUser(data).catch((err) => {
+      console.error('Failed to sync onboarding to database:', err);
+    });
+  }, [data]);
 
   return (
     <main className="flex min-h-[100dvh] w-full flex-col items-center justify-center px-6 py-10 [padding-top:max(2.5rem,env(safe-area-inset-top))] [padding-bottom:max(2.5rem,env(safe-area-inset-bottom))]">

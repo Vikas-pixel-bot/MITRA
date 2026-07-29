@@ -6,36 +6,218 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Warden {
-  id         String   @id @default(cuid())
-  name       String
-  hostelName String
-  phone      String?
-  createdAt  DateTime @default(now())
+enum Role {
+  SUPERINTENDENT
+  ASSISTANT_SUPERINTENDENT
+  HEADMASTER
+  OFFICER
+  ADMIN
 }
 
-model Incident {
+enum CaseType {
+  HEALTH
+  SAFETY
+  DISCIPLINE
+  HOMESICKNESS
+  INFRASTRUCTURE
+  GENERAL
+}
+
+enum CaseSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL_EMERGENCY
+}
+
+enum CaseStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  ESCALATED
+}
+
+enum NotificationLevel {
+  INFO
+  RHYTHM
+  WARNING
+  EMERGENCY
+}
+
+model School {
   id              String   @id @default(cuid())
-  description     String
-  status          String   @default("OPEN")
-  suggestedAction String?
-  resolutionNotes String?
+  code            String?  @unique
+  name            String
+  district        String?
+  taluka          String?
+  tribalType      String?
+  studentCapacity Int      @default(0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  users     User[]
+  students  Student[]
+  cases     Case[]
+  dailyLogs DailyLog[]
 }
 
-model JournalEntry {
+model User {
+  id                  String   @id @default(cuid())
+  name                String
+  honorific           String?  // e.g., "Sunita Tai", "Rajesh Sir"
+  role                Role     @default(SUPERINTENDENT)
+  phone               String?  @unique
+  email               String?  @unique
+  language            String   @default("mr") // "mr", "hi", "en"
+  onboardingCompleted Boolean  @default(false)
+  primaryChallenges   String[]
+  thirtyDayGoal       String?
+  schoolId            String?
+  school              School?  @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  casesCreated   Case[]         @relation("CaseCreatedBy")
+  conversations  Conversation[]
+  journalEntries JournalEntry[]
+  goals          Goal[]
+  notifications  Notification[]
+  dailyLogs      DailyLog[]
+}
+
+model Student {
+  id           String   @id @default(cuid())
+  name         String
+  rollNo       String?
+  gender       String?
+  grade        String?
+  healthStatus String   @default("HEALTHY")
+  riskFlag     Boolean  @default(false)
+  notes        String?
+  schoolId     String
+  school       School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  cases Case[]
+}
+
+model Case {
+  id                String        @id @default(cuid())
+  caseNumber        String        @unique
+  title             String
+  type              CaseType      @default(GENERAL)
+  severity          CaseSeverity  @default(LOW)
+  status            CaseStatus    @default(OPEN)
+  description       String
+  restorativeAction String?
+  resolutionNotes   String?
+  schoolId          String?
+  school            School?       @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  studentId         String?
+  student           Student?      @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  createdById       String?
+  createdBy         User?         @relation("CaseCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  conversationId    String?
+  conversation      Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  attachments Attachment[]
+}
+
+model Conversation {
   id        String   @id @default(cuid())
-  content   String
-  mood      String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String?
+  space     String   @default("MITRA")
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+  cases    Case[]
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String       // "user" | "assistant" | "system"
+  content        String
+  sentiment      String?
+  language       String?
+  createdAt      DateTime     @default(now())
 }
 
 model DailyLog {
   id              String   @id @default(cuid())
+  schoolId        String?
+  school          School?  @relation(fields: [schoolId], references: [id], onDelete: SetNull)
   date            DateTime @default(now())
   attendanceCount Int      @default(0)
   sickCount       Int      @default(0)
+  mealQuality     String?
   notes           String?
+  createdById     String?
+  createdBy       User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
   createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Knowledge {
+  id             String   @id @default(cuid())
+  title          String
+  category       String   // "SOP", "CIRCULAR", "PLAYBOOK", "LEGAL_POCSO"
+  officialSource String?  // e.g. "Maharashtra Hostel SOP Section 4.2"
+  summary        String
+  content        String
+  tags           String[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Goal {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String
+  category   String    // "WELLBEING", "GROWTH", "HOSTEL_CARE"
+  status     String    @default("IN_PROGRESS")
+  targetDate DateTime?
+  reflection String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model JournalEntry {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content      String
+  mood         String?
+  burnoutScore Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Notification {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  level     NotificationLevel @default(INFO)
+  read      Boolean           @default(false)
+  createdAt DateTime          @default(now())
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  caseId    String?
+  case      Case?    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  fileName  String
+  fileUrl   String
+  mimeType  String
+  createdAt DateTime @default(now())
 }
