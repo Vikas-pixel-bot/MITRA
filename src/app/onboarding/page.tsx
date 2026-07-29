@@ -1,22 +1,47 @@
-import Link from 'next/link';
+'use client';
 
-export default function OnboardingPage() {
+import { useRouter } from 'next/navigation';
+import { OnboardingShell } from './_components/OnboardingShell';
+import { OptionChip } from './_components/OptionChip';
+import { PrimaryButton } from './_components/PrimaryButton';
+import { useOnboarding, type Language } from './_context';
+
+const LANGUAGES: Language[] = ['Marathi', 'Hindi', 'English'];
+
+export default function LanguagePage() {
+  const router = useRouter();
+  const { data, update } = useOnboarding();
+
   return (
-    <main className="flex min-h-[100dvh] w-full flex-col items-center justify-center gap-6 px-6 py-10 text-center [padding-top:max(2.5rem,env(safe-area-inset-top))] [padding-bottom:max(2.5rem,env(safe-area-inset-bottom))]">
-      <div className="space-y-2">
-        <h1 className="text-xl font-semibold text-moon">
+    <OnboardingShell
+      footer={
+        <PrimaryButton
+          disabled={!data.language}
+          onClick={() => router.push('/onboarding/meet-mitra')}
+        >
+          Continue
+        </PrimaryButton>
+      }
+    >
+      <div className="space-y-2 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight text-moon">
           Which language would you like to talk in?
         </h1>
         <p className="text-sm text-earth">
-          Marathi · Hindi · English — coming next.
+          You can switch anytime by simply saying, &ldquo;Let&apos;s talk in Marathi.&rdquo;
         </p>
       </div>
-      <Link
-        href="/"
-        className="text-sm font-medium text-river underline-offset-4 hover:underline"
-      >
-        Back to Welcome
-      </Link>
-    </main>
+
+      <div className="space-y-3">
+        {LANGUAGES.map((language) => (
+          <OptionChip
+            key={language}
+            label={language}
+            selected={data.language === language}
+            onClick={() => update({ language })}
+          />
+        ))}
+      </div>
+    </OnboardingShell>
   );
 }
