@@ -18,6 +18,21 @@
   --color-primary-light: var(--mitra-primary-light);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* PRD Custom Colors */
+  --color-brand-50: #fffbeb;
+  --color-brand-100: #fef3c7;
+  --color-brand-500: #f59e0b;
+  --color-brand-600: #d97706;
+  --color-brand-700: #b45309;
+  --color-brand-900: #0f172a;
+  --color-brand-accent: #e11d48;
+
+  --color-indigoCustom-50: #eef2ff;
+  --color-indigoCustom-100: #e0e7ff;
+  --color-indigoCustom-600: #4f46e5;
+  --color-indigoCustom-700: #4338ca;
+  --color-indigoCustom-900: #1e1b4b;
 }
 
 @media (prefers-color-scheme: dark) {

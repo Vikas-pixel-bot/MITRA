@@ -1,225 +1,108 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Sun, CheckCircle2, AlertTriangle, BookOpen, User, Bell, X, Send } from 'lucide-react';
+import React from 'react';
+import { Heart, ShieldAlert, CheckCircle, Clock } from 'lucide-react';
 
 interface HomeViewProps {
   setActiveTab?: (tab: 'home' | 'chat' | 'journal' | 'incident') => void;
 }
 
 export default function HomeView({ setActiveTab }: HomeViewProps) {
-  const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-  
-  // Check-in modal form state
-  const [checkInSteps, setCheckInSteps] = useState({ attendance: false, kitchen: false, hygiene: false });
-
-  // Digital register state
-  const [attendanceCount, setAttendanceCount] = useState('');
-
-  const currentHour = new Date().getHours();
-  let greeting = "Good afternoon";
-  if (currentHour < 12) greeting = "Good morning";
-  else if (currentHour >= 18) greeting = "Good evening";
-
-  // Auto-open check-in on first visit of the day
-  useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    const lastCheckIn = localStorage.getItem('mitra_last_checkin');
-    
-    // Only auto-open if it's morning and they haven't checked in
-    if (lastCheckIn !== today && currentHour < 12) {
-      // Add a slight delay for better UX
-      const timer = setTimeout(() => setIsCheckInModalOpen(true), 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [currentHour]);
-
-  const handleCheckInSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const today = new Date().toISOString().split('T')[0];
-    localStorage.setItem('mitra_last_checkin', today);
-    setIsCheckInModalOpen(false);
-  };
-
-  const handleRegisterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simulate saving attendance
-    setIsRegisterModalOpen(false);
-    setAttendanceCount('');
-    alert(`Attendance of ${attendanceCount} recorded successfully!`);
-  };
-
   return (
-    <div className="flex flex-col h-full w-full bg-slate-50 dark:bg-slate-950 font-sans overflow-y-auto no-scrollbar pb-24 relative">
+    <div className="flex flex-col h-full w-full bg-slate-50 dark:bg-slate-950 font-sans overflow-y-auto no-scrollbar pb-24">
       {/* Header */}
-      <header className="px-5 py-6 bg-blue-600 text-white rounded-b-3xl shadow-md">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm border border-white/30">
-              <User className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-blue-100 text-sm font-medium">Warden Dashboard</p>
-              <h1 className="text-xl font-bold">{greeting}, Warden</h1>
-            </div>
-          </div>
-          <button className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors relative">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-red-400 rounded-full border border-blue-600"></span>
-          </button>
+      <header className="px-5 py-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 shadow-sm flex justify-between items-center">
+        <div>
+          <span className="text-xs font-extrabold uppercase tracking-widest text-indigoCustom-700 dark:text-indigo-400">Warden Portal</span>
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-950 dark:text-white">Admin Dashboard</h1>
         </div>
-
-        {/* Highlight Card */}
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-          <div className="flex items-start gap-3">
-            <Sun className="w-6 h-6 text-yellow-300 shrink-0 mt-1" />
-            <div>
-              <h3 className="font-semibold text-lg">Daily Morning Routine</h3>
-              <p className="text-blue-100 text-sm mt-1 mb-3">Time to check attendance and kitchen preparations.</p>
-              <button 
-                onClick={() => setIsCheckInModalOpen(true)}
-                className="bg-white text-blue-600 px-4 py-2 rounded-full text-sm font-semibold shadow-sm w-full active:scale-95 transition-transform"
-              >
-                Start Check-in
-              </button>
-            </div>
-          </div>
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-amber-500 flex items-center justify-center text-white font-extrabold shadow-md shadow-amber-500/20 shrink-0">
+          KM
         </div>
       </header>
 
       {/* Main Content */}
       <main className="px-5 py-6 flex flex-col gap-6">
         
-        {/* Quick Actions */}
-        <section>
-          <h2 className="text-slate-800 dark:text-white font-bold text-lg mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <button 
-              onClick={() => setActiveTab && setActiveTab('incident')}
-              className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col items-center gap-3 active:scale-95 transition-transform"
-            >
-              <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
-              </div>
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Log Incident</span>
-            </button>
-            <button 
-              onClick={() => setIsRegisterModalOpen(true)}
-              className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col items-center gap-3 active:scale-95 transition-transform"
-            >
-              <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
-              </div>
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Digital Register</span>
-            </button>
+        {/* Metric Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 shadow-sm">
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="text-xs font-semibold uppercase tracking-wider">Avg. Stress Index</span>
+              <Heart className="w-4 h-4 text-rose-500" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-slate-900 dark:text-white">4.2 <span className="text-sm font-medium text-slate-400">/ 5.0</span></span>
+              <span className="text-[10px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-100 dark:bg-emerald-900/50 px-2 py-0.5 rounded-full">Stable</span>
+            </div>
+            <p className="text-[10px] text-slate-500">Based on self-reported logs</p>
           </div>
-        </section>
 
-        {/* SEL & Learning */}
-        <section>
-          <h2 className="text-slate-800 dark:text-white font-bold text-lg mb-4">Wellbeing & Learning</h2>
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
-              <BookOpen className="w-7 h-7 text-purple-600 dark:text-purple-400" />
+          <div 
+            onClick={() => setActiveTab && setActiveTab('incident')}
+            className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 shadow-sm cursor-pointer active:scale-95 transition-transform group hover:border-amber-300"
+          >
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="text-xs font-semibold uppercase tracking-wider">Active Incidents</span>
+              <ShieldAlert className="w-4 h-4 text-amber-500 group-hover:text-amber-600 transition-colors" />
             </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200">SEL Coaching Module</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Managing conflict with empathy</p>
-              <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mt-3">
-                <div className="bg-purple-500 w-1/3 h-full rounded-full"></div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-slate-900 dark:text-white">1 <span className="text-sm font-medium text-slate-400">Pending</span></span>
+              <span className="text-[10px] text-amber-700 dark:text-amber-300 font-bold bg-amber-100 dark:bg-amber-900/50 px-2 py-0.5 rounded-full">Action Req</span>
+            </div>
+            <p className="text-[10px] text-slate-500">Tap to review & resolve</p>
+          </div>
+        </div>
+
+        {/* Visual Log Tracker */}
+        <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-extrabold uppercase text-slate-500 tracking-wider">Daily Synthesized Logs</h3>
+            <span className="text-[10px] text-slate-400 flex items-center gap-1"><Clock className="w-3 h-3"/> Live Preview</span>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg flex flex-col gap-2 border border-slate-100 dark:border-slate-700">
+              <div className="flex justify-between items-start">
+                <span className="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-400 font-bold uppercase tracking-wider text-[9px]">Attendance</span>
+                <span className="text-[10px] text-slate-400">8:15 AM</span>
               </div>
+              <p className="text-xs font-bold text-slate-800 dark:text-slate-200">Attendance completed with 120 present</p>
+            </div>
+
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg flex flex-col gap-2 border border-slate-100 dark:border-slate-700">
+              <div className="flex justify-between items-start">
+                <span className="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400 font-bold uppercase tracking-wider text-[9px]">Health Event</span>
+                <span className="text-[10px] text-slate-400">11:30 AM</span>
+              </div>
+              <p className="text-xs font-bold text-slate-800 dark:text-slate-200">Two student fever cases registered. Meds administered.</p>
             </div>
           </div>
-        </section>
+          
+          <button 
+            onClick={() => setActiveTab && setActiveTab('chat')}
+            className="mt-5 w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold py-3.5 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
+          >
+            Open Chat to Log New Entry
+          </button>
+        </div>
+
+        {/* Warden Profile Concept */}
+        <div className="bg-indigoCustom-50 dark:bg-indigo-900/20 border border-indigoCustom-100 dark:border-indigo-900/50 rounded-xl p-5 space-y-4 shadow-inner">
+          <h4 className="font-extrabold text-indigoCustom-700 dark:text-indigo-400 uppercase tracking-widest text-[10px]">Warden's Active Context</h4>
+          
+          <div className="space-y-2 bg-white dark:bg-slate-900/50 p-4 rounded-lg border border-indigoCustom-100/50 dark:border-indigo-900/30">
+            <div className="flex justify-between font-semibold text-slate-800 dark:text-slate-200 text-xs">
+              <span>Recent Concern:</span>
+              <span className="text-brand-600 dark:text-amber-500">Rani (Homesick)</span>
+            </div>
+            <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed mt-2">
+              Mitra has flagged this and will ask on the next checkpoint: "How is Rani feeling today? Did she talk to her mother?"
+            </p>
+          </div>
+        </div>
+
       </main>
-
-      {/* Check-in Modal Overlay */}
-      {isCheckInModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-5">
-          <div className="bg-white dark:bg-slate-900 w-full sm:w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-xl p-6 animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-8">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Morning Check-in</h2>
-              <button onClick={() => setIsCheckInModalOpen(false)} className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={handleCheckInSubmit} className="flex flex-col gap-4">
-              <label className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 cursor-pointer active:scale-[0.98] transition-transform">
-                <input 
-                  type="checkbox" 
-                  checked={checkInSteps.attendance}
-                  onChange={(e) => setCheckInSteps({...checkInSteps, attendance: e.target.checked})}
-                  className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="font-medium text-slate-700 dark:text-slate-300">Student attendance completed</span>
-              </label>
-              <label className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 cursor-pointer active:scale-[0.98] transition-transform">
-                <input 
-                  type="checkbox" 
-                  checked={checkInSteps.kitchen}
-                  onChange={(e) => setCheckInSteps({...checkInSteps, kitchen: e.target.checked})}
-                  className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="font-medium text-slate-700 dark:text-slate-300">Kitchen & breakfast inspected</span>
-              </label>
-              <label className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 cursor-pointer active:scale-[0.98] transition-transform">
-                <input 
-                  type="checkbox" 
-                  checked={checkInSteps.hygiene}
-                  onChange={(e) => setCheckInSteps({...checkInSteps, hygiene: e.target.checked})}
-                  className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="font-medium text-slate-700 dark:text-slate-300">Dormitory hygiene checked</span>
-              </label>
-              
-              <button 
-                type="submit" 
-                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors shadow-sm"
-              >
-                Complete Check-in
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Digital Register Modal Overlay */}
-      {isRegisterModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-5">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl shadow-xl p-6 animate-in zoom-in-95">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Digital Register</h2>
-              <button onClick={() => setIsRegisterModalOpen(false)} className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={handleRegisterSubmit} className="flex flex-col gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Total Present Students
-                </label>
-                <input 
-                  type="number" 
-                  required
-                  min="0"
-                  value={attendanceCount}
-                  onChange={(e) => setAttendanceCount(e.target.value)}
-                  className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xl font-bold text-center focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="e.g. 45"
-                />
-              </div>
-              <button 
-                type="submit" 
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
-              >
-                <Send className="w-4 h-4" /> Save Record
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
