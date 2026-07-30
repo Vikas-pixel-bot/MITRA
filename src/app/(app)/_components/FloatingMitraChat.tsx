@@ -5,7 +5,23 @@ import { DefaultChatTransport } from 'ai';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Sparkles, Sun, BookOpen, Users, UserRound, ShieldAlert, Mic, MicOff, Volume2 } from 'lucide-react';
+import {
+  MessageCircle,
+  X,
+  Send,
+  Sparkles,
+  Sun,
+  BookOpen,
+  Users,
+  UserRound,
+  ShieldAlert,
+  Mic,
+  MicOff,
+  Volume2,
+  Droplets,
+  Heart,
+  Coffee,
+} from 'lucide-react';
 import { MitraDoodleAvatar } from '@/components/illustrations/MitraDoodleAvatar';
 import { useCircadianTheme } from '@/hooks/useCircadianTheme';
 
@@ -29,6 +45,7 @@ export function FloatingMitraChat() {
   const circadianPhase = useCircadianTheme(); // Volume IV dynamic Circadian day phase
   const [isOpen, setIsOpen] = useState(false);
   const [showAutoPopup, setShowAutoPopup] = useState(false);
+  const [careNudge, setCareNudge] = useState<{ icon: any; title: string; message: string; action: string } | null>(null);
   const [input, setInput] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
@@ -40,6 +57,39 @@ export function FloatingMitraChat() {
 
   useEffect(() => {
     userIdRef.current = window.localStorage.getItem('mitra:userId') ?? undefined;
+
+    // Time-based Proactive Caregiver Nudge Evaluation
+    const evalCaregiverNudge = () => {
+      const hour = new Date().getHours();
+      const lastNudgeTime = window.sessionStorage.getItem('mitra:lastCareNudgeHour');
+
+      if (lastNudgeTime !== String(hour)) {
+        if (hour >= 12 && hour < 14) {
+          setCareNudge({
+            icon: Coffee,
+            title: 'Lunchtime & Rest Reminder 🍲',
+            message: 'Superintendent Sir, have you taken your lunch today? Caring for children starts with taking care of yourself.',
+            action: 'I have eaten lunch 👍',
+          });
+        } else if (hour >= 15 && hour < 17) {
+          setCareNudge({
+            icon: Droplets,
+            title: 'Hydration Check 💧',
+            message: 'A quick reminder to drink a glass of water. You have been managing the hostel continuously today.',
+            action: 'Drank water 🥤',
+          });
+        } else if (hour >= 21) {
+          setCareNudge({
+            icon: Heart,
+            title: 'Night Rest Check-In 🌙',
+            message: 'The students are settling in. Take 5 quiet minutes to rest and unwind before sleep.',
+            action: 'Resting now 😴',
+          });
+        }
+      }
+    };
+
+    evalCaregiverNudge();
 
     // Trigger proactive welcome pop-up on initial visit session
     const hasSeenWelcome = window.sessionStorage.getItem('mitra:welcomeShown');
@@ -124,6 +174,12 @@ export function FloatingMitraChat() {
     window.speechSynthesis.speak(utterance);
   };
 
+  const dismissCareNudge = () => {
+    const hour = new Date().getHours();
+    window.sessionStorage.setItem('mitra:lastCareNudgeHour', String(hour));
+    setCareNudge(null);
+  };
+
   const [transport] = useState(
     () =>
       new DefaultChatTransport({
@@ -163,9 +219,44 @@ export function FloatingMitraChat() {
 
   return (
     <>
+      {/* Time-Based Proactive Caregiver Hydration & Meal Nudge Banner */}
+      <AnimatePresence>
+        {careNudge && !isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-14 inset-x-4 z-40 mx-auto max-w-sm rounded-card border border-morning-sun/30 bg-cloud-strong/95 p-3.5 shadow-xl backdrop-blur-md space-y-2"
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-morning-sun/20 text-morning-sun-strong">
+                  <careNudge.icon className="h-4 w-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-moon">{careNudge.title}</h4>
+                  <p className="text-[11px] text-earth font-medium">{careNudge.message}</p>
+                </div>
+              </div>
+              <button onClick={dismissCareNudge} className="p-1 text-earth hover:text-moon">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex justify-end gap-2 text-[10px]">
+              <button
+                onClick={dismissCareNudge}
+                className="rounded-full bg-morning-sun px-3 py-1 font-bold text-white shadow-xs hover:bg-morning-sun-strong"
+              >
+                {careNudge.action}
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Proactive Auto Greeting Popup Bubble */}
       <AnimatePresence>
-        {showAutoPopup && !isOpen && (
+        {showAutoPopup && !isOpen && !careNudge && (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}

@@ -53,6 +53,68 @@ export async function getKnowledgeItems(options: KnowledgeFilterOptions = {}) {
   }
 }
 
+const STOPWORDS = new Set([
+  'the', 'a', 'an', 'is', 'are', 'was', 'were', 'and', 'or', 'but', 'to', 'of', 'in', 'on',
+  'for', 'with', 'my', 'me', 'i', 'we', 'you', 'what', 'how', 'do', 'does', 'did', 'should',
+  'can', 'could', 'would', 'about', 'this', 'that', 'it', 'has', 'have', 'had', 'today',
+]);
+
+/**
+ * Lightweight lexical retrieval over the Knowledge base for grounding chat
+ * replies — no embeddings/pgvector infra, deliberately simple given the
+ * current handful of seeded items. Extracts meaningful terms from a free-text
+ * message, fetches candidates matching any term, then ranks by term overlap.
+ */
+export async function retrieveRelevantKnowledge(userMessage: string, limit = 3) {
+  try {
+    const terms = Array.from(
+      new Set(
+        userMessage
+          .toLowerCase()
+          .replace(/[^a-z0-9\s]/g, ' ')
+          .split(/\s+/)
+          .filter((word) => word.length > 3 && !STOPWORDS.has(word))
+      )
+    );
+
+    if (terms.length === 0) return { success: true as const, items: [] };
+
+    const candidates = await prisma.knowledge.findMany({
+      where: {
+        OR: terms.flatMap((term) => [
+          { title: { contains: term, mode: 'insensitive' as const } },
+          { summary: { contains: term, mode: 'insensitive' as const } },
+          { content: { contains: term, mode: 'insensitive' as const } },
+          { tags: { hasSome: [term] } },
+        ]),
+      },
+      take: 20,
+    });
+
+    const scored = candidates
+      .map((item) => {
+        const haystack = `${item.title} ${item.summary} ${item.content} ${item.tags.join(' ')}`.toLowerCase();
+        const score = terms.reduce((count, term) => count + (haystack.includes(term) ? 1 : 0), 0);
+        return { item, score };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit);
+
+    return {
+      success: true as const,
+      items: scored.map(({ item }) => ({
+        title: item.title,
+        officialSource: item.officialSource,
+        summary: item.summary,
+        content: item.content,
+      })),
+    };
+  } catch (error) {
+    console.error('Error retrieving knowledge for grounding:', error);
+    return { success: true as const, items: [] };
+  }
+}
+
 export async function seedKnowledgeBase() {
   try {
     // If knowledge items exist, skip re-seeding
