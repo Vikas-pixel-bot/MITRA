@@ -275,17 +275,34 @@ export default function MePage() {
                 </div>
               </div>
 
-              {/* 30-Day Streak Progress Visual Bar */}
-              <div className="space-y-1 pt-1 border-t border-moon/5">
-                <div className="flex justify-between text-[9px] text-earth font-medium">
-                  <span>30-Day Habit Completion Streak</span>
-                  <span>{Math.min(100, Math.round((h.streak / 30) * 100))}% Goal</span>
+              {/* 30-Day Calendar Tracker Dots Row (Line of 30 days) */}
+              <div className="space-y-1.5 pt-1.5 border-t border-moon/10">
+                <div className="flex justify-between items-center text-[9px] text-earth font-medium">
+                  <span>30-Day Daily Completion Tracker</span>
+                  <span className="font-bold text-forest">🔥 {h.streak} / 30 Days Done</span>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-moon/10">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-forest to-emerald-400 transition-all duration-500"
-                    style={{ width: `${Math.min(100, (h.streak / 30) * 100)}%` }}
-                  />
+
+                {/* 30 Interactive Day Boxes */}
+                <div className="grid grid-cols-10 gap-1 pt-0.5">
+                  {Array.from({ length: 30 }).map((_, idx) => {
+                    const dayNum = idx + 1;
+                    // Highlight completed days up to current streak
+                    const isDone = dayNum <= h.streak || (dayNum === 1 && h.completedToday);
+
+                    return (
+                      <div
+                        key={dayNum}
+                        title={`Day ${dayNum}: ${isDone ? 'Completed' : 'Pending'}`}
+                        className={`flex h-4 w-full items-center justify-center rounded-[3px] text-[8px] font-bold border transition-all ${
+                          isDone
+                            ? 'border-forest bg-forest text-white shadow-xs'
+                            : 'border-moon/10 bg-cloud-strong text-earth/50'
+                        }`}
+                      >
+                        {dayNum}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
