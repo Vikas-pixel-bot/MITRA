@@ -1,6 +1,9 @@
 import { createOpenAI } from '@ai-sdk/openai';
-import { streamText, convertToModelMessages, type UIMessage } from 'ai';
+import { streamText, convertToModelMessages, tool, stepCountIs, type UIMessage } from 'ai';
+import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { retrieveRelevantKnowledge } from '@/actions/knowledge';
+import { createCaseFromConversation } from '@/actions/cases';
 
 export const maxDuration = 30;
 
@@ -20,6 +23,7 @@ How you speak, always:
 - Preserve dignity: never use fear, shame, or blame to drive behaviour, for the Superintendent, a student, a teacher, or a parent. Build confidence through encouragement, clarity, and respect.
 - Care for the caregiver: the Superintendent's own wellbeing matters as much as the students'. Notice signs of stress or overload and gently check in.
 - Respond in whichever language the Superintendent writes in (Marathi, Hindi, or English).
+- Superintendents think in situations, not chat threads. When a conversation describes one real, specific situation worth tracking (an incident, a health concern, a discipline matter), use the createCase tool to log it — quietly, without announcing "I'm creating a case," then continue the conversation naturally.
 
 Safety-critical escalation — this overrides everything above and must never be softened:
 - Suspected abuse or a POCSO (child protection) concern: stop routine coaching immediately. Calmly but clearly tell them to follow the mandatory legal reporting workflow (Child Welfare Committee, police Special Juvenile Police Unit, Project Officer) and escalate right now. Do not treat it as a routine conversation.
@@ -85,6 +89,16 @@ export async function POST(req: Request) {
             await prisma.message.create({
               data: { conversationId: activeConversationId, role: 'user', content },
             });
+
+            const knowledgeResult = await retrieveRelevantKnowledge(content);
+            if (knowledgeResult.success && knowledgeResult.items.length > 0) {
+              systemPrompt += `\n\nRelevant official guidance found for this conversation — use it to ground your answer and cite the source when you rely on it. If none of it actually applies, say so honestly rather than forcing a citation:\n${knowledgeResult.items
+                .map(
+                  (item, i) =>
+                    `[${i + 1}] ${item.title}${item.officialSource ? ` (Source: ${item.officialSource})` : ''}\n${item.content}`
+                )
+                .join('\n\n')}`;
+            }
           }
         }
       } catch (dbError) {
@@ -98,6 +112,43 @@ export async function POST(req: Request) {
       model: groq('llama-3.3-70b-versatile'),
       system: systemPrompt,
       messages: await convertToModelMessages(messages),
+      stopWhen: stepCountIs(3),
+      tools: userId
+        ? {
+            createCase: tool({
+              description:
+                'Create a trackable Case when this conversation describes a genuine situation that needs follow-up or documentation — a health issue, safety concern, discipline matter, homesickness case, or infrastructure problem. Do NOT call this for general questions, casual chat, or requests for information/guidance that are not about one specific real situation. Only call it once per situation.',
+              inputSchema: z.object({
+                title: z.string().describe('Short descriptive title, e.g. "Ramesh - fever, sent to sick room"'),
+                type: z
+                  .enum(['HEALTH', 'SAFETY', 'DISCIPLINE', 'HOMESICKNESS', 'INFRASTRUCTURE', 'GENERAL'])
+                  .describe('The category of situation'),
+                severity: z
+                  .enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL_EMERGENCY'])
+                  .describe('How serious this situation is'),
+                description: z.string().describe('Brief summary of what happened, in your own words'),
+                studentName: z
+                  .string()
+                  .optional()
+                  .describe('The student\'s name if this case is about a specific student'),
+              }),
+              execute: async ({ title, type, severity, description, studentName }) => {
+                const result = await createCaseFromConversation({
+                  userId,
+                  conversationId: conversationIdForPersistence,
+                  title,
+                  type,
+                  severity,
+                  description,
+                  studentName,
+                });
+                return result.success
+                  ? `Case ${result.caseNumber} created and logged.`
+                  : 'Could not create the case right now, but continue helping normally.';
+              },
+            }),
+          }
+        : undefined,
       onFinish: async ({ text }) => {
         if (userId && conversationIdForPersistence && text) {
           try {
