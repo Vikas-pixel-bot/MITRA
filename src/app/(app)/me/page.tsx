@@ -29,6 +29,9 @@ export default function MePage() {
         if (result.success) {
           setOverview(result);
           setState('ready');
+          if (result.user?.id && typeof window !== 'undefined' && !userId) {
+            window.localStorage.setItem('mitra:userId', result.user.id);
+          }
         } else {
           setState('no-user');
         }

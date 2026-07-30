@@ -20,6 +20,14 @@ export default function MitraChatPage() {
 
   useEffect(() => {
     userIdRef.current = window.localStorage.getItem('mitra:userId') ?? undefined;
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const query = params.get('query');
+      if (query) {
+        setInput(query);
+      }
+    }
   }, []);
 
   // The transport's `body` callback is invoked per-request when a message is

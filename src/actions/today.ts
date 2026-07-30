@@ -24,6 +24,7 @@ export async function getTodayBriefing(userId?: string | null) {
     return {
       success: true as const,
       user: {
+        id: user.id,
         name: user.name,
         honorific: user.honorific,
         thirtyDayGoal: user.thirtyDayGoal,

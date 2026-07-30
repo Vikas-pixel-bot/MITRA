@@ -45,9 +45,17 @@ type Briefing = Awaited<ReturnType<typeof getTodayBriefing>>;
 
 const QUICK_ACTIONS = [
   { label: 'Talk to MITRA', icon: MessageCircle, href: '/mitra' },
-  { label: 'Report an Incident', icon: ShieldAlert, href: '/mitra' },
+  {
+    label: 'Report an Incident',
+    icon: ShieldAlert,
+    href: '/mitra?query=' + encodeURIComponent('I want to report an incident that just happened in the hostel.'),
+  },
   { label: 'Search Knowledge', icon: BookOpen, href: '/knowledge' },
-  { label: "Generate Today's Report", icon: FileText, href: '/mitra' },
+  {
+    label: "Generate Today's Report",
+    icon: FileText,
+    href: '/mitra?query=' + encodeURIComponent("Help me generate today's daily administrative report."),
+  },
 ];
 
 export default function TodayPage() {
@@ -74,8 +82,8 @@ export default function TodayPage() {
         if (result.success) {
           setBriefing(result);
           setState('ready');
-          if (result.user && typeof window !== 'undefined' && !userId) {
-            // Optional sync back
+          if (result.user?.id && typeof window !== 'undefined' && !userId) {
+            window.localStorage.setItem('mitra:userId', result.user.id);
           }
         } else {
           setState('no-user');
