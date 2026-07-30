@@ -9,7 +9,6 @@ import {
   ShieldAlert,
   FileText,
   HeartHandshake,
-  CheckCircle2,
   X,
   ExternalLink,
   MessageCircle,
@@ -63,9 +62,13 @@ export default function KnowledgePage() {
     setLoading(false);
   };
 
+  // One-time + on-filter-change sync from the server into local state,
+  // same pattern used across the other Spaces.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     fetchItems(selectedCategory, searchQuery);
   }, [selectedCategory, searchQuery]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   return (
     <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-24 [padding-top:max(1.5rem,env(safe-area-inset-top))]">

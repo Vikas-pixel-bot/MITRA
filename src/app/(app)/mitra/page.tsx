@@ -18,6 +18,10 @@ export default function MitraChatPage() {
   const conversationIdRef = useRef<string | undefined>(undefined);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // One-time sync from external browser state (localStorage, the URL's
+  // query string) into React state after mount, same pattern used across
+  // the other Spaces.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     userIdRef.current = window.localStorage.getItem('mitra:userId') ?? undefined;
 
@@ -29,6 +33,7 @@ export default function MitraChatPage() {
       }
     }
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // The transport's `body` callback is invoked per-request when a message is
   // actually sent, not during render — refs there always read the latest
