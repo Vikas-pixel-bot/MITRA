@@ -5,8 +5,9 @@ import { DefaultChatTransport } from 'ai';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Sparkles, Sun, BookOpen, Users, UserRound, ShieldAlert } from 'lucide-react';
+import { MessageCircle, X, Send, Sparkles, Sun, BookOpen, Users, UserRound, ShieldAlert, Mic, MicOff, Volume2 } from 'lucide-react';
 import { MitraDoodleAvatar } from '@/components/illustrations/MitraDoodleAvatar';
+import { useCircadianTheme } from '@/hooks/useCircadianTheme';
 
 function extractText(parts: { type: string; text?: string }[]) {
   return parts
@@ -25,12 +26,17 @@ const QUICK_GUIDE_CHIPS = [
 
 export function FloatingMitraChat() {
   const router = useRouter();
+  const circadianPhase = useCircadianTheme(); // Volume IV dynamic Circadian day phase
   const [isOpen, setIsOpen] = useState(false);
   const [showAutoPopup, setShowAutoPopup] = useState(false);
   const [input, setInput] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
+
   const userIdRef = useRef<string | undefined>(undefined);
   const conversationIdRef = useRef<string | undefined>(undefined);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     userIdRef.current = window.localStorage.getItem('mitra:userId') ?? undefined;
@@ -57,6 +63,66 @@ export function FloatingMitraChat() {
     window.addEventListener('open-mitra-chat' as any, handleOpenMitra as any);
     return () => window.removeEventListener('open-mitra-chat' as any, handleOpenMitra as any);
   }, []);
+
+  // Web Speech Recognition Setup
+  useEffect(() => {
+    if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const rec = new SpeechRecognition();
+      rec.continuous = false;
+      rec.interimResults = true;
+      rec.lang = 'mr-IN'; // Default to Marathi / Indian English
+
+      rec.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((r: any) => r[0].transcript)
+          .join('');
+        setInput(transcript);
+      };
+
+      rec.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = rec;
+    }
+  }, []);
+
+  const toggleVoiceInput = () => {
+    if (!recognitionRef.current) {
+      alert('Voice speech recognition is not supported in this browser.');
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err) {
+        setIsListening(false);
+      }
+    }
+  };
+
+  const speakText = (id: string, text: string) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    if (speakingMessageId === id) {
+      window.speechSynthesis.cancel();
+      setSpeakingMessageId(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.95;
+    utterance.onend = () => setSpeakingMessageId(null);
+    utterance.onerror = () => setSpeakingMessageId(null);
+    setSpeakingMessageId(id);
+    window.speechSynthesis.speak(utterance);
+  };
 
   const [transport] = useState(
     () =>
@@ -198,7 +264,9 @@ export function FloatingMitraChat() {
                   <h3 className="text-sm font-bold text-moon flex items-center gap-1">
                     MITRA Companion <Sparkles className="h-3.5 w-3.5 text-morning-sun-strong" />
                   </h3>
-                  <p className="text-[10px] text-earth">Incident Guidance & Operational Companion</p>
+                  <p className="text-[10px] text-earth">
+                    Circadian: <span className="font-bold">{circadianPhase} Mode</span>
+                  </p>
                 </div>
               </div>
               <button
@@ -236,31 +304,51 @@ export function FloatingMitraChat() {
                 </div>
               )}
 
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div className="flex items-end gap-2 max-w-[88%]">
-                    {message.role !== 'user' && <MitraDoodleAvatar size={28} className="mb-0.5" />}
-                    <div
-                      className={`whitespace-pre-wrap rounded-button px-3.5 py-2.5 leading-relaxed ${
-                        message.role === 'user'
-                          ? 'bg-morning-sun/20 text-moon font-medium'
-                          : 'bg-cloud-strong text-moon border border-moon/5'
-                      }`}
-                    >
-                      {extractText(message.parts)}
+              {messages.map((message) => {
+                const textContent = extractText(message.parts);
+                const isSpeakingThis = speakingMessageId === message.id;
+
+                return (
+                  <div
+                    key={message.id}
+                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className="flex items-end gap-2 max-w-[88%]">
+                      {message.role !== 'user' && <MitraDoodleAvatar size={28} className="mb-0.5" />}
+                      <div
+                        className={`group relative whitespace-pre-wrap rounded-button px-3.5 py-2.5 leading-relaxed ${
+                          message.role === 'user'
+                            ? 'bg-morning-sun/20 text-moon font-medium'
+                            : 'bg-cloud-strong text-moon border border-moon/5'
+                        }`}
+                      >
+                        {textContent}
+
+                        {/* Spoken Voice Synthesizer Button */}
+                        {message.role !== 'user' && textContent && (
+                          <button
+                            onClick={() => speakText(message.id, textContent)}
+                            className={`mt-1.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold transition-all ${
+                              isSpeakingThis
+                                ? 'bg-morning-sun text-white animate-pulse'
+                                : 'bg-moon/10 text-earth hover:text-moon'
+                            }`}
+                          >
+                            <Volume2 className="h-3 w-3" />
+                            {isSpeakingThis ? 'Speaking...' : 'Listen'}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
               {isThinking && (
                 <div className="flex items-center gap-2 justify-start">
                   <MitraDoodleAvatar size={28} />
                   <div className="rounded-button bg-cloud-strong px-3.5 py-2 text-moon/50 italic">
-                    MITRA is thinking...
+                    Looking up relevant SOP guidance...
                   </div>
                 </div>
               )}
@@ -277,8 +365,21 @@ export function FloatingMitraChat() {
               <div ref={bottomRef} />
             </div>
 
-            {/* Input Bar */}
+            {/* Input Bar with Voice Input Toggle */}
             <div className="flex items-center gap-2 border-t border-moon/10 bg-cloud-strong p-3">
+              <button
+                type="button"
+                onClick={toggleVoiceInput}
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-button border transition-all ${
+                  isListening
+                    ? 'border-emergency bg-emergency text-white animate-pulse'
+                    : 'border-moon/10 bg-cloud text-moon hover:bg-moon/5'
+                }`}
+                title="Toggle Voice Speech Input"
+              >
+                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4 text-morning-sun-strong" />}
+              </button>
+
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -288,9 +389,10 @@ export function FloatingMitraChat() {
                     handleSend();
                   }
                 }}
-                placeholder="Ask MITRA or report incident..."
+                placeholder={isListening ? 'Listening in Marathi / English...' : 'Ask MITRA or speak...'}
                 className="min-h-[42px] flex-1 rounded-button border border-moon/10 bg-cloud px-3.5 text-xs text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
               />
+
               <button
                 type="button"
                 onClick={handleSend}

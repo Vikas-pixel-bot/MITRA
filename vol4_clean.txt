@@ -1,0 +1,1194 @@
+
+
+
+MITRA DESIGN BIBLE
+
+
+Volume IV — Living Design System
+
+
+Subtitle
+
+Designing Calm, Trustworthy and Human Technology
+
+Estimated Length
+
+150–180 pages
+
+
+
+
+
+Table of Contents
+
+
+
+
+
+PART A
+
+
+Brand
+
+The MITRA Brand
+
+Design Philosophy
+
+Emotional Language
+
+Visual Identity
+
+
+
+
+
+PART B
+
+
+Foundations
+
+Color System
+
+Typography
+
+Grid System
+
+Spacing
+
+Elevation
+
+Radius
+
+Shadows
+
+
+
+
+
+PART C
+
+
+Dynamic Interface
+
+Circadian Interface
+
+Seasonal Themes
+
+Festival Themes
+
+Accessibility Themes
+
+
+
+
+
+PART D
+
+
+Components
+
+Buttons
+
+Cards
+
+Lists
+
+Student Cards
+
+Case Cards
+
+AI Cards
+
+Voice UI
+
+Navigation
+
+Dialogs
+
+Bottom Sheets
+
+Forms
+
+Tables
+
+Charts
+
+Timelines
+
+
+
+
+
+PART E
+
+
+Motion
+
+Animations
+
+Transitions
+
+Microinteractions
+
+Haptics
+
+Voice Feedback
+
+Loading
+
+Success
+
+Errors
+
+
+
+
+
+PART F
+
+
+Illustration
+
+Icons
+
+Illustrations
+
+Photography
+
+Empty States
+
+Lottie
+
+Mascots
+
+
+
+
+
+PART A
+
+
+The MITRA Brand
+
+This chapter begins with one sentence.
+
+
+
+
+MITRA should feel like the most trusted senior colleague you have ever worked with.
+
+Not your boss.
+
+Not your teacher.
+
+Not your assistant.
+
+Not your friend.
+
+A calm senior.
+
+Always available.
+
+Never intimidating.
+
+
+
+
+Brand Attributes
+
+Attribute
+
+Description
+
+Warm
+
+Welcoming without being informal
+
+Dependable
+
+Always available, consistent
+
+Respectful
+
+Uses dignified language
+
+Calm
+
+Never creates panic
+
+Knowledgeable
+
+Guides with evidence
+
+Encouraging
+
+Celebrates progress
+
+
+
+
+
+Emotional Design
+
+One of the most important chapters.
+
+Every interface element must create an emotion.
+
+User Situation
+
+Emotion
+
+UI Response
+
+First Login
+
+Safety
+
+Warm greeting, no information overload
+
+Morning
+
+Hope
+
+Sunrise palette, clear priorities
+
+Emergency
+
+Calm
+
+High contrast, minimal actions
+
+Goal Completed
+
+Pride
+
+Gentle celebration
+
+Reflection
+
+Comfort
+
+Dimmed interface, quiet visuals
+
+
+
+
+
+Brand Personality
+
+MITRA speaks like
+
+A mentor.
+
+Not a motivational speaker.
+
+Never says
+
+&quot;You are amazing!&quot;
+
+Instead
+
+&quot;You handled a difficult situation with care. That matters.&quot;
+
+Notice the difference.
+
+
+
+
+
+PART B
+
+
+Foundations
+
+
+
+
+
+Color Philosophy
+
+Instead of colors...
+
+MITRA uses
+
+Nature.
+
+
+
+
+Primary Colors
+
+Morning Sky
+
+
+
+River
+
+
+
+Forest
+
+
+
+Clay
+
+
+
+Sunrise
+
+
+
+Moonlight
+
+
+
+Cloud
+
+
+
+Earth
+
+No
+
+Blue500
+
+Yellow700
+
+Those belong to developers.
+
+Not designers.
+
+
+
+
+
+Example Palette
+
+Semantic Name
+
+Hex
+
+Meaning
+
+Morning Sky
+
+#5FA8F5
+
+Clarity & fresh start
+
+Sunrise Gold
+
+#F6C453
+
+Energy & optimism
+
+Forest Green
+
+#3E8B5B
+
+Growth & wellbeing
+
+Clay Earth
+
+#A66A4C
+
+Stability & rootedness
+
+Warm Sand
+
+#F5EFE6
+
+Neutral background
+
+Deep Night
+
+#243447
+
+Reflection & night mode
+
+Emergency Red
+
+#D64545
+
+Critical alerts only
+
+Success Green
+
+#2E7D32
+
+Completion & positive feedback
+
+
+
+
+
+Circadian Interface
+
+This is MITRA's signature innovation.
+
+The app changes with the day.
+
+
+
+
+
+Morning
+
+5–8 AM
+
+Colors
+
+Sky Blue
+
+Warm Yellow
+
+White
+
+Illustration
+
+Sun rising over hills.
+
+Greeting
+
+Good Morning, Anita Madam 🌼
+
+Motion
+
+Gentle fade.
+
+
+
+
+
+School Hours
+
+Blue.
+
+Focused.
+
+Minimal.
+
+
+
+
+
+Afternoon
+
+Warmer.
+
+Less contrast.
+
+Reduce visual clutter.
+
+
+
+
+
+Evening
+
+Orange.
+
+Earth.
+
+Warm.
+
+Cards soften.
+
+MITRA begins asking reflective questions.
+
+
+
+
+
+Night
+
+Dark blue.
+
+Purple.
+
+Everything slows down.
+
+Notifications almost disappear.
+
+
+
+
+
+Seasonal Themes
+
+
+
+
+Summer
+
+Golden.
+
+Dry.
+
+Warm.
+
+
+
+
+Monsoon
+
+Green.
+
+Raindrops on header.
+
+Cloud gradients.
+
+
+
+
+Winter
+
+Cool blues.
+
+Soft mist.
+
+
+
+
+Nothing dramatic.
+
+Just enough to feel alive.
+
+
+
+
+
+Festival Themes
+
+Very subtle.
+
+Diwali
+
+Tiny diya in the header.
+
+
+
+
+Independence Day
+
+Saffron accent.
+
+
+
+
+Tribal Day
+
+Inspired by Warli.
+
+
+
+
+No fireworks.
+
+No confetti.
+
+Professional.
+
+
+
+
+
+PART C
+
+
+Typography
+
+Readable.
+
+Human.
+
+Marathi-first.
+
+
+
+
+Hierarchy
+
+Display
+
+Heading
+
+Subheading
+
+Body
+
+Caption
+
+Label
+
+Metadata
+
+
+
+
+Recommended Fonts
+
+Noto Sans
+
+Noto Sans Devanagari
+
+Inter
+
+
+
+
+Never use more than two font families.
+
+
+
+
+
+Grid
+
+8-point grid.
+
+Everything aligns.
+
+No exceptions.
+
+
+
+
+Spacing
+
+8
+
+
+
+16
+
+
+
+24
+
+
+
+32
+
+
+
+40
+
+
+
+48
+
+
+
+64
+
+Predictable rhythm.
+
+
+
+
+Corner Radius
+
+Cards
+
+20px
+
+Buttons
+
+16px
+
+Input Fields
+
+16px
+
+Bottom Sheets
+
+28px
+
+
+
+
+
+PART D
+
+
+Components
+
+This becomes almost an engineering catalogue.
+
+Each component gets:
+
+Purpose
+
+States
+
+Accessibility
+
+Motion
+
+Voice Behaviour
+
+Dark Theme
+
+Offline
+
+Code Token
+
+
+
+
+
+Example
+
+
+AI Response Card
+
+Purpose
+
+Deliver guidance.
+
+
+
+
+States
+
+Normal
+
+Speaking
+
+Thinking
+
+Loading
+
+Error
+
+Citation Expanded
+
+Voice Playing
+
+
+
+
+Contains
+
+Response
+
+Source
+
+Confidence
+
+Suggested Action
+
+Follow-up Button
+
+
+
+
+Never longer than 6 visible lines without collapse.
+
+
+
+
+
+Student Card
+
+Contains
+
+Photo
+
+Class
+
+House
+
+Health Badge
+
+Mood
+
+Last Seen
+
+Current Case
+
+Attendance
+
+Parent Contact
+
+
+
+
+One tap
+
+opens
+
+Timeline.
+
+
+
+
+
+Case Card
+
+Displays
+
+Priority
+
+Status
+
+Student
+
+Assigned To
+
+Next Action
+
+Updated Time
+
+
+
+
+Color indicates urgency, never importance of the student.
+
+
+
+
+
+Voice Button
+
+Default
+
+↓
+
+Listening
+
+↓
+
+Processing
+
+↓
+
+Speaking
+
+↓
+
+Finished
+
+No abrupt changes.
+
+
+
+
+
+PART E
+
+
+Motion
+
+This chapter is often skipped.
+
+It shouldn't be.
+
+Motion teaches.
+
+
+
+
+Example
+
+Card
+
+200 ms
+
+Fade + Elevation
+
+
+
+
+Bottom Sheet
+
+250 ms
+
+Slide
+
+
+
+
+Navigation
+
+300 ms
+
+Shared transition
+
+
+
+
+Emergency
+
+0 ms
+
+Immediate
+
+
+
+
+
+Haptics
+
+Small vibration
+
+Task completed.
+
+
+
+
+Medium vibration
+
+Voice started.
+
+
+
+
+Long vibration
+
+Emergency acknowledged.
+
+
+
+
+Nothing vibrates continuously.
+
+
+
+
+
+AI Motion
+
+When MITRA thinks
+
+Don't show
+
+Spinner.
+
+Show
+
+Thinking about today's priorities…
+
+
+
+Looking up the latest guidance…
+
+
+
+Preparing your report…
+
+
+
+Finding the relevant SOP…
+
+Feels human.
+
+
+
+
+
+PART F
+
+
+Illustration
+
+Illustrations are not decoration.
+
+They teach emotion.
+
+
+
+
+Style
+
+Google
+
+
+
+Headspace
+
+
+
+Indian
+
+
+
+Warli
+
+Minimal.
+
+
+
+
+No stock photos.
+
+Ever.
+
+
+
+
+
+Empty States
+
+Instead of
+
+No Reports
+
+Show
+
+A peaceful desk.
+
+
+
+
+No Cases
+
+Children playing.
+
+
+
+
+No Notifications
+
+Clear sky.
+
+
+
+
+These illustrations reduce anxiety.
+
+
+
+
+
+Icon System
+
+Rounded.
+
+Filled.
+
+Simple.
+
+Recognizable.
+
+
+
+
+
+Photography
+
+Use only when necessary.
+
+Prefer illustrations.
+
+If photography is used:
+
+Real Ashramshalas (with permissions)
+
+Real environments
+
+Respectful representation
+
+No staged &quot;poverty imagery&quot;
+
+
+
+
+
+Accessibility
+
+Every component must support:
+
+Large text
+
+High contrast
+
+Screen readers
+
+Voice input
+
+One-handed use
+
+Offline mode
+
+Accessibility is not a feature. It is a design constraint.
+
+
+
+
+
+Design Tokens
+
+To ensure consistency between design and code, define reusable tokens.
+
+Examples:
+
+Color tokens (e.g., color.background.primary)
+
+Typography tokens (e.g., text.heading.large)
+
+Spacing tokens (e.g., space.16)
+
+Radius tokens
+
+Motion durations
+
+Elevation levels
+
+The same tokens should be used in Figma and Flutter.
+
+
+
+
+
+The Missing Piece: MITRA's Signature
+
+I want MITRA to have something users remember.
+
+Not a logo.
+
+Not a color.
+
+A ritual.
+
+
+The Morning Check-In
+
+Every morning, before anything else, MITRA greets the Superintendent by name.
+
+🌼 Good Morning, Anita Madam.
+
+I hope you rested well.
+
+Here's what today looks like.
+
+Three things follow:
+
+One priority (&quot;A student health follow-up is due today.&quot;)
+
+One encouragement (&quot;You've completed your morning briefing for 5 consecutive days.&quot;)
+
+One reflection (&quot;What would you like to focus on today?&quot;)
+
+That experience should take less than 20 seconds, but over months it becomes the emotional anchor of the product.
+
+Think of it as MITRA's equivalent of the Apple startup chime—not a sound, but a daily habit that users come to expect and appreciate.
+
+
+
+
+
+The Final Page of Volume IV
+
+I would end with this statement:
+
+Good design is not when users admire the interface.
+
+Good design is when they forget the interface exists because it quietly helps them do meaningful work.
+
+MITRA succeeds when technology disappears and care remains.
+
+
+
+
