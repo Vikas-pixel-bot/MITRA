@@ -68,18 +68,17 @@ export default function TodayPage() {
     }
 
     const userId = window.localStorage.getItem('mitra:userId');
-    if (!userId) {
-      setState('no-user');
-      return;
-    }
 
     getTodayBriefing(userId)
       .then((result) => {
         if (result.success) {
           setBriefing(result);
           setState('ready');
+          if (result.user && typeof window !== 'undefined' && !userId) {
+            // Optional sync back
+          }
         } else {
-          setState('error');
+          setState('no-user');
         }
       })
       .catch(() => setState('error'));

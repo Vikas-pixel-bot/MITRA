@@ -1,10 +1,32 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { WelcomeIllustration } from '@/components/illustrations/WelcomeIllustration';
 
 export default function WelcomePage() {
+  const router = useRouter();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const userId = window.localStorage.getItem('mitra:userId');
+    if (userId) {
+      router.replace('/today');
+    } else {
+      setChecking(false);
+    }
+  }, [router]);
+
+  if (checking) {
+    return (
+      <main className="flex min-h-[100dvh] items-center justify-center px-6 text-center text-sm text-moon/50">
+        Loading MITRA...
+      </main>
+    );
+  }
+
   return (
     <main className="flex min-h-[100dvh] w-full flex-col items-center justify-center px-6 py-10 [padding-top:max(2.5rem,env(safe-area-inset-top))] [padding-bottom:max(2.5rem,env(safe-area-inset-bottom))]">
       <div className="flex w-full max-w-sm flex-1 flex-col items-center justify-center gap-10">

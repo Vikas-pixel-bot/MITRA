@@ -2,15 +2,21 @@
 
 import { prisma } from '@/lib/prisma';
 
-export async function getTodayBriefing(userId: string) {
+export async function getTodayBriefing(userId?: string | null) {
   try {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    let user = userId ? await prisma.user.findUnique({ where: { id: userId } }) : null;
+    if (!user) {
+      user = await prisma.user.findFirst({
+        where: { onboardingCompleted: true },
+        orderBy: { createdAt: 'desc' },
+      });
+    }
     if (!user) {
       return { success: false as const, error: 'User not found' };
     }
 
     const notifications = await prisma.notification.findMany({
-      where: { userId, read: false },
+      where: { userId: user.id, read: false },
       orderBy: { createdAt: 'desc' },
       take: 3,
     });
