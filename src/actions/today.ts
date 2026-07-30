@@ -30,7 +30,7 @@ export async function getTodayBriefing(userId?: string | null) {
       user = await prisma.user.create({
         data: {
           name: 'Superintendent',
-          honorific: 'Warden Sir',
+          honorific: 'Superintendent Sir',
           language: 'mr',
           onboardingCompleted: true,
           primaryChallenges: ['Hostel Operations & Safety', 'Student Restorative Care'],
@@ -80,7 +80,7 @@ export async function getTodayBriefing(userId?: string | null) {
       user: {
         id: 'fallback-superintendent',
         name: 'Superintendent',
-        honorific: 'Warden Sir',
+        honorific: 'Superintendent Sir',
         thirtyDayGoal: 'Build a calm, restorative hostel rhythm for student wellbeing.',
         primaryChallenges: ['Hostel Operations & Safety', 'Student Restorative Care'],
         language: 'mr',

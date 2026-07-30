@@ -29,7 +29,7 @@ export async function getMeOverview(userId?: string | null) {
       user = await prisma.user.create({
         data: {
           name: 'Superintendent',
-          honorific: 'Warden Sir',
+          honorific: 'Superintendent Sir',
           language: 'mr',
           onboardingCompleted: true,
           primaryChallenges: ['Hostel Operations & Safety', 'Student Restorative Care'],
@@ -93,7 +93,7 @@ export async function getMeOverview(userId?: string | null) {
       user: {
         id: 'fallback-superintendent',
         name: 'Superintendent',
-        honorific: 'Warden Sir',
+        honorific: 'Superintendent Sir',
         primaryChallenges: ['Hostel Operations & Safety', 'Student Restorative Care'],
       },
       goal: {

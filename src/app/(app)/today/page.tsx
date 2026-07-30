@@ -127,9 +127,10 @@ export default function TodayPage() {
   };
 
   const handleAddTask = async () => {
-    if (!newTaskTitle.trim() || !briefing?.success) return;
+    const userId = briefing?.success ? briefing.user.id : (typeof window !== 'undefined' ? window.localStorage.getItem('mitra:userId') : null);
+    if (!newTaskTitle.trim() || !userId) return;
     setAddingTask(true);
-    const res = await addTodayTask(briefing.user.id, newTaskTitle, newTaskTime);
+    const res = await addTodayTask(userId, newTaskTitle, newTaskTime);
     if (res.success && res.task) {
       setTasks((prev) => [
         ...prev,
@@ -138,7 +139,7 @@ export default function TodayPage() {
           title: res.task.title,
           completed: res.task.completed,
           timeSlot: res.task.timeSlot,
-          createdAt: res.task.createdAt.toISOString(),
+          createdAt: typeof res.task.createdAt === 'string' ? res.task.createdAt : new Date(res.task.createdAt).toISOString(),
         },
       ]);
       setNewTaskTitle('');
@@ -211,7 +212,7 @@ export default function TodayPage() {
     );
   }
 
-  const { user } = briefing?.success ? briefing : { user: { name: 'Superintendent', honorific: 'Warden Sir' } };
+  const { user } = briefing?.success ? briefing : { user: { name: 'Superintendent', honorific: 'Superintendent Sir' } };
   const addressee = user.honorific || user.name;
   const completedCount = tasks.filter((t) => t.completed).length;
 
@@ -356,6 +357,12 @@ export default function TodayPage() {
             type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddTask();
+              }
+            }}
             placeholder="Routine task (e.g. Inspect RO Filter)..."
             className="flex-1 rounded-button border border-moon/10 bg-cloud px-3 py-2 text-xs text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
           />
@@ -364,6 +371,12 @@ export default function TodayPage() {
               type="text"
               value={newTaskTime}
               onChange={(e) => setNewTaskTime(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddTask();
+                }
+              }}
               placeholder="Time (e.g. 5:30 PM)"
               className="w-32 rounded-button border border-moon/10 bg-cloud px-3 py-2 text-xs text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
             />
@@ -440,7 +453,7 @@ export default function TodayPage() {
         <section className="rounded-card bg-cloud-strong p-4 space-y-2">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-earth">
             <Bell className="h-4 w-4 text-morning-sun-strong" />
-            Active Warden Alerts ({reminders.length})
+            Active Superintendent Alerts ({reminders.length})
           </div>
           <div className="space-y-2">
             {reminders.map((rem) => (
