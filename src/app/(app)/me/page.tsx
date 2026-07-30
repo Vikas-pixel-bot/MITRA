@@ -80,9 +80,10 @@ export default function MePage() {
   };
 
   const handleAddHabit = async () => {
-    if (!newHabitName.trim() || !overview?.success) return;
+    const userId = overview?.success ? overview.user.id : (typeof window !== 'undefined' ? window.localStorage.getItem('mitra:userId') : null);
+    if (!newHabitName.trim() || !userId) return;
     setAddingHabit(true);
-    const res = await addCustomHabit(overview.user.id, newHabitName);
+    const res = await addCustomHabit(userId, newHabitName);
     if (res.success && res.habit) {
       setHabits((prev) => [
         ...prev,
@@ -209,6 +210,12 @@ export default function MePage() {
             type="text"
             value={newHabitName}
             onChange={(e) => setNewHabitName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddHabit();
+              }
+            }}
             placeholder="Add new daily habit..."
             className="flex-1 rounded-button border border-moon/10 bg-cloud px-3 py-2 text-xs text-moon placeholder:text-moon/40 focus:border-forest focus:outline-none"
           />
