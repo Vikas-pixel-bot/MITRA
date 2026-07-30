@@ -275,32 +275,31 @@ export default function MePage() {
                 </div>
               </div>
 
-              {/* 30-Day Calendar Tracker Dots Row (Line of 30 days) */}
+              {/* 30-Day Streak Progress Grid — reflects current streak count only,
+                  not a verified per-day history (habits don't store dated
+                  completion records yet), so cells are unlabeled progress
+                  markers rather than claimed "Day N: Completed" dates. */}
               <div className="space-y-1.5 pt-1.5 border-t border-moon/10">
                 <div className="flex justify-between items-center text-[9px] text-earth font-medium">
-                  <span>30-Day Daily Completion Tracker</span>
-                  <span className="font-bold text-forest">🔥 {h.streak} / 30 Days Done</span>
+                  <span>Streak Progress Toward 30 Days</span>
+                  <span className="font-bold text-forest">🔥 {h.streak} / 30</span>
                 </div>
 
-                {/* 30 Interactive Day Boxes */}
                 <div className="grid grid-cols-10 gap-1 pt-0.5">
                   {Array.from({ length: 30 }).map((_, idx) => {
-                    const dayNum = idx + 1;
-                    // Highlight completed days up to current streak
-                    const isDone = dayNum <= h.streak || (dayNum === 1 && h.completedToday);
+                    const milestone = idx + 1;
+                    const isReached = milestone <= h.streak;
 
                     return (
                       <div
-                        key={dayNum}
-                        title={`Day ${dayNum}: ${isDone ? 'Completed' : 'Pending'}`}
-                        className={`flex h-4 w-full items-center justify-center rounded-[3px] text-[8px] font-bold border transition-all ${
-                          isDone
-                            ? 'border-forest bg-forest text-white shadow-xs'
-                            : 'border-moon/10 bg-cloud-strong text-earth/50'
+                        key={milestone}
+                        title={isReached ? 'Within current streak' : 'Not yet reached'}
+                        className={`h-4 w-full rounded-[3px] border transition-all ${
+                          isReached
+                            ? 'border-forest bg-forest shadow-xs'
+                            : 'border-moon/10 bg-cloud-strong'
                         }`}
-                      >
-                        {dayNum}
-                      </div>
+                      />
                     );
                   })}
                 </div>
