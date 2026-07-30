@@ -256,16 +256,25 @@ export default function TodayPage() {
 
       <section>
         <div className="grid grid-cols-2 gap-3">
-          {QUICK_ACTIONS.map(({ label, icon: Icon, href }) => (
-            <Link
-              key={label}
-              href={href}
-              className="flex flex-col items-start gap-2 rounded-button bg-cloud-strong p-3.5"
-            >
-              <Icon className="h-5 w-5 text-morning-sun-strong" />
-              <span className="text-xs font-semibold text-moon">{label}</span>
-            </Link>
-          ))}
+          {QUICK_ACTIONS.map(({ label, icon: Icon, href }) => {
+            const isIncident = label === 'Report an Incident';
+            return (
+              <Link
+                key={label}
+                href={href}
+                className={`flex flex-col items-start gap-2 rounded-button p-3.5 border transition-all ${
+                  isIncident
+                    ? 'bg-clay/10 border-clay/30 hover:bg-clay/20'
+                    : 'bg-cloud-strong border-moon/5 hover:border-moon/15'
+                }`}
+              >
+                <Icon className={`h-5 w-5 ${isIncident ? 'text-clay' : 'text-morning-sun-strong'}`} />
+                <span className={`text-xs font-semibold ${isIncident ? 'text-clay font-bold' : 'text-moon'}`}>
+                  {label}
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

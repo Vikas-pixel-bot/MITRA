@@ -55,83 +55,131 @@ export async function getKnowledgeItems(options: KnowledgeFilterOptions = {}) {
 
 export async function seedKnowledgeBase() {
   try {
+    // If knowledge items exist, skip re-seeding
     const count = await prisma.knowledge.count();
-    if (count > 0) {
+    if (count >= 10) {
       return { success: true, seeded: false, count };
     }
 
-    const SEED_DATA = [
+    // Clear old sample knowledge to ensure the complete 10 Core Service Modules are present
+    await prisma.knowledge.deleteMany({});
+
+    const TEN_CORE_MODULES = [
       {
-        title: 'Child Protection & Mandatory POCSO Protocol',
-        category: 'LEGAL_POCSO',
-        officialSource: 'Protection of Children from Sexual Offences (POCSO) Act & MSMS Guidelines Sec 19',
-        summary: 'Immediate mandatory legal reporting workflow for any suspected child abuse or safety incident.',
-        content: `### Mandatory Legal Guidance
-1. **Immediate Safety First**: Ensure the student is in a safe, secure room with a female assistant/teacher (if girl student).
-2. **Do Not Interrogate**: Listen to the child calmly without asking leading questions or expressing judgment.
-3. **Mandatory Reporting**: Notify the Child Welfare Committee (CWC), local Police Station (Special Juvenile Police Unit), and Project Officer within 24 hours.
-4. **Documentation**: Maintain strict confidentiality. Do not distribute or share any details on public or social channels.
-5. **Medical Care**: Direct the student to the nearest Civil Hospital / PHC for official medical examination if required.`,
-        tags: ['Safety', 'POCSO', 'Legal', 'Emergency'],
+        title: 'Module 1: Daily Conversations & Non-Judgmental Space',
+        category: 'MODULE_1',
+        officialSource: 'MITRA System Blueprint — Core Module 01',
+        summary: 'A completely non-judgmental space for wardens to explore conflicts, daily events, or queries using Listen -> Understand -> Clarify -> Guide.',
+        content: `### Core Framework & Playbook
+- **Listen Before Advice**: Acknowledge warden emotional state before jumping into standard rules.
+- **CASEL SEL Alignment**: Encourage self-awareness and active reflection.
+- **Code-Mixed Guidance**: Natural Marathi-English empathetic conversation.`,
+        tags: ['Module 1', 'Daily Conversations', 'SEL', 'Empathetic Support'],
       },
       {
-        title: 'Daily Hostel Dining & Food Quality Hygiene Inspection',
-        category: 'SOP',
-        officialSource: 'Maharashtra Tribal Development Department Ashramshala Food SOP Item 4.2',
-        summary: 'Standard procedures for morning breakfast, lunch, and dinner inspection to ensure child nutrition & safety.',
-        content: `### Daily Food Safety Checklist
-1. **Raw Material Inspection**: Check quality of rice, pulses, oil, and fresh vegetables delivered before cooking.
-2. **Cook Hygiene**: Ensure kitchen staff wear clean aprons, hairnets, and wash hands thoroughly.
-3. **Sample Tasting**: The Superintendent or Assistant Superintendent must taste samples of cooked food 15 minutes before serving to students.
-4. **Water Purity**: Test RO / drinking water filter output daily; report filter clog immediately.
-5. **Log Entry**: Record meal quality, quantity served, and student feedback in the Daily Kitchen Register.`,
-        tags: ['SOP', 'Food', 'Hygiene', 'Hostel Management'],
+        title: 'Module 2: Hostel Operations & Management Assistant',
+        category: 'MODULE_2',
+        officialSource: 'Maharashtra Tribal Hostel Operations Standard SOP 4.2',
+        summary: 'Practical, real-time guidance on daily routines, dining hygiene, facility cleanliness, and parental communication.',
+        content: `### Operations Checklist
+1. **Raw Material Audit**: Verify rice, pulses, and milk freshness before cooking.
+2. **Sample Tasting**: Sample meals 15 minutes before serving to students.
+3. **Cleanliness Rounds**: Inspect dining hall, RO water purifiers, and sanitation units daily.`,
+        tags: ['Module 2', 'Operations', 'Food Hygiene', 'Hostel Management'],
       },
       {
-        title: 'Monsoon Seasonal Disease & Medical Emergency Workflow',
-        category: 'CIRCULAR',
-        officialSource: 'TRTI Health Circular 2025/MED-09 / Tribal Health Manual',
-        summary: 'Preventative measures and rapid medical response protocol for Dengue, Malaria, and viral fever outbreaks.',
-        content: `### Health & Disease Control Measures
-1. **Daily Morning Temperature Check**: Screen students during morning assembly for fever, chills, or lethargy.
-2. **Isolation Ward Setup**: Prepare a clean, ventilated room in the hostel for sick students.
-3. **Immediate PHC Escalation**: If a student shows temperature > 100°F or persistent vomiting, transport to Primary Health Centre immediately. Do not self-administer prescription drugs.
-4. **Water Stagnation Audit**: Inspect campus grounds every Tuesday to eliminate standing water and mosquito breeding spots.
-5. **Parent Notification**: Notify parents calmly when a child is admitted to PHC for observation.`,
-        tags: ['Health', 'Medical', 'Circular', 'Monsoon'],
+        title: 'Module 3: CASEL SEL Coaching & Emotional Growth',
+        category: 'MODULE_3',
+        officialSource: 'CASEL Social-Emotional Learning Framework & MSMS Companion',
+        summary: 'Promotes core CASEL competencies (Self-Awareness, Relationship Skills, Responsible Decision-Making) for wardens & children.',
+        content: `### Restorative Practices
+- **Active Listening**: Encourage children to express feelings without fear of punishment.
+- **Breathing Exercises**: 2-minute grounding routines during stressful assembly or evening study.
+- **Peer Mediation**: Pair students in conflict to build mutual understanding.`,
+        tags: ['Module 3', 'SEL Coaching', 'CASEL', 'Emotional Support'],
       },
       {
-        title: 'Restorative Care: Managing Severe Student Homesickness',
-        category: 'PLAYBOOK',
-        officialSource: 'MSMS Restorative Care Companion Guide — Section 2',
-        summary: 'Empathetic steps to help newly enrolled tribal residential students adjust comfortably without punitive measures.',
-        content: `### Step-by-Step Restorative Playbook
-1. **Acknowledge Emotional Feeling**: Validate the child's feeling ("It is completely normal to miss home and your parents").
-2. **Peer Buddy Pairing**: Pair the student with a compassionate senior student from the same village or taluka.
-3. **Scheduled Home Call**: Allow a 5-minute phone conversation with parents in your presence during evening free time.
-4. **Creative Engagement**: Involve the child in hostel evening sports, drawing, or cultural storytelling circle.
-5. **Daily Monitoring**: Revisit the student for 3 days to celebrate small adjustments and build trust.`,
-        tags: ['Restorative', 'Wellbeing', 'Homesickness', 'Student Care'],
+        title: 'Module 4: Student Wellbeing & Restorative Care',
+        category: 'MODULE_4',
+        officialSource: 'MSMS Restorative Student Care Protocol',
+        summary: 'Deals proactively with homesickness, absenteeism, peer aggression, and hygiene without defaulting to punitive action.',
+        content: `### Restorative Care Protocol
+1. **Homesickness**: Pair newly enrolled students with a compassionate senior buddy.
+2. **Absenteeism**: Conduct friendly check-ins; avoid shaming or harsh punishment.
+3. **Hygiene & Care**: Provide gentle guidance on personal hygiene and health routines.`,
+        tags: ['Module 4', 'Student Care', 'Homesickness', 'Restorative'],
       },
       {
-        title: 'Ashramshala Campus Night Security & Roll Call SOP',
-        category: 'SOP',
-        officialSource: 'Maharashtra Tribal Residential Hostel Security Standard SOP 7.1',
-        summary: 'Mandatory night roll-call procedure and boundary security check for residential student safety.',
-        content: `### Night Operations Routine
-1. **8:30 PM Mandatory Roll Call**: Conduct room-by-room headcount matching official hostel register.
-2. **Gate Lock & Boundary Check**: Secure main hostel perimeter gates at 9:00 PM; verify campus lighting is active.
-3. **Night Guard Duty Verification**: Confirm presence of night guard / female warden on duty at the entrance.
-4. **Emergency Contact Display**: Ensure medical emergency numbers and PO contact details are displayed at the warden office.`,
-        tags: ['Security', 'Safety', 'Night Routine', 'SOP'],
+        title: 'Module 5: Critical Incident SOPs & Emergency Escalation',
+        category: 'MODULE_5',
+        officialSource: 'Maharashtra Tribal Safety Manual & Emergency Protocol',
+        summary: 'Step-by-step guidance for extreme scenarios (Snake bite, Fire, Missing child, POCSO, Medical emergency) with exact authority contacts.',
+        content: `### Critical Incident Emergency Checklist
+1. **Snake Bite**: Keep victim still, do not apply tourniquet, transport immediately to PHC/Civil Hospital.
+2. **POCSO / Safety Concern**: Mandatory legal reporting to CWC, SJPU Police, and PO within 24 hours. Confidentiality is legally required.
+3. **Missing Child**: Immediately notify campus security, local police station, and Project Officer.`,
+        tags: ['Module 5', 'Critical SOPs', 'Emergency', 'POCSO', 'Snake Bite'],
+      },
+      {
+        title: 'Module 6: Knowledge Companion & Official Citation Library',
+        category: 'MODULE_6',
+        officialSource: 'TRTI & Tribal Development Department Circular Library',
+        summary: 'Instant, citation-backed access to Government circulars, child protection guidelines, MSMS handbooks, and nutrition files.',
+        content: `### Knowledge & Source Citation
+- **Source Grounding**: All advice is backed by official Maharashtra Government circulars.
+- **Format Tiers**: Available in original legal text, plain summary, and interactive playbooks.`,
+        tags: ['Module 6', 'Knowledge', 'Government Circulars', 'SOPs'],
+      },
+      {
+        title: 'Module 7: Daily Digital Register & Automated Log Conversion',
+        category: 'MODULE_7',
+        officialSource: 'MITRA Automated Registry Engine — Module 07',
+        summary: 'No complex form entry. Wardens simply chat naturally ("2 kids have fever..."), and MITRA structures the official log entry automatically.',
+        content: `### Automated Logging Workflow
+1. **Natural Chat Input**: Speak or type informal daily updates.
+2. **AI Structure**: MITRA extracts attendance, health flags, and meal quality.
+3. **Register Persistence**: Persisted directly into official District & School log ledgers.`,
+        tags: ['Module 7', 'Registry Logs', 'Digital Register', 'Automated Logs'],
+      },
+      {
+        title: 'Module 8: Reflection Journal & Mindful Practice',
+        category: 'MODULE_8',
+        officialSource: 'Warden Wellbeing & Reflection Framework',
+        summary: 'Prompts weekly deep thoughts ("Who made you smile today?", "Which child needs more attention tomorrow?") to build mindful practice.',
+        content: `### Reflection Routine
+- **Daily 2-Minute Check**: Quick evening mood log and reflection entry.
+- **Mindful Growth**: Tracks emotional resilience over 30-day goal cycles.`,
+        tags: ['Module 8', 'Self-Mindfulness', 'Reflection Journal', 'Wellbeing'],
+      },
+      {
+        title: 'Module 9: Habit Builder & Micro-Challenges',
+        category: 'MODULE_9',
+        officialSource: 'MITRA Behavioral Growth Loop',
+        summary: 'Tracks vital warden habits (hydration, sleeping on time, observing student progress) with supportive weekly micro-challenges.',
+        content: `### Growth & Habit Loops
+1. **Hydration & Rest**: Daily reminders for warden health.
+2. **Student Audit**: Observe positive behavioral changes in 1 child daily.
+3. **Weekly Progress**: Celebrate small, steady accomplishments.`,
+        tags: ['Module 9', 'Habit Loops', 'Warden Habits', 'Growth'],
+      },
+      {
+        title: 'Module 10: Warden Self-Care & Burnout Mitigation',
+        category: 'MODULE_10',
+        officialSource: 'Caregiver Mental Health & Burnout Prevention SOP',
+        summary: 'Ensures wardens check on their own mental status, mitigating isolation-induced anxiety with grounding routines and late-night venting support.',
+        content: `### Caregiver Self-Care Routine
+1. **Emotional Venting**: Safe, non-judgmental space to express daily stress.
+2. **Stress Index Monitoring**: Self-reported mood index keeps track of burnout risk.
+3. **Grounding Exercises**: Quick 3-step breathing routine before sleep.`,
+        tags: ['Module 10', 'Wellbeing', 'Self-Care', 'Burnout Prevention'],
       },
     ];
 
-    for (const item of SEED_DATA) {
+    for (const item of TEN_CORE_MODULES) {
       await prisma.knowledge.create({ data: item });
     }
 
-    return { success: true, seeded: true, count: SEED_DATA.length };
+    return { success: true, seeded: true, count: TEN_CORE_MODULES.length };
   } catch (error) {
     console.error('Error seeding knowledge base:', error);
     return { success: false, error: 'Failed to seed knowledge base' };

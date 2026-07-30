@@ -9,9 +9,15 @@ import {
   ShieldAlert,
   FileText,
   HeartHandshake,
+  CheckCircle2,
   X,
   ExternalLink,
   MessageCircle,
+  Activity,
+  Heart,
+  Sparkles,
+  RefreshCw,
+  UserCheck,
 } from 'lucide-react';
 import { getKnowledgeItems, seedKnowledgeBase } from '@/actions/knowledge';
 
@@ -27,11 +33,17 @@ type KnowledgeItem = {
 };
 
 const CATEGORIES = [
-  { id: 'ALL', label: 'All Guidance' },
-  { id: 'SOP', label: 'Hostel SOPs', icon: FileText },
-  { id: 'CIRCULAR', label: 'Circulars', icon: BookOpen },
-  { id: 'LEGAL_POCSO', label: 'Legal & Safety', icon: ShieldAlert },
-  { id: 'PLAYBOOK', label: 'Restorative Playbooks', icon: HeartHandshake },
+  { id: 'ALL', label: 'All 10 Modules' },
+  { id: 'MODULE_1', label: 'Mod 1: Conversations', icon: MessageCircle },
+  { id: 'MODULE_2', label: 'Mod 2: Operations', icon: FileText },
+  { id: 'MODULE_3', label: 'Mod 3: CASEL SEL', icon: HeartHandshake },
+  { id: 'MODULE_4', label: 'Mod 4: Student Care', icon: Heart },
+  { id: 'MODULE_5', label: 'Mod 5: Critical SOPs', icon: ShieldAlert },
+  { id: 'MODULE_6', label: 'Mod 6: Knowledge', icon: BookOpen },
+  { id: 'MODULE_7', label: 'Mod 7: Registry Logs', icon: RefreshCw },
+  { id: 'MODULE_8', label: 'Mod 8: Mindfulness', icon: Sparkles },
+  { id: 'MODULE_9', label: 'Mod 9: Habit Loops', icon: UserCheck },
+  { id: 'MODULE_10', label: 'Mod 10: Self-Care', icon: Activity },
 ];
 
 export default function KnowledgePage() {
@@ -43,7 +55,6 @@ export default function KnowledgePage() {
 
   const fetchItems = async (cat: string, q: string) => {
     setLoading(true);
-    // Ensure initial seed runs if empty
     await seedKnowledgeBase();
     const res = await getKnowledgeItems({ category: cat, query: q });
     if (res.success && res.items) {
@@ -52,13 +63,9 @@ export default function KnowledgePage() {
     setLoading(false);
   };
 
-  // One-time + on-filter-change sync from the server into local state,
-  // same pattern used across the other Spaces.
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     fetchItems(selectedCategory, searchQuery);
   }, [selectedCategory, searchQuery]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   return (
     <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-24 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
@@ -68,10 +75,10 @@ export default function KnowledgePage() {
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-morning-sun/15 text-morning-sun-strong">
             <BookOpen className="h-4 w-4" />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight text-moon">Knowledge & Guidance</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-moon">System Blueprint & 10 Core Modules</h1>
         </div>
         <p className="text-xs text-earth">
-          Official MSMS SOPs, circulars, and restorative playbooks — always cited to official sources.
+          Comprehensive guide to MITRA&apos;s 10 structured service modules — from CASEL SEL to Critical Emergency SOPs.
         </p>
       </header>
 
@@ -82,7 +89,7 @@ export default function KnowledgePage() {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search SOPs, POCSO, health protocols, circulars..."
+          placeholder="Search 10 modules, POCSO, Snake Bite, CASEL, Register..."
           className="w-full rounded-button border border-moon/10 bg-cloud-strong py-3 pl-10 pr-4 text-sm text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
         />
         {searchQuery && (
@@ -105,7 +112,7 @@ export default function KnowledgePage() {
               onClick={() => setSelectedCategory(cat.id)}
               className={`flex shrink-0 items-center gap-1.5 rounded-button px-3.5 py-2 text-xs font-medium transition-colors ${
                 isSelected
-                  ? 'bg-morning-sun text-white shadow-sm'
+                  ? 'bg-morning-sun text-white shadow-xs'
                   : 'border border-moon/10 bg-cloud-strong text-moon/80 hover:bg-moon/5'
               }`}
             >
@@ -118,10 +125,10 @@ export default function KnowledgePage() {
 
       {/* Knowledge Cards List */}
       {loading ? (
-        <div className="py-12 text-center text-sm text-moon/50">Loading guidance library...</div>
+        <div className="py-12 text-center text-sm text-moon/50">Loading system modules...</div>
       ) : items.length === 0 ? (
         <div className="rounded-card border border-moon/10 bg-cloud-strong p-6 text-center text-sm text-earth">
-          No guidance found matching your search query. Try searching for &ldquo;SOP&rdquo;, &ldquo;POCSO&rdquo;, or &ldquo;Food&rdquo;.
+          No modules found matching your search query.
         </div>
       ) : (
         <div className="space-y-3">
@@ -136,9 +143,9 @@ export default function KnowledgePage() {
               <div className="mb-2 flex items-center justify-between">
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
-                    item.category === 'LEGAL_POCSO'
+                    item.category === 'MODULE_5'
                       ? 'bg-clay/15 text-clay'
-                      : item.category === 'PLAYBOOK'
+                      : item.category === 'MODULE_3' || item.category === 'MODULE_10'
                         ? 'bg-morning-sun/15 text-morning-sun-strong'
                         : 'bg-moon/10 text-earth'
                   }`}
@@ -167,7 +174,7 @@ export default function KnowledgePage() {
                   ))}
                 </div>
                 <span className="flex items-center gap-1 text-xs font-medium text-morning-sun-strong">
-                  View Playbook &rarr;
+                  View Module Details &rarr;
                 </span>
               </div>
             </motion.div>
@@ -207,17 +214,17 @@ export default function KnowledgePage() {
                 {activeModalItem.officialSource && (
                   <div className="flex items-center gap-1.5 rounded-button bg-morning-sun/10 px-3 py-2 text-earth font-medium">
                     <ExternalLink className="h-3.5 w-3.5 shrink-0 text-morning-sun-strong" />
-                    <span>Official Source: {activeModalItem.officialSource}</span>
+                    <span>Reference Source: {activeModalItem.officialSource}</span>
                   </div>
                 )}
 
                 <div className="rounded-card bg-cloud-strong p-3">
-                  <p className="font-semibold text-moon">Summary</p>
+                  <p className="font-semibold text-moon">Module Summary</p>
                   <p className="mt-1 text-moon/80">{activeModalItem.summary}</p>
                 </div>
 
                 <div className="space-y-2 prose prose-sm max-w-none text-moon/90">
-                  <p className="font-semibold text-moon text-sm">Actionable Playbook & Protocol</p>
+                  <p className="font-semibold text-moon text-sm">Actionable Playbook & Guidelines</p>
                   <div className="whitespace-pre-line rounded-card border border-moon/10 bg-cloud-strong p-4">
                     {activeModalItem.content}
                   </div>
@@ -227,11 +234,11 @@ export default function KnowledgePage() {
               {/* Modal Footer */}
               <div className="flex items-center gap-2 border-t border-moon/10 pt-3">
                 <Link
-                  href={`/mitra?query=${encodeURIComponent(`Guide me on: ${activeModalItem.title}`)}`}
+                  href={`/mitra?query=${encodeURIComponent(`Guide me using ${activeModalItem.title}`)}`}
                   className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-button bg-morning-sun text-xs font-semibold text-white shadow-xs"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  Discuss with MITRA AI
+                  Discuss Module with MITRA
                 </Link>
                 <button
                   onClick={() => setActiveModalItem(null)}
