@@ -14,6 +14,7 @@ import {
   Activity,
   Heart,
   Sparkles,
+  Compass,
 } from 'lucide-react';
 import { getKnowledgeItems, seedKnowledgeBase } from '@/actions/knowledge';
 
@@ -28,14 +29,15 @@ type KnowledgeItem = {
   updatedAt: string;
 };
 
-// The 5 Core Pillars of MITRA Operational Framework
+// The 5 Core Pillars of MITRA Operational Framework with Custom Illustrations
 const FIVE_PILLARS = [
   {
     id: 'ALL',
     name: 'All 5 Pillars Framework',
     badge: '10 Modules',
     color: 'from-morning-sun/20 via-cloud-strong to-morning-sun/10 border-morning-sun/30 text-morning-sun-strong',
-    icon: '🧭',
+    image: '/knowledge-banner.png',
+    lucideIcon: Compass,
   },
   {
     id: 'PILLAR_1',
@@ -43,7 +45,8 @@ const FIVE_PILLARS = [
     desc: 'Modules 1 & 3: Non-judgmental dialogue, CASEL emotional coaching, and restorative care.',
     badge: 'Modules 1 & 3',
     color: 'from-amber-500/20 via-cloud-strong to-orange-400/10 border-amber-500/30 text-amber-800',
-    icon: '💬',
+    image: '/pillar-1.png',
+    lucideIcon: HeartHandshake,
     modules: ['MODULE_1', 'MODULE_3'],
   },
   {
@@ -52,7 +55,8 @@ const FIVE_PILLARS = [
     desc: 'Modules 2 & 4: Daily kitchen inspection, food quality, homesickness, and student wellbeing.',
     badge: 'Modules 2 & 4',
     color: 'from-forest/20 via-cloud-strong to-emerald-500/10 border-forest/30 text-forest',
-    icon: '🏠',
+    image: '/pillar-2.png',
+    lucideIcon: Heart,
     modules: ['MODULE_2', 'MODULE_4'],
   },
   {
@@ -61,7 +65,8 @@ const FIVE_PILLARS = [
     desc: 'Modules 5 & 6: Snake bite, POCSO, emergency escalation, and official legal circular library.',
     badge: 'Modules 5 & 6',
     color: 'from-clay/20 via-cloud-strong to-rose-500/10 border-clay/30 text-clay',
-    icon: '🚨',
+    image: '/students-banner.png',
+    lucideIcon: ShieldAlert,
     modules: ['MODULE_5', 'MODULE_6'],
   },
   {
@@ -70,7 +75,8 @@ const FIVE_PILLARS = [
     desc: 'Module 7: Automated conversion of informal chat notes into official digital registries.',
     badge: 'Module 7',
     color: 'from-river/20 via-cloud-strong to-sky-500/10 border-river/30 text-river',
-    icon: '📋',
+    image: '/knowledge-banner.png',
+    lucideIcon: FileText,
     modules: ['MODULE_7'],
   },
   {
@@ -79,7 +85,8 @@ const FIVE_PILLARS = [
     desc: 'Modules 8, 9 & 10: Reflection journal, daily habit builder, and caregiver burnout mitigation.',
     badge: 'Modules 8, 9 & 10',
     color: 'from-purple-600/20 via-cloud-strong to-pink-500/10 border-purple-600/30 text-purple-800',
-    icon: '🧘',
+    image: '/pillar-5.png',
+    lucideIcon: Sparkles,
     modules: ['MODULE_8', 'MODULE_9', 'MODULE_10'],
   },
 ];
@@ -118,11 +125,11 @@ export default function KnowledgePage() {
 
   return (
     <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-28 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
-      {/* Visual Header with Knowledge Banner Image */}
+      {/* Visual Header Banner */}
       <div className="relative overflow-hidden rounded-card border border-morning-sun/20 bg-gradient-to-r from-morning-sun/15 to-cloud-strong p-5 shadow-xs">
         <div className="flex items-start justify-between">
           <div className="space-y-1 max-w-[210px]">
-            <span className="inline-flex items-center gap-1 rounded-full bg-morning-sun/20 px-2 py-0.5 text-[10px] font-bold text-morning-sun-strong">
+            <span className="inline-flex items-center gap-1 rounded-full bg-morning-sun/20 px-2.5 py-0.5 text-[10px] font-bold text-morning-sun-strong">
               <BookOpen className="h-3 w-3" /> Ashramshala SOPs
             </span>
             <h1 className="text-xl font-bold text-moon tracking-tight">5 Core Pillars Knowledge Base</h1>
@@ -154,31 +161,35 @@ export default function KnowledgePage() {
         )}
       </div>
 
-      {/* 5 Pillar Equal-Sized 2-Column Grid (No Horizontal Scrollbar) */}
+      {/* 5 Pillar Cards Grid with Large Illustrations */}
       <div className="space-y-2">
         <p className="text-xs font-bold uppercase tracking-wider text-earth">Operational Governance Pillars</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {FIVE_PILLARS.slice(1).map((p) => {
             const isSelected = selectedPillar === p.id;
+            const Icon = p.lucideIcon;
             return (
               <button
                 key={p.id}
                 onClick={() => setSelectedPillar(isSelected ? 'ALL' : p.id)}
-                className={`flex flex-col justify-between rounded-card p-3 border text-left transition-all min-h-[105px] ${
+                className={`flex flex-col justify-between overflow-hidden rounded-card border text-left transition-all ${
                   isSelected
-                    ? `bg-gradient-to-br ${p.color} border-morning-sun-strong/80 ring-2 ring-morning-sun shadow-sm`
-                    : 'bg-cloud-strong border-moon/10 hover:border-morning-sun/30'
+                    ? `bg-gradient-to-br ${p.color} border-morning-sun-strong/80 ring-2 ring-morning-sun shadow-md`
+                    : 'bg-cloud-strong border-moon/10 hover:border-morning-sun/30 shadow-xs'
                 }`}
               >
-                <div className="flex items-center justify-between w-full">
-                  <span className="text-xl">{p.icon}</span>
-                  <span className="rounded-full bg-cloud px-2 py-0.5 text-[9px] font-bold text-earth border border-moon/10">
+                <div className="relative h-28 w-full overflow-hidden border-b border-moon/10">
+                  <img src={p.image} alt={p.name} className="h-full w-full object-cover transition-transform duration-300 hover:scale-105" />
+                  <span className="absolute top-2 right-2 rounded-full bg-cloud/90 backdrop-blur-xs px-2.5 py-0.5 text-[9px] font-bold text-moon border border-moon/10 shadow-xs">
                     {p.badge}
                   </span>
                 </div>
-                <div className="mt-2 space-y-0.5">
-                  <h3 className="text-xs font-bold text-moon leading-tight line-clamp-1">{p.name.split(':')[1] || p.name}</h3>
-                  <p className="text-[10px] text-earth line-clamp-1">{p.desc}</p>
+                <div className="p-3.5 space-y-1">
+                  <div className="flex items-center gap-1.5">
+                    <Icon className="h-4 w-4 shrink-0 text-morning-sun-strong" />
+                    <h3 className="text-xs font-bold text-moon line-clamp-1">{p.name.split(':')[1] || p.name}</h3>
+                  </div>
+                  <p className="text-[11px] text-earth line-clamp-2 leading-relaxed">{p.desc}</p>
                 </div>
               </button>
             );
@@ -223,7 +234,7 @@ export default function KnowledgePage() {
                       <span className="rounded-full bg-cloud px-2 py-0.5 text-[9px] font-bold text-moon border border-moon/10">
                         {item.category.replace('_', ' ')}
                       </span>
-                      <span className="text-lg">{pillar.icon}</span>
+                      <pillar.lucideIcon className="h-4 w-4 text-morning-sun-strong" />
                     </div>
                     <h2 className="mt-1.5 text-xs font-bold text-moon line-clamp-1">{item.title}</h2>
                   </div>
@@ -237,7 +248,7 @@ export default function KnowledgePage() {
                         {item.officialSource ? `Source: ${item.officialSource.slice(0, 20)}...` : 'Official SOP'}
                       </span>
                       <span className="font-bold text-morning-sun-strong">
-                        Read &rarr;
+                        Read SOP &rarr;
                       </span>
                     </div>
                   </div>

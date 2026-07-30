@@ -3,7 +3,24 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { UserRound, Target, Sparkles, Calendar, CheckSquare, Square, Plus, HeartHandshake, Smile, Meh, Frown, CheckCircle2 } from 'lucide-react';
+import {
+  UserRound,
+  Target,
+  Sparkles,
+  Calendar,
+  CheckSquare,
+  Square,
+  Plus,
+  HeartHandshake,
+  Smile,
+  Meh,
+  Frown,
+  CheckCircle2,
+  TrendingUp,
+  Activity,
+  Flame,
+  Award,
+} from 'lucide-react';
 import { getMeOverview, addReflection } from '@/actions/me';
 import { getUserHabits, toggleHabit, addCustomHabit, HabitItem } from '@/actions/habits';
 import { MitraDoodleAvatar } from '@/components/illustrations/MitraDoodleAvatar';
@@ -11,9 +28,9 @@ import { MitraDoodleAvatar } from '@/components/illustrations/MitraDoodleAvatar'
 type Overview = Awaited<ReturnType<typeof getMeOverview>>;
 
 const MOODS = [
-  { id: 'Energized', emoji: '😄', label: 'Energized' },
-  { id: 'Calm', emoji: '😌', label: 'Calm' },
-  { id: 'Tough', emoji: '😔', label: 'Tough' },
+  { id: 'Energized', label: 'Energized', icon: Smile, color: 'text-amber-600 bg-amber-50 border-amber-200' },
+  { id: 'Calm', label: 'Calm', icon: Meh, color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
+  { id: 'Tough', label: 'Tough Day', icon: Frown, color: 'text-rose-600 bg-rose-50 border-rose-200' },
 ];
 
 export default function MePage() {
@@ -22,31 +39,28 @@ export default function MePage() {
   const [mood, setMood] = useState<string | null>(null);
   const [reflectionText, setReflectionText] = useState('');
   const [saving, setSaving] = useState(false);
-  const [now] = useState(() => Date.now());
-
-  // Habits State
   const [habits, setHabits] = useState<HabitItem[]>([]);
   const [newHabitName, setNewHabitName] = useState('');
   const [addingHabit, setAddingHabit] = useState(false);
+  const [now] = useState(() => Date.now());
 
-  const load = () => {
-    const userId = window.localStorage.getItem('mitra:userId');
-    getMeOverview(userId)
-      .then((result) => {
-        if (result.success) {
-          setOverview(result);
-          setState('ready');
-          if (result.user?.id && typeof window !== 'undefined' && !userId) {
-            window.localStorage.setItem('mitra:userId', result.user.id);
-          }
-          getUserHabits(result.user.id).then((habitRes) => {
-            if (habitRes.success) setHabits(habitRes.habits);
-          });
-        } else {
-          setState('no-user');
-        }
-      })
-      .catch(() => setState('error'));
+  const load = async () => {
+    setState('loading');
+    const userId = typeof window !== 'undefined' ? window.localStorage.getItem('mitra:userId') : null;
+    const res = await getMeOverview(userId);
+    if (!res.success) {
+      setState('error');
+      return;
+    }
+    setOverview(res);
+    if (res.user?.id) {
+      if (typeof window !== 'undefined' && !userId) {
+        window.localStorage.getItem('mitra:userId');
+      }
+      const habitRes = await getUserHabits(res.user.id);
+      if (habitRes.success) setHabits(habitRes.habits);
+    }
+    setState('ready');
   };
 
   useEffect(() => {
@@ -54,9 +68,9 @@ export default function MePage() {
   }, []);
 
   const handleSaveReflection = async () => {
-    if (!overview?.success || !reflectionText.trim()) return;
+    if (!reflectionText.trim() || !overview?.success) return;
     setSaving(true);
-    const res = await addReflection(overview.user.id, reflectionText, mood ?? undefined);
+    const res = await addReflection(overview.user.id, reflectionText.trim(), mood || undefined);
     if (res.success) {
       setReflectionText('');
       setMood(null);
@@ -103,43 +117,41 @@ export default function MePage() {
 
   if (state === 'loading') {
     return (
-      <main className="flex min-h-[100dvh] items-center justify-center px-6 text-center text-sm text-moon/50">
-        Loading your growth journey...
+      <main className="flex min-h-[100dvh] items-center justify-center px-6 text-center text-xs text-moon/50">
+        Loading your personal reflection space...
       </main>
     );
   }
 
-  if (state === 'no-user' || state === 'error' || !overview?.success) {
-    return (
-      <main className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 px-6 text-center">
-        <h1 className="text-lg font-semibold text-moon">Let&apos;s get you set up first</h1>
-        <p className="max-w-xs text-sm text-earth">
-          Finish onboarding so MITRA can track your goal and reflections.
-        </p>
-        <Link
-          href="/"
-          className="flex min-h-[48px] items-center justify-center rounded-button bg-morning-sun px-6 text-sm font-semibold text-white"
-        >
-          Start Onboarding
-        </Link>
-      </main>
-    );
-  }
+  const { user, goal, reflections } = overview?.success
+    ? overview
+    : {
+        user: { name: 'Superintendent', honorific: 'Superintendent Sir' },
+        goal: null,
+        reflections: [],
+      };
 
-  const { user, goal, reflections } = overview;
   const addressee = user.honorific || user.name;
   const daysIn = goal
     ? Math.max(1, Math.floor((now - new Date(goal.createdAt).getTime()) / 86400000) + 1)
     : null;
 
+  // Monthly mood analytics statistics
+  const energizedCount = reflections.filter((r) => r.mood === 'Energized').length;
+  const calmCount = reflections.filter((r) => r.mood === 'Calm').length;
+  const toughCount = reflections.filter((r) => r.mood === 'Tough').length;
+  const completedHabitsCount = habits.filter((h) => h.completedToday).length;
+  const maxStreak = habits.length > 0 ? Math.max(...habits.map((h) => h.streak)) : 0;
+
   return (
     <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-28 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
+      {/* Visual Header */}
       <header className="flex items-center justify-between rounded-card border border-morning-sun/20 bg-gradient-to-r from-morning-sun/15 to-cloud-strong p-4 shadow-xs">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold tracking-tight text-moon">{addressee}</h1>
           </div>
-          <p className="text-xs text-earth">Your personal reflection, mood journal, and habit builder.</p>
+          <p className="text-xs text-earth">Your monthly reflection journal, mood trends, and habit builder.</p>
         </div>
         <MitraDoodleAvatar size={52} />
       </header>
@@ -151,32 +163,64 @@ export default function MePage() {
           animate={{ opacity: 1, y: 0 }}
           className="rounded-card border border-morning-sun/20 bg-gradient-to-r from-morning-sun/15 to-cloud-strong p-4 shadow-xs"
         >
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-morning-sun-strong">
-            <Target className="h-4 w-4" />
-            30-Day Goal · Day {daysIn} of 30
+          <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-morning-sun-strong">
+            <span className="flex items-center gap-1.5">
+              <Target className="h-4 w-4 text-morning-sun-strong" />
+              30-Day Leadership Goal
+            </span>
+            <span className="rounded-full bg-morning-sun/20 px-2 py-0.5 text-[10px] text-morning-sun-strong">
+              Day {daysIn} of 30
+            </span>
           </div>
           <p className="mt-2 text-sm font-semibold text-moon">{goal.title}</p>
           <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-moon/10">
             <div
-              className="h-full rounded-full bg-morning-sun"
+              className="h-full rounded-full bg-morning-sun transition-all duration-500"
               style={{ width: `${Math.min(100, ((daysIn ?? 0) / 30) * 100)}%` }}
             />
           </div>
         </motion.section>
       )}
 
-      {/* Habit Tracker Section */}
-      <section className="rounded-card border border-forest/20 bg-forest/5 p-4 space-y-3">
+      {/* Monthly Wellbeing Analytics Dashboard */}
+      <section className="space-y-2">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-earth">
+          <TrendingUp className="h-4 w-4 text-forest" />
+          Monthly Wellbeing & Habit Analytics
+        </div>
+        <div className="grid grid-cols-3 gap-2.5">
+          <div className="rounded-card border border-amber-500/20 bg-amber-500/10 p-3 space-y-1 text-center shadow-xs">
+            <span className="text-xl">😄</span>
+            <p className="text-base font-bold text-amber-800">{energizedCount}</p>
+            <p className="text-[10px] text-amber-700 font-medium">Energized Days</p>
+          </div>
+          <div className="rounded-card border border-emerald-500/20 bg-emerald-500/10 p-3 space-y-1 text-center shadow-xs">
+            <span className="text-xl">😌</span>
+            <p className="text-base font-bold text-emerald-800">{calmCount}</p>
+            <p className="text-[10px] text-emerald-700 font-medium">Calm Days</p>
+          </div>
+          <div className="rounded-card border border-purple-500/20 bg-purple-500/10 p-3 space-y-1 text-center shadow-xs">
+            <span className="text-xl">🔥</span>
+            <p className="text-base font-bold text-purple-800">{maxStreak}d</p>
+            <p className="text-[10px] text-purple-700 font-medium">Best Habit Streak</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Habit Builder Section */}
+      <section className="rounded-card border border-forest/20 bg-gradient-to-br from-forest/10 via-cloud-strong to-cloud p-4 space-y-3 shadow-xs">
         <div className="flex items-center justify-between border-b border-forest/10 pb-2">
           <div className="flex items-center gap-2">
             <HeartHandshake className="h-5 w-5 text-forest" />
             <div>
-              <h2 className="text-sm font-bold text-moon">Habit Builder</h2>
-              <p className="text-[11px] text-earth">Pick habits and check off your progress today</p>
+              <h2 className="text-sm font-bold text-moon">Habit Builder & Streak Tracker</h2>
+              <p className="text-[11px] text-earth">
+                {completedHabitsCount} of {habits.length} habits completed today
+              </p>
             </div>
           </div>
           <span className="rounded-full bg-forest/15 px-2.5 py-0.5 text-[10px] font-bold text-forest">
-            Daily Habits
+            Daily Rhythm
           </span>
         </div>
 
@@ -199,7 +243,7 @@ export default function MePage() {
                 )}
                 <span>{h.name}</span>
               </div>
-              <span className="shrink-0 rounded-full bg-cloud-strong px-2 py-0.5 text-[10px] font-bold text-earth">
+              <span className="shrink-0 rounded-full bg-cloud-strong px-2 py-0.5 text-[10px] font-bold text-earth border border-moon/5">
                 🔥 {h.streak}d streak
               </span>
             </div>
@@ -231,27 +275,31 @@ export default function MePage() {
       </section>
 
       {/* Two-Minute Reflection & Mood Input */}
-      <section className="rounded-card border border-moon/10 bg-cloud-strong p-4 space-y-3">
+      <section className="rounded-card border border-moon/10 bg-cloud-strong p-4 space-y-3 shadow-xs">
         <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-earth">
           <Sparkles className="h-4 w-4 text-morning-sun-strong" />
           Log Today&apos;s Mood & Reflection
         </p>
 
         <div className="flex gap-2">
-          {MOODS.map((m) => (
-            <button
-              key={m.id}
-              onClick={() => setMood(m.id)}
-              className={`flex-1 flex items-center justify-center gap-1.5 rounded-button py-2.5 text-xs font-semibold border transition-all ${
-                mood === m.id
-                  ? 'bg-morning-sun text-white border-morning-sun shadow-xs'
-                  : 'bg-cloud border-moon/10 text-moon hover:bg-moon/5'
-              }`}
-            >
-              <span>{m.emoji}</span>
-              <span>{m.label}</span>
-            </button>
-          ))}
+          {MOODS.map((m) => {
+            const Icon = m.icon;
+            const isSelected = mood === m.id;
+            return (
+              <button
+                key={m.id}
+                onClick={() => setMood(m.id)}
+                className={`flex-1 flex items-center justify-center gap-1.5 rounded-button py-2.5 text-xs font-semibold border transition-all ${
+                  isSelected
+                    ? 'bg-morning-sun text-white border-morning-sun shadow-xs'
+                    : 'bg-cloud border-moon/10 text-moon hover:bg-moon/5'
+                }`}
+              >
+                <Icon className={`h-4 w-4 ${isSelected ? 'text-white' : ''}`} />
+                <span>{m.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         <textarea
@@ -272,11 +320,14 @@ export default function MePage() {
         </button>
       </section>
 
-      {/* Day-Wise Reflection Log Timeline (Week / Month Mood History) */}
+      {/* Day-Wise Longitudinal Mood & Reflection Log (Last 30 Days Timeline) */}
       <section className="space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-earth">
-          <Calendar className="h-4 w-4 text-river" />
-          Day-Wise Reflection History ({reflections.length})
+        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-earth">
+          <span className="flex items-center gap-1.5">
+            <Calendar className="h-4 w-4 text-river" />
+            Longitudinal Mood & Reflection History ({reflections.length})
+          </span>
+          <span className="text-[10px] text-earth font-normal">Last 30 Days</span>
         </div>
 
         {reflections.length === 0 ? (
@@ -294,6 +345,7 @@ export default function MePage() {
               });
               const timeStr = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
               const moodItem = MOODS.find((m) => m.id === r.mood);
+              const Icon = moodItem?.icon;
 
               return (
                 <div
@@ -303,9 +355,10 @@ export default function MePage() {
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-moon">{dateStr}</span>
                     <div className="flex items-center gap-2">
-                      {moodItem && (
-                        <span className="rounded-full bg-cloud px-2 py-0.5 text-[10px] font-semibold text-moon border border-moon/5">
-                          {moodItem.emoji} {moodItem.label}
+                      {moodItem && Icon && (
+                        <span className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border ${moodItem.color}`}>
+                          <Icon className="h-3 w-3" />
+                          {moodItem.label}
                         </span>
                       )}
                       <span className="text-[10px] text-earth">{timeStr}</span>
