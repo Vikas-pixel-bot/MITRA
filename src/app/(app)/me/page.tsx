@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { UserRound, Target, Sparkles, Calendar, CheckSquare, Square, Plus, HeartHandshake, Smile, Meh, Frown, CheckCircle2 } from 'lucide-react';
 import { getMeOverview, addReflection } from '@/actions/me';
 import { getUserHabits, toggleHabit, addCustomHabit, HabitItem } from '@/actions/habits';
+import { MitraDoodleAvatar } from '@/components/illustrations/MitraDoodleAvatar';
 
 type Overview = Awaited<ReturnType<typeof getMeOverview>>;
 
@@ -133,14 +134,14 @@ export default function MePage() {
 
   return (
     <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-28 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-morning-sun/15 text-morning-sun-strong font-bold">
-            🙏
+      <header className="flex items-center justify-between rounded-card border border-morning-sun/20 bg-gradient-to-r from-morning-sun/15 to-cloud-strong p-4 shadow-xs">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold tracking-tight text-moon">{addressee}</h1>
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-moon">{addressee}</h1>
+          <p className="text-xs text-earth">Your personal reflection, mood journal, and habit builder.</p>
         </div>
-        <p className="text-xs text-earth">Your personal reflection, mood journal, and habit builder.</p>
+        <MitraDoodleAvatar size={52} />
       </header>
 
       {/* 30-Day Goal Banner */}

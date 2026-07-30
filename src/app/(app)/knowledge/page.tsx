@@ -14,9 +14,6 @@ import {
   Activity,
   Heart,
   Sparkles,
-  Users,
-  Compass,
-  CheckCircle2,
 } from 'lucide-react';
 import { getKnowledgeItems, seedKnowledgeBase } from '@/actions/knowledge';
 
@@ -31,70 +28,59 @@ type KnowledgeItem = {
   updatedAt: string;
 };
 
-// The 5 Core Pillars of MITRA Operational Framework (From System Blueprints)
+// The 5 Core Pillars of MITRA Operational Framework
 const FIVE_PILLARS = [
   {
     id: 'ALL',
-    name: 'All Pillars',
-    desc: 'Complete 10-Module Operational Framework',
+    name: 'All 5 Pillars Framework',
     badge: '10 Modules',
-    color: 'from-morning-sun/20 to-cloud-strong border-morning-sun/30 text-morning-sun-strong',
-    icon: Compass,
+    color: 'from-morning-sun/20 via-cloud-strong to-morning-sun/10 border-morning-sun/30 text-morning-sun-strong',
+    icon: '🧭',
   },
   {
     id: 'PILLAR_1',
-    name: 'Pillar 1: Daily Conversations & SEL Support',
+    name: 'Pillar 1: Daily Conversations & CASEL SEL Support',
     desc: 'Modules 1 & 3: Non-judgmental dialogue, CASEL emotional coaching, and restorative care.',
     badge: 'Modules 1 & 3',
-    color: 'from-morning-sun/15 to-cloud-strong border-morning-sun/25 text-morning-sun-strong',
-    icon: HeartHandshake,
+    color: 'from-amber-500/20 via-cloud-strong to-orange-400/10 border-amber-500/30 text-amber-800',
+    icon: '💬',
     modules: ['MODULE_1', 'MODULE_3'],
-    imgGradient: 'from-amber-500/20 via-orange-400/20 to-yellow-600/10',
-    svgIcon: '💬',
   },
   {
     id: 'PILLAR_2',
     name: 'Pillar 2: Hostel Operations & Restorative Student Care',
     desc: 'Modules 2 & 4: Daily kitchen inspection, food quality, homesickness, and student wellbeing.',
     badge: 'Modules 2 & 4',
-    color: 'from-forest/15 to-cloud-strong border-forest/25 text-forest',
-    icon: Heart,
+    color: 'from-forest/20 via-cloud-strong to-emerald-500/10 border-forest/30 text-forest',
+    icon: '🏠',
     modules: ['MODULE_2', 'MODULE_4'],
-    imgGradient: 'from-emerald-600/20 via-green-500/20 to-teal-700/10',
-    svgIcon: '🏠',
   },
   {
     id: 'PILLAR_3',
     name: 'Pillar 3: Critical SOPs & Government Guidelines',
     desc: 'Modules 5 & 6: Snake bite, POCSO, emergency escalation, and official legal circular library.',
     badge: 'Modules 5 & 6',
-    color: 'from-clay/15 to-cloud-strong border-clay/25 text-clay',
-    icon: ShieldAlert,
+    color: 'from-clay/20 via-cloud-strong to-rose-500/10 border-clay/30 text-clay',
+    icon: '🚨',
     modules: ['MODULE_5', 'MODULE_6'],
-    imgGradient: 'from-red-600/20 via-rose-500/20 to-orange-700/10',
-    svgIcon: '🚨',
   },
   {
     id: 'PILLAR_4',
     name: 'Pillar 4: Digital Register & Administrative Logs',
     desc: 'Module 7: Automated conversion of informal chat notes into official digital registries.',
     badge: 'Module 7',
-    color: 'from-river/15 to-cloud-strong border-river/25 text-river',
-    icon: FileText,
+    color: 'from-river/20 via-cloud-strong to-sky-500/10 border-river/30 text-river',
+    icon: '📋',
     modules: ['MODULE_7'],
-    imgGradient: 'from-cyan-600/20 via-sky-500/20 to-blue-700/10',
-    svgIcon: '📋',
   },
   {
     id: 'PILLAR_5',
-    name: 'Pillar 5: Warden Mindfulness, Habits & Self-Care',
+    name: 'Pillar 5: Superintendent Mindfulness & Self-Care',
     desc: 'Modules 8, 9 & 10: Reflection journal, daily habit builder, and caregiver burnout mitigation.',
     badge: 'Modules 8, 9 & 10',
-    color: 'from-purple-600/15 to-cloud-strong border-purple-600/25 text-purple-700',
-    icon: Sparkles,
+    color: 'from-purple-600/20 via-cloud-strong to-pink-500/10 border-purple-600/30 text-purple-800',
+    icon: '🧘',
     modules: ['MODULE_8', 'MODULE_9', 'MODULE_10'],
-    imgGradient: 'from-purple-600/20 via-indigo-500/20 to-pink-600/10',
-    svgIcon: '🧘',
   },
 ];
 
@@ -132,18 +118,21 @@ export default function KnowledgePage() {
 
   return (
     <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-28 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
-      {/* Header */}
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-morning-sun/15 text-morning-sun-strong font-bold">
-            📚
+      {/* Visual Header with Knowledge Banner Image */}
+      <div className="relative overflow-hidden rounded-card border border-morning-sun/20 bg-gradient-to-r from-morning-sun/15 to-cloud-strong p-5 shadow-xs">
+        <div className="flex items-start justify-between">
+          <div className="space-y-1 max-w-[210px]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-morning-sun/20 px-2 py-0.5 text-[10px] font-bold text-morning-sun-strong">
+              <BookOpen className="h-3 w-3" /> Ashramshala SOPs
+            </span>
+            <h1 className="text-xl font-bold text-moon tracking-tight">5 Core Pillars Knowledge Base</h1>
+            <p className="text-xs text-earth">Official SOP playbooks & Maharashtra Governance circulars.</p>
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-moon">Knowledge Base · 5 Core Pillars</h1>
+          <div className="h-20 w-24 shrink-0 overflow-hidden rounded-card border border-moon/10 shadow-xs">
+            <img src="/knowledge-banner.png" alt="Knowledge Banner" className="h-full w-full object-cover" />
+          </div>
         </div>
-        <p className="text-xs text-earth">
-          Organized into the 5 core operational pillars of Maharashtra Tribal Ashramshala Governance.
-        </p>
-      </header>
+      </div>
 
       {/* Search Bar */}
       <div className="relative w-full">
@@ -165,101 +154,101 @@ export default function KnowledgePage() {
         )}
       </div>
 
-      {/* 5 Pillar Filter Tiles Carousel */}
+      {/* 5 Pillar Equal-Sized 2-Column Grid (No Horizontal Scrollbar) */}
       <div className="space-y-2">
-        <p className="text-xs font-bold uppercase tracking-wider text-earth">Select Operational Pillar</p>
-        <div className="-mx-6 flex gap-3 overflow-x-auto px-6 pb-2 scrollbar-none">
-          {FIVE_PILLARS.map((p) => {
+        <p className="text-xs font-bold uppercase tracking-wider text-earth">Operational Governance Pillars</p>
+        <div className="grid grid-cols-2 gap-3">
+          {FIVE_PILLARS.slice(1).map((p) => {
             const isSelected = selectedPillar === p.id;
-            const Icon = p.icon;
             return (
               <button
                 key={p.id}
-                onClick={() => setSelectedPillar(p.id)}
-                className={`flex shrink-0 min-w-[200px] flex-col justify-between rounded-card p-3.5 border transition-all text-left ${
+                onClick={() => setSelectedPillar(isSelected ? 'ALL' : p.id)}
+                className={`flex flex-col justify-between rounded-card p-3 border text-left transition-all min-h-[105px] ${
                   isSelected
-                    ? `bg-gradient-to-br ${p.color} shadow-sm border-morning-sun-strong/60 ring-1 ring-morning-sun`
-                    : 'bg-cloud-strong border-moon/10 hover:border-moon/20'
+                    ? `bg-gradient-to-br ${p.color} border-morning-sun-strong/80 ring-2 ring-morning-sun shadow-sm`
+                    : 'bg-cloud-strong border-moon/10 hover:border-morning-sun/30'
                 }`}
               >
                 <div className="flex items-center justify-between w-full">
-                  <span className="text-xl">{p.svgIcon || '📖'}</span>
-                  <span className="rounded-full bg-cloud px-2 py-0.5 text-[10px] font-bold text-earth border border-moon/10">
+                  <span className="text-xl">{p.icon}</span>
+                  <span className="rounded-full bg-cloud px-2 py-0.5 text-[9px] font-bold text-earth border border-moon/10">
                     {p.badge}
                   </span>
                 </div>
-                <div className="mt-3 space-y-0.5">
-                  <h3 className="text-xs font-bold text-moon">{p.name}</h3>
-                  <p className="text-[10px] text-earth line-clamp-2">{p.desc}</p>
+                <div className="mt-2 space-y-0.5">
+                  <h3 className="text-xs font-bold text-moon leading-tight line-clamp-1">{p.name.split(':')[1] || p.name}</h3>
+                  <p className="text-[10px] text-earth line-clamp-1">{p.desc}</p>
                 </div>
               </button>
             );
           })}
         </div>
+        {selectedPillar !== 'ALL' && (
+          <button
+            onClick={() => setSelectedPillar('ALL')}
+            className="text-[11px] font-semibold text-morning-sun-strong underline pt-1"
+          >
+            Clear Pillar Filter (Show All 10 Modules)
+          </button>
+        )}
       </div>
 
-      {/* Tile-Based Module Cards */}
+      {/* Equal Grid View for Module Playbook Cards */}
       {loading ? (
-        <div className="py-12 text-center text-xs text-moon/50">Loading operational modules...</div>
+        <div className="py-12 text-center text-xs text-moon/50">Loading operational playbooks...</div>
       ) : items.length === 0 ? (
         <div className="rounded-card border border-moon/10 bg-cloud-strong p-6 text-center text-xs text-earth">
           No modules found matching your query or selected pillar.
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-3">
-          {items.map((item) => {
-            const pillar = FIVE_PILLARS.find((p) => p.modules?.includes(item.category)) || FIVE_PILLARS[1];
+        <div className="space-y-2">
+          <p className="text-xs font-bold uppercase tracking-wider text-earth">
+            {selectedPillar === 'ALL' ? 'All 10 Module Playbooks' : 'Filtered Playbooks'} ({items.length})
+          </p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {items.map((item) => {
+              const pillar = FIVE_PILLARS.find((p) => p.modules?.includes(item.category)) || FIVE_PILLARS[1];
 
-            return (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                onClick={() => setActiveModalItem(item)}
-                className="cursor-pointer overflow-hidden rounded-card border border-moon/10 bg-cloud-strong shadow-xs transition-all hover:border-morning-sun/50"
-              >
-                {/* Visual Banner Tile Header */}
-                <div className={`relative h-24 bg-gradient-to-r ${pillar.imgGradient} p-4 flex flex-col justify-between border-b border-moon/10`}>
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-full bg-cloud/90 px-2.5 py-0.5 text-[10px] font-bold text-moon border border-moon/10">
-                      {item.category.replace('_', ' ')}
-                    </span>
-                    <span className="text-2xl">{pillar.svgIcon}</span>
-                  </div>
-                  <h2 className="text-sm font-bold text-moon line-clamp-1">{item.title}</h2>
-                </div>
-
-                {/* Card Content Body */}
-                <div className="p-4 space-y-2">
-                  <p className="line-clamp-2 text-xs leading-relaxed text-moon/80">
-                    {item.summary}
-                  </p>
-                  {item.officialSource && (
-                    <p className="text-[10px] text-earth font-medium flex items-center gap-1">
-                      <ExternalLink className="h-3 w-3 text-morning-sun-strong" />
-                      Ref: {item.officialSource}
-                    </p>
-                  )}
-                  <div className="mt-2 flex items-center justify-between pt-2 border-t border-moon/5">
-                    <div className="flex flex-wrap gap-1">
-                      {item.tags.slice(0, 3).map((tag) => (
-                        <span key={tag} className="rounded bg-cloud px-1.5 py-0.5 text-[10px] text-earth">
-                          #{tag}
-                        </span>
-                      ))}
+              return (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  onClick={() => setActiveModalItem(item)}
+                  className="flex flex-col justify-between overflow-hidden rounded-card border border-moon/10 bg-cloud-strong shadow-xs transition-all hover:border-morning-sun/50 min-h-[160px]"
+                >
+                  <div className={`p-3.5 border-b border-moon/10 bg-gradient-to-r ${pillar.color}`}>
+                    <div className="flex items-center justify-between">
+                      <span className="rounded-full bg-cloud px-2 py-0.5 text-[9px] font-bold text-moon border border-moon/10">
+                        {item.category.replace('_', ' ')}
+                      </span>
+                      <span className="text-lg">{pillar.icon}</span>
                     </div>
-                    <span className="text-xs font-semibold text-morning-sun-strong">
-                      Read SOP Playbook &rarr;
-                    </span>
+                    <h2 className="mt-1.5 text-xs font-bold text-moon line-clamp-1">{item.title}</h2>
                   </div>
-                </div>
-              </motion.div>
-            );
-          })}
+
+                  <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2 text-xs">
+                    <p className="line-clamp-2 text-[11px] leading-relaxed text-moon/80">
+                      {item.summary}
+                    </p>
+                    <div className="flex items-center justify-between pt-2 border-t border-moon/5 text-[10px]">
+                      <span className="font-semibold text-earth">
+                        {item.officialSource ? `Source: ${item.officialSource.slice(0, 20)}...` : 'Official SOP'}
+                      </span>
+                      <span className="font-bold text-morning-sun-strong">
+                        Read &rarr;
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       )}
 
-      {/* Interactive Reader Modal */}
+      {/* Reader Modal */}
       <AnimatePresence>
         {activeModalItem && (
           <div className="fixed inset-0 z-50 flex items-end justify-center bg-moon/40 backdrop-blur-xs p-0 sm:items-center sm:p-4">

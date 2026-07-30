@@ -120,18 +120,23 @@ export default function StudentsPage() {
 
   return (
     <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-24 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
-      {/* Header */}
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-morning-sun/15 text-morning-sun-strong">
-            <Users className="h-4 w-4" />
+      {/* Header Banner with Student Care Illustration */}
+      <div className="relative overflow-hidden rounded-card border border-morning-sun/20 bg-gradient-to-r from-morning-sun/15 to-cloud-strong p-5 shadow-xs">
+        <div className="flex items-start justify-between">
+          <div className="space-y-1 max-w-[210px]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-morning-sun/20 px-2 py-0.5 text-[10px] font-bold text-morning-sun-strong">
+              <Users className="h-3 w-3" /> Restorative Student Care
+            </span>
+            <h1 className="text-xl font-bold tracking-tight text-moon">Student Care & Wellbeing</h1>
+            <p className="text-xs text-earth">
+              Track student health, restorative care needs, and support history in real time.
+            </p>
           </div>
-          <h1 className="text-xl font-semibold tracking-tight text-moon">Student Care & Wellbeing</h1>
+          <div className="h-20 w-24 shrink-0 overflow-hidden rounded-card border border-moon/10 shadow-xs">
+            <img src="/students-banner.png" alt="Student Care Illustration" className="h-full w-full object-cover" />
+          </div>
         </div>
-        <p className="text-xs text-earth">
-          Track student health, restorative care needs, and support history in real time.
-        </p>
-      </header>
+      </div>
 
       {/* Search input */}
       <div className="relative w-full">
