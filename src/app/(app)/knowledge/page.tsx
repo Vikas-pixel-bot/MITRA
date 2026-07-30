@@ -162,10 +162,10 @@ export default function KnowledgePage() {
         )}
       </div>
 
-      {/* Square Tile 2-Column Grid for Governance Pillars with Unstretched Images */}
+      {/* Perfectly Balanced 50/50 Split Cards for Governance Pillars */}
       <div className="space-y-2">
         <p className="text-xs font-bold uppercase tracking-wider text-earth">Operational Governance Pillars</p>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {FIVE_PILLARS.slice(1).map((p) => {
             const isSelected = selectedPillar === p.id;
             const Icon = p.lucideIcon;
@@ -173,31 +173,40 @@ export default function KnowledgePage() {
               <button
                 key={p.id}
                 onClick={() => setSelectedPillar(isSelected ? 'ALL' : p.id)}
-                className={`group flex flex-col justify-between overflow-hidden rounded-card border text-left transition-all aspect-square p-3 ${
+                className={`group flex h-40 w-full overflow-hidden rounded-card border text-left transition-all ${
                   isSelected
                     ? `bg-gradient-to-br ${p.color} border-morning-sun-strong/80 ring-2 ring-morning-sun shadow-md`
                     : 'bg-cloud-strong border-moon/10 hover:border-morning-sun/30 shadow-xs'
                 }`}
               >
-                {/* Square Image Thumbnail Container */}
-                <div className="relative h-20 w-full overflow-hidden rounded-button border border-moon/10 bg-cloud">
+                {/* Top/Left Half (50% Slot): Full Cover Illustration */}
+                <div className="relative w-1/2 h-full overflow-hidden border-r border-moon/10 bg-cloud">
                   <img
                     src={p.image}
                     alt={p.name}
-                    className="h-full w-full object-contain p-1 transition-transform duration-300 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  <span className="absolute top-1 right-1 rounded-full bg-cloud/95 backdrop-blur-xs px-1.5 py-0.5 text-[8px] font-bold text-moon border border-moon/10 shadow-xs">
+                  <span className="absolute top-2 left-2 rounded-full bg-cloud/90 backdrop-blur-xs px-2 py-0.5 text-[9px] font-bold text-moon border border-moon/10 shadow-xs">
                     {p.badge}
                   </span>
                 </div>
 
-                {/* Description & Icon */}
-                <div className="space-y-1 pt-1.5">
-                  <div className="flex items-center gap-1">
-                    <Icon className="h-3.5 w-3.5 shrink-0 text-morning-sun-strong" />
-                    <h3 className="text-xs font-bold text-moon line-clamp-1">{p.name.split(':')[1] || p.name}</h3>
+                {/* Right Half (50% Slot): Details & Icon */}
+                <div className="w-1/2 h-full p-3.5 flex flex-col justify-between space-y-1 bg-cloud-strong/40">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <Icon className="h-4 w-4 shrink-0 text-morning-sun-strong" />
+                      <h3 className="text-xs font-bold text-moon line-clamp-2 leading-tight">
+                        {p.name.split(':')[1] || p.name}
+                      </h3>
+                    </div>
+                    <p className="text-[11px] text-earth line-clamp-3 leading-snug">
+                      {p.desc}
+                    </p>
                   </div>
-                  <p className="text-[10px] text-earth line-clamp-2 leading-tight">{p.desc}</p>
+                  <span className="text-[10px] font-bold text-morning-sun-strong pt-1">
+                    View SOPs &rarr;
+                  </span>
                 </div>
               </button>
             );
@@ -213,7 +222,7 @@ export default function KnowledgePage() {
         )}
       </div>
 
-      {/* Square Tile Grid for Module Playbook Cards */}
+      {/* 50/50 Split Cards for Module Playbook Cards */}
       {loading ? (
         <div className="py-12 text-center text-xs text-moon/50">Loading operational playbooks...</div>
       ) : items.length === 0 ? (
@@ -225,7 +234,7 @@ export default function KnowledgePage() {
           <p className="text-xs font-bold uppercase tracking-wider text-earth">
             {selectedPillar === 'ALL' ? 'All 10 Module Playbooks' : 'Filtered Playbooks'} ({items.length})
           </p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {items.map((item) => {
               const pillar = FIVE_PILLARS.find((p) => p.modules?.includes(item.category)) || FIVE_PILLARS[1];
 
@@ -235,25 +244,27 @@ export default function KnowledgePage() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   onClick={() => setActiveModalItem(item)}
-                  className="cursor-pointer flex flex-col justify-between overflow-hidden rounded-card border border-moon/10 bg-cloud-strong p-3 shadow-xs transition-all hover:border-morning-sun/50 aspect-square"
+                  className="cursor-pointer flex h-36 w-full overflow-hidden rounded-card border border-moon/10 bg-cloud-strong shadow-xs transition-all hover:border-morning-sun/50"
                 >
-                  <div className={`rounded-button p-2 border border-moon/10 bg-gradient-to-r ${pillar.color}`}>
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-full bg-cloud px-1.5 py-0.5 text-[8px] font-bold text-moon border border-moon/10">
-                        {item.category.replace('_', ' ')}
-                      </span>
-                      <pillar.lucideIcon className="h-3.5 w-3.5 text-morning-sun-strong" />
+                  {/* Left Half (40% Slot): Pillar Cover Banner */}
+                  <div className={`w-2/5 h-full p-3 border-r border-moon/10 bg-gradient-to-br ${pillar.color} flex flex-col justify-between`}>
+                    <span className="rounded-full bg-cloud/90 px-2 py-0.5 text-[8px] font-bold text-moon border border-moon/10 w-fit truncate max-w-full">
+                      {item.category.replace('_', ' ')}
+                    </span>
+                    <div className="space-y-1">
+                      <pillar.lucideIcon className="h-5 w-5 text-morning-sun-strong" />
+                      <h2 className="text-xs font-bold text-moon line-clamp-2 leading-tight">{item.title}</h2>
                     </div>
-                    <h2 className="mt-1 text-xs font-bold text-moon line-clamp-1">{item.title}</h2>
                   </div>
 
-                  <div className="flex-1 flex flex-col justify-between pt-2 space-y-1">
-                    <p className="line-clamp-3 text-[10px] leading-tight text-moon/80">
+                  {/* Right Half (60% Slot): Module Details */}
+                  <div className="w-3/5 h-full p-3 flex flex-col justify-between text-xs space-y-1">
+                    <p className="line-clamp-3 text-[11px] leading-relaxed text-moon/80">
                       {item.summary}
                     </p>
-                    <div className="flex items-center justify-between pt-1 border-t border-moon/5 text-[9px]">
-                      <span className="font-semibold text-earth truncate max-w-[80px]">
-                        {item.officialSource || 'SOP'}
+                    <div className="flex items-center justify-between pt-1 border-t border-moon/5 text-[10px]">
+                      <span className="font-semibold text-earth truncate max-w-[90px]">
+                        {item.officialSource || 'Official SOP'}
                       </span>
                       <span className="font-bold text-morning-sun-strong shrink-0">
                         Read &rarr;
