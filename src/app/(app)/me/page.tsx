@@ -3,15 +3,16 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { UserRound, Target, Settings, Sparkles } from 'lucide-react';
+import { UserRound, Target, Sparkles, Calendar, CheckSquare, Square, Plus, HeartHandshake, Smile, Meh, Frown, CheckCircle2 } from 'lucide-react';
 import { getMeOverview, addReflection } from '@/actions/me';
+import { getUserHabits, toggleHabit, addCustomHabit, HabitItem } from '@/actions/habits';
 
 type Overview = Awaited<ReturnType<typeof getMeOverview>>;
 
 const MOODS = [
-  { id: 'GOOD', emoji: '😊', label: 'Good' },
-  { id: 'OKAY', emoji: '😐', label: 'Okay' },
-  { id: 'TOUGH', emoji: '😔', label: 'Tough' },
+  { id: 'Energized', emoji: '😄', label: 'Energized' },
+  { id: 'Calm', emoji: '😌', label: 'Calm' },
+  { id: 'Tough', emoji: '😔', label: 'Tough' },
 ];
 
 export default function MePage() {
@@ -21,6 +22,11 @@ export default function MePage() {
   const [reflectionText, setReflectionText] = useState('');
   const [saving, setSaving] = useState(false);
   const [now] = useState(() => Date.now());
+
+  // Habits State
+  const [habits, setHabits] = useState<HabitItem[]>([]);
+  const [newHabitName, setNewHabitName] = useState('');
+  const [addingHabit, setAddingHabit] = useState(false);
 
   const load = () => {
     const userId = window.localStorage.getItem('mitra:userId');
@@ -32,6 +38,9 @@ export default function MePage() {
           if (result.user?.id && typeof window !== 'undefined' && !userId) {
             window.localStorage.setItem('mitra:userId', result.user.id);
           }
+          getUserHabits(result.user.id).then((habitRes) => {
+            if (habitRes.success) setHabits(habitRes.habits);
+          });
         } else {
           setState('no-user');
         }
@@ -53,6 +62,41 @@ export default function MePage() {
       load();
     }
     setSaving(false);
+  };
+
+  const handleToggleHabit = async (habitId: string, currentCompleted: boolean) => {
+    setHabits((prev) =>
+      prev.map((h) =>
+        h.id === habitId
+          ? {
+              ...h,
+              completedToday: !currentCompleted,
+              streak: !currentCompleted ? h.streak + 1 : Math.max(0, h.streak - 1),
+            }
+          : h
+      )
+    );
+    await toggleHabit(habitId, currentCompleted);
+  };
+
+  const handleAddHabit = async () => {
+    if (!newHabitName.trim() || !overview?.success) return;
+    setAddingHabit(true);
+    const res = await addCustomHabit(overview.user.id, newHabitName);
+    if (res.success && res.habit) {
+      setHabits((prev) => [
+        ...prev,
+        {
+          id: res.habit.id,
+          name: res.habit.name,
+          category: res.habit.category,
+          completedToday: res.habit.completedToday,
+          streak: res.habit.streak,
+        },
+      ]);
+      setNewHabitName('');
+    }
+    setAddingHabit(false);
   };
 
   if (state === 'loading') {
@@ -87,28 +131,29 @@ export default function MePage() {
     : null;
 
   return (
-    <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-24 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
+    <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-28 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
       <header className="space-y-1">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-morning-sun/15 text-morning-sun-strong">
-            <UserRound className="h-4 w-4" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-morning-sun/15 text-morning-sun-strong font-bold">
+            🙏
           </div>
-          <h1 className="text-xl font-semibold tracking-tight text-moon">{addressee}</h1>
+          <h1 className="text-xl font-bold tracking-tight text-moon">{addressee}</h1>
         </div>
-        <p className="text-xs text-earth">Every month, a calmer, more confident you.</p>
+        <p className="text-xs text-earth">Your personal reflection, mood journal, and habit builder.</p>
       </header>
 
+      {/* 30-Day Goal Banner */}
       {goal && (
         <motion.section
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-card bg-cloud-strong p-5"
+          className="rounded-card border border-morning-sun/20 bg-gradient-to-r from-morning-sun/15 to-cloud-strong p-4 shadow-xs"
         >
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-earth">
-            <Target className="h-3.5 w-3.5" />
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-morning-sun-strong">
+            <Target className="h-4 w-4" />
             30-Day Goal · Day {daysIn} of 30
           </div>
-          <p className="mt-2 text-base font-semibold text-moon">{goal.title}</p>
+          <p className="mt-2 text-sm font-semibold text-moon">{goal.title}</p>
           <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-moon/10">
             <div
               className="h-full rounded-full bg-morning-sun"
@@ -118,88 +163,153 @@ export default function MePage() {
         </motion.section>
       )}
 
-      {user.primaryChallenges.length > 0 && (
-        <section>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-earth">
-            What you told MITRA
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {user.primaryChallenges.map((c) => (
-              <span
-                key={c}
-                className="rounded-full bg-cloud-strong px-3 py-1.5 text-xs font-medium text-moon"
-              >
-                {c}
-              </span>
-            ))}
+      {/* Habit Tracker Section */}
+      <section className="rounded-card border border-forest/20 bg-forest/5 p-4 space-y-3">
+        <div className="flex items-center justify-between border-b border-forest/10 pb-2">
+          <div className="flex items-center gap-2">
+            <HeartHandshake className="h-5 w-5 text-forest" />
+            <div>
+              <h2 className="text-sm font-bold text-moon">Habit Builder</h2>
+              <p className="text-[11px] text-earth">Pick habits and check off your progress today</p>
+            </div>
           </div>
-        </section>
-      )}
+          <span className="rounded-full bg-forest/15 px-2.5 py-0.5 text-[10px] font-bold text-forest">
+            Daily Habits
+          </span>
+        </div>
 
-      <section className="rounded-card bg-morning-sun/10 p-4">
-        <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-earth">
-          <Sparkles className="h-3.5 w-3.5" />
-          Two-Minute Reflection
+        <div className="space-y-2">
+          {habits.map((h) => (
+            <div
+              key={h.id}
+              onClick={() => handleToggleHabit(h.id, h.completedToday)}
+              className={`flex cursor-pointer items-center justify-between rounded-button p-3 text-xs border transition-colors ${
+                h.completedToday
+                  ? 'bg-forest/15 border-forest/30 text-moon font-medium'
+                  : 'bg-cloud border-moon/10 text-moon hover:border-forest/30'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                {h.completedToday ? (
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-forest" />
+                ) : (
+                  <Square className="h-4 w-4 shrink-0 text-earth/50" />
+                )}
+                <span>{h.name}</span>
+              </div>
+              <span className="shrink-0 rounded-full bg-cloud-strong px-2 py-0.5 text-[10px] font-bold text-earth">
+                🔥 {h.streak}d streak
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2 pt-2 border-t border-forest/10">
+          <input
+            type="text"
+            value={newHabitName}
+            onChange={(e) => setNewHabitName(e.target.value)}
+            placeholder="Add new daily habit..."
+            className="flex-1 rounded-button border border-moon/10 bg-cloud px-3 py-2 text-xs text-moon placeholder:text-moon/40 focus:border-forest focus:outline-none"
+          />
+          <button
+            disabled={addingHabit || !newHabitName.trim()}
+            onClick={handleAddHabit}
+            className="flex h-9 items-center justify-center rounded-button bg-forest px-3 text-xs font-semibold text-white shadow-xs hover:bg-forest/90 disabled:opacity-40"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+        </div>
+      </section>
+
+      {/* Two-Minute Reflection & Mood Input */}
+      <section className="rounded-card border border-moon/10 bg-cloud-strong p-4 space-y-3">
+        <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-earth">
+          <Sparkles className="h-4 w-4 text-morning-sun-strong" />
+          Log Today&apos;s Mood & Reflection
         </p>
-        <div className="mb-2 flex gap-2">
+
+        <div className="flex gap-2">
           {MOODS.map((m) => (
             <button
               key={m.id}
               onClick={() => setMood(m.id)}
-              className={`flex flex-1 flex-col items-center gap-1 rounded-button py-2 text-xs font-medium transition-colors ${
-                mood === m.id ? 'bg-morning-sun/25 text-moon' : 'bg-cloud-strong text-moon/60'
+              className={`flex-1 flex items-center justify-center gap-1.5 rounded-button py-2.5 text-xs font-semibold border transition-all ${
+                mood === m.id
+                  ? 'bg-morning-sun text-white border-morning-sun shadow-xs'
+                  : 'bg-cloud border-moon/10 text-moon hover:bg-moon/5'
               }`}
             >
-              <span className="text-lg">{m.emoji}</span>
-              {m.label}
+              <span>{m.emoji}</span>
+              <span>{m.label}</span>
             </button>
           ))}
         </div>
+
         <textarea
           value={reflectionText}
           onChange={(e) => setReflectionText(e.target.value)}
-          placeholder="What's one thing that went well today?"
-          rows={2}
-          className="w-full resize-none rounded-button border border-moon/10 bg-cloud px-3 py-2 text-sm text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
+          placeholder="What made you smile today? Or what challenged you?"
+          rows={3}
+          className="w-full resize-none rounded-button border border-moon/10 bg-cloud p-3 text-xs text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
         />
+
         <button
+          type="button"
           onClick={handleSaveReflection}
-          disabled={!reflectionText.trim() || saving}
-          className="mt-2 flex min-h-[40px] w-full items-center justify-center rounded-button bg-morning-sun text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+          disabled={saving || !reflectionText.trim()}
+          className="w-full min-h-[42px] rounded-button bg-morning-sun text-xs font-semibold text-white shadow-xs hover:bg-morning-sun-strong disabled:opacity-40"
         >
           {saving ? 'Saving...' : 'Save Reflection'}
         </button>
       </section>
 
-      {reflections.length > 0 && (
-        <section>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-earth">
-            Past Reflections
-          </p>
-          <div className="space-y-2">
-            {reflections.map((r) => (
-              <div key={r.id} className="rounded-button bg-cloud-strong px-4 py-3 text-sm text-moon">
-                <div className="mb-1 flex items-center justify-between text-xs text-moon/50">
-                  <span>{new Date(r.createdAt).toLocaleDateString()}</span>
-                  {r.mood && <span>{MOODS.find((m) => m.id === r.mood)?.emoji}</span>}
-                </div>
-                {r.content}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Day-Wise Reflection Log Timeline (Week / Month Mood History) */}
+      <section className="space-y-3">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-earth">
+          <Calendar className="h-4 w-4 text-river" />
+          Day-Wise Reflection History ({reflections.length})
+        </div>
 
-      <Link
-        href="/administration"
-        className="flex items-center justify-between rounded-button border border-moon/10 bg-cloud-strong px-4 py-3.5 text-sm font-medium text-moon"
-      >
-        <span className="flex items-center gap-2">
-          <Settings className="h-4 w-4 text-earth" />
-          Administration &amp; Settings
-        </span>
-        <span className="text-moon/40">→</span>
-      </Link>
+        {reflections.length === 0 ? (
+          <div className="rounded-card border border-moon/10 bg-cloud-strong p-4 text-center text-xs text-earth">
+            No reflections logged yet. Share your first thought above!
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {reflections.map((r) => {
+              const d = new Date(r.createdAt);
+              const dateStr = d.toLocaleDateString('en-IN', {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'short',
+              });
+              const timeStr = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+              const moodItem = MOODS.find((m) => m.id === r.mood);
+
+              return (
+                <div
+                  key={r.id}
+                  className="rounded-card border border-moon/10 bg-cloud-strong p-3.5 space-y-1.5 shadow-xs"
+                >
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-moon">{dateStr}</span>
+                    <div className="flex items-center gap-2">
+                      {moodItem && (
+                        <span className="rounded-full bg-cloud px-2 py-0.5 text-[10px] font-semibold text-moon border border-moon/5">
+                          {moodItem.emoji} {moodItem.label}
+                        </span>
+                      )}
+                      <span className="text-[10px] text-earth">{timeStr}</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-moon/90 leading-relaxed">{r.content}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </main>
   );
 }

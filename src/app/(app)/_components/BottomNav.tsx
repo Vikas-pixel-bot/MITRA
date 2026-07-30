@@ -6,7 +6,6 @@ import { Sun, MessageCircle, BookOpen, Users, UserRound } from 'lucide-react';
 
 const TABS = [
   { href: '/today', label: 'Today', icon: Sun },
-  { href: '/mitra', label: 'MITRA', icon: MessageCircle },
   { href: '/knowledge', label: 'Knowledge', icon: BookOpen },
   { href: '/students', label: 'Students', icon: Users },
   { href: '/me', label: 'Me', icon: UserRound },

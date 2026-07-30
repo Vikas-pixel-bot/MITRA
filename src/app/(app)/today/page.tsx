@@ -350,22 +350,31 @@ export default function TodayPage() {
           ))}
         </div>
 
-        {/* Add custom routine task input */}
-        <div className="flex items-center gap-2 pt-2 border-t border-moon/10">
+        {/* Add custom routine task input with Time input */}
+        <div className="flex flex-col gap-2 pt-2 border-t border-moon/10 sm:flex-row sm:items-center">
           <input
             type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
-            placeholder="Add new task to today's routine..."
+            placeholder="Routine task (e.g. Inspect RO Filter)..."
             className="flex-1 rounded-button border border-moon/10 bg-cloud px-3 py-2 text-xs text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
           />
-          <button
-            disabled={addingTask || !newTaskTitle.trim()}
-            onClick={handleAddTask}
-            className="flex h-9 items-center justify-center rounded-button bg-morning-sun px-3 text-xs font-semibold text-white shadow-xs hover:bg-morning-sun-strong disabled:opacity-40"
-          >
-            <Plus className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={newTaskTime}
+              onChange={(e) => setNewTaskTime(e.target.value)}
+              placeholder="Time (e.g. 5:30 PM)"
+              className="w-32 rounded-button border border-moon/10 bg-cloud px-3 py-2 text-xs text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
+            />
+            <button
+              disabled={addingTask || !newTaskTitle.trim()}
+              onClick={handleAddTask}
+              className="flex h-9 min-w-[36px] items-center justify-center rounded-button bg-morning-sun px-3 text-xs font-semibold text-white shadow-xs hover:bg-morning-sun-strong disabled:opacity-40"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </section>
 
