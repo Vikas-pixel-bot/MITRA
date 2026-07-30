@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import type { Prisma } from '@prisma/client';
 
 export interface StudentFilterOptions {
   schoolId?: string;
@@ -21,7 +22,7 @@ export async function getStudents(options: StudentFilterOptions = {}) {
       }
     }
 
-    const where: any = {};
+    const where: Prisma.StudentWhereInput = {};
     if (targetSchoolId) {
       where.schoolId = targetSchoolId;
     }

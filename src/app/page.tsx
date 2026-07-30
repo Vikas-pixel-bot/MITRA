@@ -10,6 +10,10 @@ export default function WelcomePage() {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
 
+  // One-time sync from external browser state (localStorage) into React
+  // state after mount — the textbook effect use the lint rule's own
+  // guidance describes, not a render-time setState.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const userId = window.localStorage.getItem('mitra:userId');
     if (userId) {
@@ -18,6 +22,7 @@ export default function WelcomePage() {
       setChecking(false);
     }
   }, [router]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   if (checking) {
     return (

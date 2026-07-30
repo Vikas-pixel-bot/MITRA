@@ -11,7 +11,6 @@ import {
   Plus,
   X,
   MessageCircle,
-  FileText,
   UserCheck,
   Activity,
 } from 'lucide-react';
@@ -75,9 +74,13 @@ export default function StudentsPage() {
     setLoading(false);
   };
 
+  // One-time + on-filter-change sync from the server into local state,
+  // same pattern used across the other Spaces.
+  /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
   useEffect(() => {
     fetchStudents();
   }, [selectedFilter, searchQuery]);
+  /* eslint-enable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 
   const handleAddNote = async () => {
     if (!activeStudent || !newNote.trim()) return;

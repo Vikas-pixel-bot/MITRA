@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import type { Prisma } from '@prisma/client';
 
 export interface KnowledgeFilterOptions {
   category?: string;
@@ -11,7 +12,7 @@ export async function getKnowledgeItems(options: KnowledgeFilterOptions = {}) {
   try {
     const { category, query } = options;
 
-    const where: any = {};
+    const where: Prisma.KnowledgeWhereInput = {};
 
     if (category && category !== 'ALL') {
       where.category = category;
