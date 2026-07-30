@@ -91,15 +91,11 @@ export function FloatingMitraChat() {
 
     evalCaregiverNudge();
 
-    // Trigger proactive welcome pop-up on initial visit session
-    const hasSeenWelcome = window.sessionStorage.getItem('mitra:welcomeShown');
-    if (!hasSeenWelcome) {
-      const timer = setTimeout(() => {
-        setShowAutoPopup(true);
-        window.sessionStorage.setItem('mitra:welcomeShown', 'true');
-      }, 1200);
-      return () => clearTimeout(timer);
-    }
+    // Trigger proactive welcome pop-up on page mount to greet the Superintendent
+    const timer = setTimeout(() => {
+      setShowAutoPopup(true);
+    }, 800);
+    return () => clearTimeout(timer);
 
     // Listen for custom trigger event to open floating chat with query
     const handleOpenMitra = (e: CustomEvent<{ query?: string }>) => {

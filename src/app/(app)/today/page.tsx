@@ -21,12 +21,13 @@ import {
   Meh,
   Frown,
   CheckCircle2,
+  Trash2,
 } from 'lucide-react';
 import { getTodayBriefing } from '@/actions/today';
 import { getNotifications, dismissNotification } from '@/actions/notifications';
 import { submitDailyLog, getTodayLogs } from '@/actions/dailyLog';
 import { getProactiveCheckpoints, CheckpointPrompt } from '@/actions/proactive';
-import { getTodayTasks, toggleTaskCompleted, addTodayTask, TaskItem } from '@/actions/tasks';
+import { getTodayTasks, toggleTaskCompleted, addTodayTask, deleteTask, TaskItem } from '@/actions/tasks';
 import { addReflection } from '@/actions/me';
 import { WelcomeIllustration } from '@/components/illustrations/WelcomeIllustration';
 import { DailyMotivationCard } from '@/components/cards/DailyMotivationCard';
@@ -147,6 +148,12 @@ export default function TodayPage() {
       setNewTaskTime('');
     }
     setAddingTask(false);
+  };
+
+  const handleDeleteTask = async (e: React.MouseEvent, taskId: string) => {
+    e.stopPropagation();
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    await deleteTask(taskId);
   };
 
   const handleSaveMood = async (moodLabel: string) => {
@@ -372,11 +379,21 @@ export default function TodayPage() {
                 )}
                 <span className="font-medium">{t.title}</span>
               </div>
-              {t.timeSlot && (
-                <span className="shrink-0 rounded bg-cloud-strong px-2 py-0.5 text-[10px] text-earth font-mono">
-                  {t.timeSlot}
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {t.timeSlot && (
+                  <span className="shrink-0 rounded bg-cloud-strong px-2 py-0.5 text-[10px] text-earth font-mono">
+                    {t.timeSlot}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={(e) => handleDeleteTask(e, t.id)}
+                  className="rounded p-1 text-earth hover:bg-emergency/10 hover:text-emergency transition-colors"
+                  title="Delete Task"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
           ))}
         </div>

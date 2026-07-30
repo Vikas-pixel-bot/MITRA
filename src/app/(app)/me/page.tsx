@@ -20,9 +20,10 @@ import {
   Activity,
   Flame,
   Award,
+  Trash2,
 } from 'lucide-react';
 import { getMeOverview, addReflection } from '@/actions/me';
-import { getUserHabits, toggleHabit, addCustomHabit, HabitItem } from '@/actions/habits';
+import { getUserHabits, toggleHabit, addCustomHabit, deleteHabit, HabitItem } from '@/actions/habits';
 import { MitraDoodleAvatar } from '@/components/illustrations/MitraDoodleAvatar';
 import { DailyMotivationCard } from '@/components/cards/DailyMotivationCard';
 
@@ -114,6 +115,12 @@ export default function MePage() {
       setNewHabitName('');
     }
     setAddingHabit(false);
+  };
+
+  const handleDeleteHabit = async (e: React.MouseEvent, habitId: string) => {
+    e.stopPropagation();
+    setHabits((prev) => prev.filter((h) => h.id !== habitId));
+    await deleteHabit(habitId);
   };
 
   if (state === 'loading') {
@@ -238,23 +245,49 @@ export default function MePage() {
             <div
               key={h.id}
               onClick={() => handleToggleHabit(h.id, h.completedToday)}
-              className={`flex cursor-pointer items-center justify-between rounded-button p-3 text-xs border transition-colors ${
+              className={`flex flex-col gap-2 rounded-button p-3 text-xs border transition-colors cursor-pointer ${
                 h.completedToday
                   ? 'bg-forest/15 border-forest/30 text-moon font-medium'
                   : 'bg-cloud border-moon/10 text-moon hover:border-forest/30'
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                {h.completedToday ? (
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-forest" />
-                ) : (
-                  <Square className="h-4 w-4 shrink-0 text-earth/50" />
-                )}
-                <span>{h.name}</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  {h.completedToday ? (
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-forest" />
+                  ) : (
+                    <Square className="h-4 w-4 shrink-0 text-earth/50" />
+                  )}
+                  <span className="font-semibold text-moon">{h.name}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="shrink-0 rounded-full bg-cloud-strong px-2 py-0.5 text-[10px] font-bold text-earth border border-moon/5">
+                    🔥 {h.streak} / 30 Days
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => handleDeleteHabit(e, h.id)}
+                    className="rounded p-1 text-earth hover:bg-emergency/10 hover:text-emergency transition-colors"
+                    title="Delete Habit"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
-              <span className="shrink-0 rounded-full bg-cloud-strong px-2 py-0.5 text-[10px] font-bold text-earth border border-moon/5">
-                🔥 {h.streak}d streak
-              </span>
+
+              {/* 30-Day Streak Progress Visual Bar */}
+              <div className="space-y-1 pt-1 border-t border-moon/5">
+                <div className="flex justify-between text-[9px] text-earth font-medium">
+                  <span>30-Day Habit Completion Streak</span>
+                  <span>{Math.min(100, Math.round((h.streak / 30) * 100))}% Goal</span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-moon/10">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-forest to-emerald-400 transition-all duration-500"
+                    style={{ width: `${Math.min(100, (h.streak / 30) * 100)}%` }}
+                  />
+                </div>
+              </div>
             </div>
           ))}
         </div>

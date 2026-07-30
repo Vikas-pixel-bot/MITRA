@@ -88,6 +88,16 @@ export async function toggleTaskCompleted(taskId: string, completed: boolean) {
   }
 }
 
+export async function deleteTask(taskId: string) {
+  try {
+    await prisma.task.delete({ where: { id: taskId } });
+    return { success: true as const };
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    return { success: false as const, error: 'Failed to delete task' };
+  }
+}
+
 export async function addTodayTask(userId: string, title: string, timeSlot?: string) {
   try {
     if (!title.trim()) {

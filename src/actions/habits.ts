@@ -123,7 +123,17 @@ export async function addCustomHabit(userId: string, name: string) {
     });
     return { success: true as const, habit };
   } catch (error) {
-    console.error('Error adding habit:', error);
+    console.error('Error adding custom habit:', error);
     return { success: false as const, error: 'Failed to add habit' };
+  }
+}
+
+export async function deleteHabit(habitId: string) {
+  try {
+    await prisma.habit.delete({ where: { id: habitId } });
+    return { success: true as const };
+  } catch (error) {
+    console.error('Error deleting habit:', error);
+    return { success: false as const, error: 'Failed to delete habit' };
   }
 }
