@@ -29,6 +29,7 @@ import { getProactiveCheckpoints, CheckpointPrompt } from '@/actions/proactive';
 import { getTodayTasks, toggleTaskCompleted, addTodayTask, TaskItem } from '@/actions/tasks';
 import { addReflection } from '@/actions/me';
 import { WelcomeIllustration } from '@/components/illustrations/WelcomeIllustration';
+import { DailyMotivationCard } from '@/components/cards/DailyMotivationCard';
 
 type Briefing = Awaited<ReturnType<typeof getTodayBriefing>>;
 type ReminderItem = { id: string; title: string; message: string; level: string };
@@ -103,7 +104,7 @@ export default function TodayPage() {
             if (taskRes.success) setTasks(taskRes.tasks);
           });
         } else {
-          setState('no-user');
+          setState('error');
         }
       })
       .catch(() => setState('error'));
@@ -212,7 +213,31 @@ export default function TodayPage() {
     );
   }
 
-  const { user } = briefing?.success ? briefing : { user: { name: 'Superintendent', honorific: 'Superintendent Sir' } };
+  if (state === 'offline') {
+    return (
+      <main className="flex min-h-[100dvh] flex-col items-center justify-center gap-2 px-6 text-center">
+        <p className="max-w-xs text-sm text-moon/80">
+          You&apos;re offline. I&apos;ll continue helping using the information already
+          available on your device. Everything will sync automatically once you&apos;re
+          connected.
+        </p>
+      </main>
+    );
+  }
+
+  if (state === 'error' || !briefing?.success) {
+    return (
+      <main className="flex min-h-[100dvh] flex-col items-center justify-center gap-2 px-6 text-center">
+        <p className="max-w-xs text-sm text-moon/80">
+          I couldn&apos;t prepare today&apos;s briefing because the connection is unstable. You
+          can still continue your work, and I&apos;ll update the briefing when we&apos;re back
+          online.
+        </p>
+      </main>
+    );
+  }
+
+  const { user } = briefing;
   const addressee = user.honorific || user.name;
   const completedCount = tasks.filter((t) => t.completed).length;
 
@@ -239,6 +264,11 @@ export default function TodayPage() {
           <div className="h-20 w-24 shrink-0 overflow-hidden rounded-card shadow-xs">
             <WelcomeIllustration />
           </div>
+        </div>
+
+        {/* Daily Rotating Caregiver Motivation & Appreciation Card */}
+        <div className="mt-3">
+          <DailyMotivationCard addressee={addressee} />
         </div>
 
         {/* In-place Mood Check-In Widget (No redirect to chat needed!) */}

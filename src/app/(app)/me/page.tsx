@@ -24,6 +24,7 @@ import {
 import { getMeOverview, addReflection } from '@/actions/me';
 import { getUserHabits, toggleHabit, addCustomHabit, HabitItem } from '@/actions/habits';
 import { MitraDoodleAvatar } from '@/components/illustrations/MitraDoodleAvatar';
+import { DailyMotivationCard } from '@/components/cards/DailyMotivationCard';
 
 type Overview = Awaited<ReturnType<typeof getMeOverview>>;
 
@@ -123,13 +124,18 @@ export default function MePage() {
     );
   }
 
-  const { user, goal, reflections } = overview?.success
-    ? overview
-    : {
-        user: { name: 'Superintendent', honorific: 'Superintendent Sir' },
-        goal: null,
-        reflections: [],
-      };
+  if (state === 'error' || !overview?.success) {
+    return (
+      <main className="flex min-h-[100dvh] flex-col items-center justify-center gap-2 px-6 text-center">
+        <p className="max-w-xs text-sm text-moon/80">
+          I couldn&apos;t load your growth journey because the connection is unstable. You can
+          still continue your work, and I&apos;ll update this once we&apos;re back online.
+        </p>
+      </main>
+    );
+  }
+
+  const { user, goal, reflections } = overview;
 
   const addressee = user.honorific || user.name;
   const daysIn = goal
@@ -155,6 +161,9 @@ export default function MePage() {
         </div>
         <MitraDoodleAvatar size={52} />
       </header>
+
+      {/* Daily Rotating Caregiver Motivation & Appreciation Card */}
+      <DailyMotivationCard addressee={addressee} />
 
       {/* 30-Day Goal Banner */}
       {goal && (

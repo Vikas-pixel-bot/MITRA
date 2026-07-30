@@ -74,18 +74,9 @@ export async function getTodayBriefing(userId?: string | null) {
     };
   } catch (error) {
     console.error('Error loading Today briefing:', error);
-    // Provide a resilient fallback user context on DB glitch
     return {
-      success: true as const,
-      user: {
-        id: 'fallback-superintendent',
-        name: 'Superintendent',
-        honorific: 'Superintendent Sir',
-        thirtyDayGoal: 'Build a calm, restorative hostel rhythm for student wellbeing.',
-        primaryChallenges: ['Hostel Operations & Safety', 'Student Restorative Care'],
-        language: 'mr',
-      },
-      notifications: [],
+      success: false as const,
+      error: "I couldn't prepare today's briefing because the connection is unstable.",
     };
   }
 }

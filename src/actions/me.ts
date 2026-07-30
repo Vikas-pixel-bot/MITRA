@@ -89,19 +89,8 @@ export async function getMeOverview(userId?: string | null) {
   } catch (error) {
     console.error('Error loading Me overview:', error);
     return {
-      success: true as const,
-      user: {
-        id: 'fallback-superintendent',
-        name: 'Superintendent',
-        honorific: 'Superintendent Sir',
-        primaryChallenges: ['Hostel Operations & Safety', 'Student Restorative Care'],
-      },
-      goal: {
-        id: 'default-goal',
-        title: 'Build a calm, restorative hostel rhythm',
-        createdAt: new Date().toISOString(),
-      },
-      reflections: [],
+      success: false as const,
+      error: "I couldn't load your growth journey because the connection is unstable.",
     };
   }
 }
