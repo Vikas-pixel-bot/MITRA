@@ -12,20 +12,22 @@ import {
   Droplets,
   Heart,
   Sparkles,
-  ChevronRight,
-  UserCheck,
-  CheckCircle2,
+  CheckSquare,
+  Square,
+  Plus,
   Bell,
   X,
-  Send,
-  Calendar,
-  Layers,
-  Award,
+  Smile,
+  Meh,
+  Frown,
+  CheckCircle2,
 } from 'lucide-react';
 import { getTodayBriefing } from '@/actions/today';
 import { getNotifications, dismissNotification } from '@/actions/notifications';
 import { submitDailyLog, getTodayLogs } from '@/actions/dailyLog';
 import { getProactiveCheckpoints, CheckpointPrompt } from '@/actions/proactive';
+import { getTodayTasks, toggleTaskCompleted, addTodayTask, TaskItem } from '@/actions/tasks';
+import { addReflection } from '@/actions/me';
 import { WelcomeIllustration } from '@/components/illustrations/WelcomeIllustration';
 
 type Briefing = Awaited<ReturnType<typeof getTodayBriefing>>;
@@ -40,20 +42,10 @@ type LogEntry = {
 };
 
 const MEAL_QUALITY = ['Good', 'Average', 'Poor'];
-
-const QUICK_ACTIONS = [
-  { label: 'Talk to MITRA', icon: MessageCircle, href: '/mitra' },
-  {
-    label: 'Report an Incident',
-    icon: ShieldAlert,
-    href: '/mitra?query=' + encodeURIComponent('I want to report an incident that just happened in the hostel.'),
-  },
-  { label: 'Search Knowledge', icon: BookOpen, href: '/knowledge' },
-  {
-    label: "Generate Today's Report",
-    icon: FileText,
-    href: '/mitra?query=' + encodeURIComponent("Help me generate today's daily administrative report."),
-  },
+const MOODS = [
+  { label: 'Energized', icon: Smile, color: 'text-forest bg-forest/10' },
+  { label: 'Calm', icon: Heart, color: 'text-river bg-river/10' },
+  { label: 'Exhausted', icon: Frown, color: 'text-clay bg-clay/10' },
 ];
 
 export default function TodayPage() {
@@ -61,14 +53,20 @@ export default function TodayPage() {
     'loading'
   );
   const [briefing, setBriefing] = useState<Briefing | null>(null);
-  const [now] = useState(() => new Date());
   const [reminders, setReminders] = useState<ReminderItem[]>([]);
   const [dismissing, setDismissing] = useState<string | null>(null);
 
   // Proactive companion state
   const [checkpoint, setCheckpoint] = useState<CheckpointPrompt | null>(null);
   const [waterCount, setWaterCount] = useState(2);
-  const [moodLogged, setMoodLogged] = useState<string | null>(null);
+  const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [moodSaved, setMoodSaved] = useState(false);
+
+  // Tasks & Checklist
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskTime, setNewTaskTime] = useState('');
+  const [addingTask, setAddingTask] = useState(false);
 
   // Daily Log Modal
   const [logModalOpen, setLogModalOpen] = useState(false);
@@ -101,6 +99,9 @@ export default function TodayPage() {
           getTodayLogs(result.user.id).then((logResult) => {
             if (logResult.success) setTodayLogs(logResult.logs);
           });
+          getTodayTasks(result.user.id).then((taskRes) => {
+            if (taskRes.success) setTasks(taskRes.tasks);
+          });
         } else {
           setState('no-user');
         }
@@ -113,6 +114,46 @@ export default function TodayPage() {
       }
     });
   }, []);
+
+  const openFloatingChat = (query?: string) => {
+    window.dispatchEvent(new CustomEvent('open-mitra-chat', { detail: { query } }));
+  };
+
+  const handleToggleTask = async (taskId: string, currentCompleted: boolean) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, completed: !currentCompleted } : t))
+    );
+    await toggleTaskCompleted(taskId, !currentCompleted);
+  };
+
+  const handleAddTask = async () => {
+    if (!newTaskTitle.trim() || !briefing?.success) return;
+    setAddingTask(true);
+    const res = await addTodayTask(briefing.user.id, newTaskTitle, newTaskTime);
+    if (res.success && res.task) {
+      setTasks((prev) => [
+        ...prev,
+        {
+          id: res.task.id,
+          title: res.task.title,
+          completed: res.task.completed,
+          timeSlot: res.task.timeSlot,
+          createdAt: res.task.createdAt.toISOString(),
+        },
+      ]);
+      setNewTaskTitle('');
+      setNewTaskTime('');
+    }
+    setAddingTask(false);
+  };
+
+  const handleSaveMood = async (moodLabel: string) => {
+    setSelectedMood(moodLabel);
+    setMoodSaved(true);
+    if (briefing?.success) {
+      await addReflection(briefing.user.id, `Logged daily mood check-in: ${moodLabel}`, moodLabel);
+    }
+  };
 
   const handleDismiss = async (id: string) => {
     setDismissing(id);
@@ -172,9 +213,10 @@ export default function TodayPage() {
 
   const { user } = briefing?.success ? briefing : { user: { name: 'Superintendent', honorific: 'Warden Sir' } };
   const addressee = user.honorific || user.name;
+  const completedCount = tasks.filter((t) => t.completed).length;
 
   return (
-    <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-24 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
+    <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-28 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
       {/* Visual Header Banner with Rich Colors */}
       <motion.section
         initial={{ opacity: 0, y: 12 }}
@@ -198,20 +240,28 @@ export default function TodayPage() {
           </div>
         </div>
 
-        {/* Quick Conversation Launcher */}
-        <div className="mt-4 flex items-center gap-2 rounded-button bg-cloud/90 p-2.5 border border-moon/10">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-forest text-white">
-            <MessageCircle className="h-4 w-4" />
+        {/* In-place Mood Check-In Widget (No redirect to chat needed!) */}
+        <div className="mt-4 rounded-button bg-cloud/90 p-3 border border-moon/10 space-y-2">
+          <p className="text-xs font-semibold text-moon flex items-center justify-between">
+            <span>How are you feeling right now today?</span>
+            {moodSaved && <span className="text-[10px] text-forest font-medium">✓ Mood Logged</span>}
+          </p>
+          <div className="flex gap-2">
+            {MOODS.map(({ label, icon: Icon, color }) => (
+              <button
+                key={label}
+                onClick={() => handleSaveMood(label)}
+                className={`flex-1 flex items-center justify-center gap-1.5 rounded-button py-2 px-2 text-xs font-medium border transition-all ${
+                  selectedMood === label
+                    ? 'border-morning-sun-strong bg-morning-sun/20 font-bold text-moon'
+                    : 'border-moon/10 bg-cloud-strong text-moon hover:bg-moon/5'
+                }`}
+              >
+                <Icon className="h-4 w-4 shrink-0 text-morning-sun-strong" />
+                <span>{label}</span>
+              </button>
+            ))}
           </div>
-          <span className="flex-1 text-xs text-moon/80 italic">
-            &quot;How are you feeling right now, Warden Sir?&quot;
-          </span>
-          <Link
-            href="/mitra?query=Namaskar%20MITRA%2C%20I%20am%20here%20for%20our%20daily%20check-in."
-            className="rounded-button bg-morning-sun px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-morning-sun-strong"
-          >
-            Chat Now
-          </Link>
         </div>
       </motion.section>
 
@@ -235,7 +285,7 @@ export default function TodayPage() {
           <h2 className="mt-2 text-base font-semibold text-moon">{checkpoint.title}</h2>
           <p className="mt-1 text-xs text-earth">{checkpoint.subtitle}</p>
 
-          {/* Hydration Tracker */}
+          {/* Hydration Tracker (In-place action) */}
           <div className="mt-3 flex items-center justify-between rounded-button bg-cloud p-3 border border-moon/5">
             <div className="flex items-center gap-2">
               <Droplets className="h-5 w-5 text-river" />
@@ -251,43 +301,93 @@ export default function TodayPage() {
               + Drink Water
             </button>
           </div>
-
-          {/* Action Trigger */}
-          <div className="mt-3 flex gap-2">
-            <Link
-              href={`/mitra?query=${encodeURIComponent(checkpoint.chatPrompt)}`}
-              className="flex min-h-[40px] flex-1 items-center justify-center gap-1.5 rounded-button bg-river text-xs font-semibold text-white shadow-xs"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Start Routine Check-in
-            </Link>
-          </div>
         </motion.section>
       )}
 
-      {/* Quick Action Grid with Vibrant Accents */}
-      <section className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-wider text-earth">Quick Actions</p>
-        <div className="grid grid-cols-2 gap-3">
-          {QUICK_ACTIONS.map(({ label, icon: Icon, href }) => {
-            const isIncident = label === 'Report an Incident';
-            return (
-              <Link
-                key={label}
-                href={href}
-                className={`flex flex-col items-start gap-2 rounded-button p-3.5 border transition-all ${
-                  isIncident
-                    ? 'bg-clay/10 border-clay/30 hover:bg-clay/20'
-                    : 'bg-cloud-strong border-moon/5 hover:border-morning-sun/30'
-                }`}
-              >
-                <Icon className={`h-5 w-5 ${isIncident ? 'text-clay' : 'text-morning-sun-strong'}`} />
-                <span className={`text-xs font-semibold ${isIncident ? 'text-clay font-bold' : 'text-moon'}`}>
-                  {label}
+      {/* Today's Checklist & Reminders Section (Night Checkoff) */}
+      <section className="rounded-card border border-moon/10 bg-cloud-strong p-4 space-y-3">
+        <div className="flex items-center justify-between border-b border-moon/10 pb-2">
+          <div className="flex items-center gap-2">
+            <CheckSquare className="h-5 w-5 text-morning-sun-strong" />
+            <div>
+              <h2 className="text-sm font-bold text-moon">Today&apos;s Routine Checklist</h2>
+              <p className="text-[11px] text-earth">
+                {completedCount} of {tasks.length} tasks completed today
+              </p>
+            </div>
+          </div>
+          <span className="rounded-full bg-morning-sun/15 px-2.5 py-0.5 text-[10px] font-bold text-morning-sun-strong">
+            Check off before sleep
+          </span>
+        </div>
+
+        {/* Task list items */}
+        <div className="space-y-2">
+          {tasks.map((t) => (
+            <div
+              key={t.id}
+              onClick={() => handleToggleTask(t.id, t.completed)}
+              className={`flex cursor-pointer items-center justify-between rounded-button p-3 text-xs border transition-colors ${
+                t.completed
+                  ? 'bg-forest/10 border-forest/20 text-moon/60 line-through'
+                  : 'bg-cloud border-moon/10 text-moon hover:border-morning-sun/30'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                {t.completed ? (
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-forest" />
+                ) : (
+                  <Square className="h-4 w-4 shrink-0 text-earth/50" />
+                )}
+                <span className="font-medium">{t.title}</span>
+              </div>
+              {t.timeSlot && (
+                <span className="shrink-0 rounded bg-cloud-strong px-2 py-0.5 text-[10px] text-earth font-mono">
+                  {t.timeSlot}
                 </span>
-              </Link>
-            );
-          })}
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Add custom routine task input */}
+        <div className="flex items-center gap-2 pt-2 border-t border-moon/10">
+          <input
+            type="text"
+            value={newTaskTitle}
+            onChange={(e) => setNewTaskTitle(e.target.value)}
+            placeholder="Add new task to today's routine..."
+            className="flex-1 rounded-button border border-moon/10 bg-cloud px-3 py-2 text-xs text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
+          />
+          <button
+            disabled={addingTask || !newTaskTitle.trim()}
+            onClick={handleAddTask}
+            className="flex h-9 items-center justify-center rounded-button bg-morning-sun px-3 text-xs font-semibold text-white shadow-xs hover:bg-morning-sun-strong disabled:opacity-40"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+        </div>
+      </section>
+
+      {/* Quick Action Trigger Buttons */}
+      <section className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-wider text-earth">Need Assistance or SOP Guidance?</p>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => openFloatingChat('I want to report an urgent incident in the hostel.')}
+            className="flex flex-col items-start gap-2 rounded-button p-3.5 border bg-clay/10 border-clay/30 hover:bg-clay/20 text-left"
+          >
+            <ShieldAlert className="h-5 w-5 text-clay" />
+            <span className="text-xs font-bold text-clay">Report an Incident</span>
+          </button>
+
+          <button
+            onClick={() => openFloatingChat('Help me with hostel operations SOP and guidance.')}
+            className="flex flex-col items-start gap-2 rounded-button p-3.5 border bg-cloud-strong border-moon/10 hover:border-morning-sun/30 text-left"
+          >
+            <MessageCircle className="h-5 w-5 text-morning-sun-strong" />
+            <span className="text-xs font-semibold text-moon">Seek AI Guidance</span>
+          </button>
         </div>
       </section>
 
@@ -298,7 +398,7 @@ export default function TodayPage() {
             <FileText className="h-5 w-5 text-forest" />
             <div>
               <h2 className="text-sm font-semibold text-moon">Daily Digital Register</h2>
-              <p className="text-[11px] text-earth">Log student presence, health events, or food quality</p>
+              <p className="text-[11px] text-earth">Log student presence, health events, or food quality directly</p>
             </div>
           </div>
           <button
