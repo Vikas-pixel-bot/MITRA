@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Mic, MessageCircle, ShieldAlert, BookOpen, FileText, Bell } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mic, MessageCircle, ShieldAlert, BookOpen, FileText, Bell, ClipboardList, X, Check } from 'lucide-react';
 import { getTodayBriefing } from '@/actions/today';
+import { submitDailyLog, getTodayLogs } from '@/actions/dailyLog';
+import { dismissNotification } from '@/actions/notifications';
 
 type TimePeriod = 'morning' | 'afternoon' | 'evening' | 'night';
 
@@ -42,6 +44,17 @@ function computeJourney(minutesNow: number) {
 }
 
 type Briefing = Awaited<ReturnType<typeof getTodayBriefing>>;
+type ReminderItem = { id: string; title: string; message: string; level: string };
+type LogEntry = {
+  id: string;
+  attendanceCount: number;
+  sickCount: number;
+  mealQuality: string | null;
+  notes: string | null;
+  createdAt: string;
+};
+
+const MEAL_QUALITY = ['Good', 'Average', 'Poor'];
 
 const QUICK_ACTIONS = [
   { label: 'Talk to MITRA', icon: MessageCircle, href: '/mitra' },
@@ -64,6 +77,16 @@ export default function TodayPage() {
   );
   const [briefing, setBriefing] = useState<Briefing | null>(null);
   const [now] = useState(() => new Date());
+  const [reminders, setReminders] = useState<ReminderItem[]>([]);
+  const [dismissing, setDismissing] = useState<string | null>(null);
+
+  const [logModalOpen, setLogModalOpen] = useState(false);
+  const [todayLogs, setTodayLogs] = useState<LogEntry[]>([]);
+  const [attendanceCount, setAttendanceCount] = useState('');
+  const [sickCount, setSickCount] = useState('');
+  const [mealQuality, setMealQuality] = useState<string | null>(null);
+  const [logNotes, setLogNotes] = useState('');
+  const [savingLog, setSavingLog] = useState(false);
 
   // One-time sync from external browser state (network status, localStorage,
   // a server fetch) into React state after mount — the textbook effect use
@@ -81,10 +104,14 @@ export default function TodayPage() {
       .then((result) => {
         if (result.success) {
           setBriefing(result);
+          setReminders(result.notifications);
           setState('ready');
           if (result.user?.id && typeof window !== 'undefined' && !userId) {
             window.localStorage.setItem('mitra:userId', result.user.id);
           }
+          getTodayLogs(result.user.id).then((logResult) => {
+            if (logResult.success) setTodayLogs(logResult.logs);
+          });
         } else {
           setState('no-user');
         }
@@ -92,6 +119,37 @@ export default function TodayPage() {
       .catch(() => setState('error'));
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  const handleDismiss = async (id: string) => {
+    setDismissing(id);
+    const res = await dismissNotification(id);
+    if (res.success) {
+      setReminders((prev) => prev.filter((r) => r.id !== id));
+    }
+    setDismissing(null);
+  };
+
+  const handleSubmitLog = async () => {
+    if (!briefing?.success) return;
+    setSavingLog(true);
+    const res = await submitDailyLog({
+      userId: briefing.user.id,
+      attendanceCount: attendanceCount ? Number(attendanceCount) : undefined,
+      sickCount: sickCount ? Number(sickCount) : undefined,
+      mealQuality: mealQuality ?? undefined,
+      notes: logNotes || undefined,
+    });
+    if (res.success) {
+      setAttendanceCount('');
+      setSickCount('');
+      setMealQuality(null);
+      setLogNotes('');
+      setLogModalOpen(false);
+      const logResult = await getTodayLogs(briefing.user.id);
+      if (logResult.success) setTodayLogs(logResult.logs);
+    }
+    setSavingLog(false);
+  };
 
   if (state === 'loading') {
     return (
@@ -142,7 +200,7 @@ export default function TodayPage() {
     );
   }
 
-  const { user, notifications } = briefing;
+  const { user } = briefing;
   const addressee = user.honorific || user.name;
   const period = getTimePeriod(now.getHours());
   const minutesNow = now.getHours() * 60 + now.getMinutes();
@@ -152,8 +210,8 @@ export default function TodayPage() {
   const briefingLines = [
     `${GREETING_WORD[period]}, ${addressee}.`,
     `Today begins with ${priority.label.toLowerCase()}.`,
-    notifications.length > 0
-      ? `There ${notifications.length === 1 ? 'is' : 'are'} ${notifications.length} thing${notifications.length === 1 ? '' : 's'} worth your attention today.`
+    reminders.length > 0
+      ? `There ${reminders.length === 1 ? 'is' : 'are'} ${reminders.length} thing${reminders.length === 1 ? '' : 's'} worth your attention today.`
       : 'Nothing urgent is waiting for you right now.',
   ];
   if (user.thirtyDayGoal) {
@@ -202,6 +260,42 @@ export default function TodayPage() {
         <p className="mt-1 text-base font-semibold text-moon">{priority.label}</p>
       </section>
 
+      <section className="rounded-card bg-cloud-strong p-5">
+        <div className="flex items-center justify-between">
+          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-earth">
+            <ClipboardList className="h-3.5 w-3.5" />
+            Log Today
+          </p>
+          <button
+            onClick={() => setLogModalOpen(true)}
+            className="rounded-button bg-morning-sun px-3 py-1.5 text-xs font-semibold text-white"
+          >
+            + Add Entry
+          </button>
+        </div>
+        {todayLogs.length > 0 ? (
+          <div className="mt-3 space-y-2">
+            {todayLogs.map((log) => (
+              <div key={log.id} className="rounded-button bg-cloud px-3 py-2 text-xs text-moon/80">
+                <span className="font-medium text-moon">
+                  {new Date(log.createdAt).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+                {' · '}
+                {log.attendanceCount > 0 && `Attendance ${log.attendanceCount}`}
+                {log.sickCount > 0 && ` · Sick ${log.sickCount}`}
+                {log.mealQuality && ` · Meal: ${log.mealQuality}`}
+                {log.notes && <p className="mt-1 text-moon/70">{log.notes}</p>}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-2 text-xs text-moon/50">Nothing logged yet today.</p>
+        )}
+      </section>
+
       <section>
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-earth">
           Today&apos;s Journey
@@ -225,22 +319,30 @@ export default function TodayPage() {
         </ol>
       </section>
 
-      {notifications.length > 0 && (
+      {reminders.length > 0 && (
         <section>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-earth">
             Important Reminders
           </p>
           <div className="space-y-2">
-            {notifications.map((n) => (
+            {reminders.map((n) => (
               <div
                 key={n.id}
                 className="flex items-start gap-2 rounded-button bg-cloud-strong px-4 py-3 text-sm text-moon"
               >
                 <Bell className="mt-0.5 h-4 w-4 shrink-0 text-clay" />
-                <div>
+                <div className="flex-1">
                   <p className="font-medium">{n.title}</p>
                   <p className="text-xs text-moon/60">{n.message}</p>
                 </div>
+                <button
+                  onClick={() => handleDismiss(n.id)}
+                  disabled={dismissing === n.id}
+                  aria-label="Dismiss reminder"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-moon/40 hover:bg-moon/10 hover:text-moon disabled:opacity-40"
+                >
+                  <Check className="h-4 w-4" />
+                </button>
               </div>
             ))}
           </div>
@@ -285,6 +387,95 @@ export default function TodayPage() {
       >
         <Mic className="h-6 w-6" />
       </Link>
+
+      <AnimatePresence>
+        {logModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-moon/40 backdrop-blur-xs p-0 sm:items-center sm:p-4">
+            <motion.div
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+              className="flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-t-card bg-cloud p-6 shadow-xl sm:rounded-card"
+            >
+              <div className="flex items-start justify-between border-b border-moon/10 pb-3">
+                <h2 className="text-lg font-semibold text-moon">Log Today</h2>
+                <button
+                  onClick={() => setLogModalOpen(false)}
+                  className="rounded-full p-1 text-moon/50 hover:bg-moon/10 hover:text-moon"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="flex-1 space-y-4 overflow-y-auto py-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="space-y-1">
+                    <span className="text-xs font-medium text-earth">Attendance count</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      value={attendanceCount}
+                      onChange={(e) => setAttendanceCount(e.target.value.replace(/\D/g, ''))}
+                      placeholder="0"
+                      className="w-full rounded-button border border-moon/10 bg-cloud-strong px-3 py-2 text-sm text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
+                    />
+                  </label>
+                  <label className="space-y-1">
+                    <span className="text-xs font-medium text-earth">Sick count</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      value={sickCount}
+                      onChange={(e) => setSickCount(e.target.value.replace(/\D/g, ''))}
+                      placeholder="0"
+                      className="w-full rounded-button border border-moon/10 bg-cloud-strong px-3 py-2 text-sm text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
+                    />
+                  </label>
+                </div>
+
+                <div className="space-y-1.5">
+                  <span className="text-xs font-medium text-earth">Meal quality</span>
+                  <div className="flex gap-2">
+                    {MEAL_QUALITY.map((q) => (
+                      <button
+                        key={q}
+                        onClick={() => setMealQuality(q)}
+                        className={`flex-1 rounded-button border px-3 py-2 text-sm font-medium transition-colors ${
+                          mealQuality === q
+                            ? 'border-morning-sun bg-morning-sun/15 text-moon'
+                            : 'border-moon/10 bg-cloud-strong text-moon/70'
+                        }`}
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <label className="space-y-1">
+                  <span className="text-xs font-medium text-earth">Notes</span>
+                  <textarea
+                    value={logNotes}
+                    onChange={(e) => setLogNotes(e.target.value)}
+                    placeholder="Anything worth remembering about today..."
+                    rows={3}
+                    className="w-full resize-none rounded-button border border-moon/10 bg-cloud-strong px-3 py-2 text-sm text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
+                  />
+                </label>
+              </div>
+
+              <button
+                onClick={handleSubmitLog}
+                disabled={savingLog}
+                className="flex min-h-[48px] w-full items-center justify-center rounded-button bg-morning-sun text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {savingLog ? 'Saving...' : 'Save Entry'}
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
