@@ -192,15 +192,15 @@ export default function KnowledgePage() {
                 </div>
 
                 {/* Right Half (50% Slot): Details & Icon */}
-                <div className="w-1/2 h-full p-3.5 flex flex-col justify-between space-y-1 bg-cloud-strong/40">
+                <div className="w-1/2 h-full p-3 flex flex-col justify-between space-y-1 bg-cloud-strong/40">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-1.5">
-                      <Icon className="h-4 w-4 shrink-0 text-morning-sun-strong" />
-                      <h3 className="text-xs font-bold text-moon line-clamp-2 leading-tight">
-                        {p.name.split(':')[1] || p.name}
+                    <div className="flex items-start gap-1.5">
+                      <Icon className="h-4 w-4 shrink-0 text-morning-sun-strong mt-0.5" />
+                      <h3 className="text-xs font-bold text-moon leading-tight">
+                        {p.name}
                       </h3>
                     </div>
-                    <p className="text-[11px] text-earth line-clamp-3 leading-snug">
+                    <p className="text-[10px] text-earth line-clamp-3 leading-snug">
                       {p.desc}
                     </p>
                   </div>

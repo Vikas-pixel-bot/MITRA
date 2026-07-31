@@ -159,24 +159,26 @@ export default function StudentsPage() {
       </div>
 
       {/* Filter pills */}
-      <div className="-mx-6 flex gap-2 overflow-x-auto px-6 pb-1 scrollbar-none">
-        {HEALTH_FILTERS.map((filter) => {
-          const isSelected = selectedFilter === filter.id;
-          return (
-            <button
-              key={filter.id}
-              onClick={() => setSelectedFilter(filter.id)}
-              className={`flex shrink-0 items-center gap-1.5 rounded-button px-3.5 py-2 text-xs font-medium transition-colors ${
-                isSelected
-                  ? 'bg-morning-sun text-white shadow-xs'
-                  : 'border border-moon/10 bg-cloud-strong text-moon/80 hover:bg-moon/5'
-              }`}
-            >
-              {filter.icon && <filter.icon className="h-3.5 w-3.5" />}
-              {filter.label}
-            </button>
-          );
-        })}
+      <div className="w-full overflow-x-auto pb-2 pt-1 scrollbar-none">
+        <div className="flex gap-2 min-w-max px-0.5">
+          {HEALTH_FILTERS.map((filter) => {
+            const isSelected = selectedFilter === filter.id;
+            return (
+              <button
+                key={filter.id}
+                onClick={() => setSelectedFilter(filter.id)}
+                className={`flex shrink-0 items-center gap-1.5 rounded-button px-3.5 py-2 text-xs font-medium transition-all ${
+                  isSelected
+                    ? 'bg-morning-sun text-white shadow-xs'
+                    : 'border border-moon/10 bg-cloud-strong text-moon/80 hover:bg-moon/5'
+                }`}
+              >
+                {filter.icon && <filter.icon className="h-3.5 w-3.5" />}
+                <span>{filter.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Student cards list */}
