@@ -323,7 +323,7 @@ export function FloatingMitraChat() {
             setShowAutoPopup(false);
             setIsOpen(true);
           }}
-          className="fixed bottom-20 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-morning-sun to-morning-sun-strong text-white shadow-xl border-2 border-white"
+          className="absolute bottom-16 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-morning-sun to-morning-sun-strong text-white shadow-xl border-2 border-white"
           aria-label="Open MITRA Floating Assistant"
         >
           <MitraDoodleAvatar size={50} className="border-none shadow-none" />
@@ -341,7 +341,7 @@ export function FloatingMitraChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-x-3 bottom-20 z-50 mx-auto flex h-[75vh] max-h-[580px] max-w-lg flex-col overflow-hidden rounded-card border border-morning-sun/30 bg-cloud shadow-2xl"
+            className="absolute inset-x-3 bottom-16 z-50 mx-auto flex h-[75vh] max-h-[540px] w-[calc(100%-24px)] max-w-md flex-col overflow-hidden rounded-card border border-morning-sun/30 bg-cloud shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-moon/10 bg-gradient-to-r from-morning-sun/15 to-cloud-strong px-4 py-3">
