@@ -74,3 +74,25 @@ export async function saveOnboardingUser(data: OnboardingData) {
     return { success: false, error: message };
   }
 }
+
+export async function updateUserProfile(userId: string, data: { name: string; honorific?: string }) {
+  try {
+    if (!data.name.trim()) {
+      return { success: false as const, error: 'Name cannot be empty' };
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name: data.name.trim(),
+        honorific: data.honorific ? data.honorific.trim() : data.name.trim(),
+      },
+    });
+
+    return { success: true as const, user: updatedUser };
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    return { success: false as const, error: 'Failed to update profile' };
+  }
+}
+

@@ -21,8 +21,12 @@ import {
   Flame,
   Award,
   Trash2,
+  Edit2,
+  Save,
+  X,
 } from 'lucide-react';
 import { getMeOverview, addReflection } from '@/actions/me';
+import { updateUserProfile } from '@/actions/user';
 import { getUserHabits, toggleHabit, addCustomHabit, deleteHabit, HabitItem } from '@/actions/habits';
 import { MitraDoodleAvatar } from '@/components/illustrations/MitraDoodleAvatar';
 import { DailyMotivationCard } from '@/components/cards/DailyMotivationCard';
@@ -45,6 +49,9 @@ export default function MePage() {
   const [newHabitName, setNewHabitName] = useState('');
   const [addingHabit, setAddingHabit] = useState(false);
   const [expandedHabits, setExpandedHabits] = useState<Record<string, boolean>>({});
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editNameInput, setEditNameInput] = useState('');
+  const [savingName, setSavingName] = useState(false);
 
   const toggleHabitExpand = (e: React.MouseEvent, habitId: string) => {
     e.stopPropagation();
@@ -129,6 +136,17 @@ export default function MePage() {
     await deleteHabit(habitId);
   };
 
+  const handleSaveProfile = async () => {
+    if (!editNameInput.trim() || !overview?.success) return;
+    setSavingName(true);
+    const res = await updateUserProfile(overview.user.id, { name: editNameInput.trim(), honorific: editNameInput.trim() });
+    if (res.success && res.user) {
+      setOverview((prev) => (prev?.success ? { ...prev, user: res.user } : prev));
+      setIsEditingName(false);
+    }
+    setSavingName(false);
+  };
+
   if (state === 'loading') {
     return (
       <main className="flex min-h-[100dvh] items-center justify-center px-6 text-center text-xs text-moon/50">
@@ -164,12 +182,48 @@ export default function MePage() {
 
   return (
     <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-28 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
-      {/* Visual Header */}
+      {/* Visual Profile Header with Editable Name */}
       <header className="flex items-center justify-between rounded-card border border-morning-sun/20 bg-gradient-to-r from-morning-sun/15 to-cloud-strong p-4 shadow-xs">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-moon">{addressee}</h1>
-          </div>
+        <div className="space-y-1.5 flex-1 pr-2">
+          {isEditingName ? (
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={editNameInput}
+                onChange={(e) => setEditNameInput(e.target.value)}
+                placeholder="Enter your name / honorific..."
+                className="rounded-button border border-morning-sun/40 bg-cloud px-3 py-1.5 text-sm font-bold text-moon focus:outline-none"
+              />
+              <button
+                disabled={savingName || !editNameInput.trim()}
+                onClick={handleSaveProfile}
+                className="flex items-center gap-1 rounded-button bg-morning-sun px-2.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-morning-sun-strong disabled:opacity-40"
+              >
+                <Save className="h-3.5 w-3.5" /> Save
+              </button>
+              <button
+                onClick={() => setIsEditingName(false)}
+                className="rounded-button border border-moon/20 bg-cloud px-2 py-1.5 text-xs font-bold text-earth hover:bg-moon/10"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold tracking-tight text-moon">{addressee}</h1>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditNameInput(addressee);
+                  setIsEditingName(true);
+                }}
+                className="flex items-center gap-1 rounded-full bg-cloud-strong border border-moon/10 px-2 py-0.5 text-[10px] font-bold text-earth hover:bg-morning-sun/10 hover:text-morning-sun-strong transition-colors"
+                title="Edit Profile Name"
+              >
+                <Edit2 className="h-3 w-3" /> Edit Profile
+              </button>
+            </div>
+          )}
           <p className="text-xs text-earth">Your monthly reflection journal, mood trends, and habit builder.</p>
         </div>
         <MitraDoodleAvatar size={52} />
