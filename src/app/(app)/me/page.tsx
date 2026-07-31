@@ -44,6 +44,12 @@ export default function MePage() {
   const [habits, setHabits] = useState<HabitItem[]>([]);
   const [newHabitName, setNewHabitName] = useState('');
   const [addingHabit, setAddingHabit] = useState(false);
+  const [expandedHabits, setExpandedHabits] = useState<Record<string, boolean>>({});
+
+  const toggleHabitExpand = (e: React.MouseEvent, habitId: string) => {
+    e.stopPropagation();
+    setExpandedHabits((prev) => ({ ...prev, [habitId]: !prev[habitId] }));
+  };
   const [now] = useState(() => Date.now());
 
   const load = async () => {
@@ -275,34 +281,43 @@ export default function MePage() {
                 </div>
               </div>
 
-              {/* 30-Day Streak Progress Grid — reflects current streak count only,
-                  not a verified per-day history (habits don't store dated
-                  completion records yet), so cells are unlabeled progress
-                  markers rather than claimed "Day N: Completed" dates. */}
-              <div className="space-y-1.5 pt-1.5 border-t border-moon/10">
+              {/* Collapsible 30-Day Streak Progress Log */}
+              <div className="space-y-1 pt-1.5 border-t border-moon/10">
                 <div className="flex justify-between items-center text-[9px] text-earth font-medium">
-                  <span>Streak Progress Toward 30 Days</span>
-                  <span className="font-bold text-forest">🔥 {h.streak} / 30</span>
+                  <button
+                    type="button"
+                    onClick={(e) => toggleHabitExpand(e, h.id)}
+                    className="font-bold text-forest hover:underline flex items-center gap-1"
+                  >
+                    <span>{expandedHabits[h.id] ? '▲ Hide 30-Day Log' : '▼ See 30-Day Log'}</span>
+                  </button>
+                  <span className="font-bold text-forest">🔥 {h.streak} / 30 Days</span>
                 </div>
 
-                <div className="grid grid-cols-10 gap-1 pt-0.5">
-                  {Array.from({ length: 30 }).map((_, idx) => {
-                    const milestone = idx + 1;
-                    const isReached = milestone <= h.streak;
+                {expandedHabits[h.id] && (
+                  <div className="space-y-1 pt-1.5 animate-fadeIn">
+                    <div className="grid grid-cols-10 gap-1 pt-0.5">
+                      {Array.from({ length: 30 }).map((_, idx) => {
+                        const milestone = idx + 1;
+                        const isReached = milestone <= h.streak;
 
-                    return (
-                      <div
-                        key={milestone}
-                        title={isReached ? 'Within current streak' : 'Not yet reached'}
-                        className={`h-4 w-full rounded-[3px] border transition-all ${
-                          isReached
-                            ? 'border-forest bg-forest shadow-xs'
-                            : 'border-moon/10 bg-cloud-strong'
-                        }`}
-                      />
-                    );
-                  })}
-                </div>
+                        return (
+                          <div
+                            key={milestone}
+                            title={isReached ? `Day ${milestone}: Completed` : `Day ${milestone}: Pending`}
+                            className={`h-4 w-full rounded-[3px] border transition-all flex items-center justify-center text-[8px] font-bold ${
+                              isReached
+                                ? 'border-forest bg-forest text-white shadow-xs'
+                                : 'border-moon/10 bg-cloud-strong text-earth/40'
+                            }`}
+                          >
+                            {milestone}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}

@@ -273,11 +273,6 @@ export default function TodayPage() {
           </div>
         </div>
 
-        {/* Daily Rotating Caregiver Motivation & Appreciation Card */}
-        <div className="mt-3">
-          <DailyMotivationCard addressee={addressee} />
-        </div>
-
         {/* In-place Mood Check-In Widget (No redirect to chat needed!) */}
         <div className="mt-4 rounded-button bg-cloud/90 p-3 border border-moon/10 space-y-2">
           <p className="text-xs font-semibold text-moon flex items-center justify-between">
