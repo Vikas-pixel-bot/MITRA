@@ -16,10 +16,10 @@ export function BottomNav() {
 
   return (
     <nav
-      className="absolute inset-x-0 bottom-0 z-20 border-t border-moon/10 bg-cloud/95 backdrop-blur-sm [padding-bottom:env(safe-area-inset-bottom)] sm:rounded-b-[28px]"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-moon/10 bg-cloud/95 backdrop-blur-md [padding-bottom:env(safe-area-inset-bottom)]"
       aria-label="Spaces"
     >
-      <div className="flex w-full items-stretch justify-between px-2 py-1.5">
+      <div className="mx-auto flex w-full max-w-md items-stretch justify-between px-2 py-1.5">
         {TABS.map(({ href, label, icon: Icon }) => {
           const isActive = pathname === href;
           return (
