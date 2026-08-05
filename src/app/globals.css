@@ -14,8 +14,8 @@
      before per circadian state, just translucent so backdrop-filter blur
      (applied globally below) reads as frosted glass over the ambient
      gradient behind it. */
-  --color-cloud: rgb(250 246 238 / 55%);
-  --color-cloud-strong: rgb(241 233 216 / 68%);
+  --color-cloud: rgb(250 246 238 / 32%);
+  --color-cloud-strong: rgb(241 233 216 / 42%);
   --color-alert: #e08a3c;
   --color-emergency: #c1442c;
   --color-success: #3f8f5f;
@@ -29,32 +29,32 @@
 
 /* Circadian Theme Overrides (Volume IV) */
 [data-circadian="MORNING"] {
-  --color-cloud: rgb(255 253 245 / 55%);
-  --color-cloud-strong: rgb(247 238 215 / 68%);
+  --color-cloud: rgb(255 253 245 / 32%);
+  --color-cloud-strong: rgb(247 238 215 / 42%);
   --color-morning-sun: #f6c453;
   --color-morning-sun-strong: #e5a728;
   --background: #fffdf5;
 }
 
 [data-circadian="SCHOOL"] {
-  --color-cloud: rgb(246 249 252 / 55%);
-  --color-cloud-strong: rgb(231 239 247 / 68%);
+  --color-cloud: rgb(246 249 252 / 32%);
+  --color-cloud-strong: rgb(231 239 247 / 42%);
   --color-morning-sun: #5fa8f5;
   --color-morning-sun-strong: #3b8be0;
   --background: #f6f9fc;
 }
 
 [data-circadian="EVENING"] {
-  --color-cloud: rgb(250 244 235 / 55%);
-  --color-cloud-strong: rgb(242 227 206 / 68%);
+  --color-cloud: rgb(250 244 235 / 32%);
+  --color-cloud-strong: rgb(242 227 206 / 42%);
   --color-morning-sun: #d97736;
   --color-morning-sun-strong: #b85a1b;
   --background: #faf4eb;
 }
 
 [data-circadian="NIGHT"] {
-  --color-cloud: rgb(28 37 48 / 55%);
-  --color-cloud-strong: rgb(39 51 66 / 70%);
+  --color-cloud: rgb(28 37 48 / 38%);
+  --color-cloud-strong: rgb(39 51 66 / 48%);
   --color-moon: #f3ede1;
   --background: #151c24;
   --foreground: #f3ede1;
@@ -63,8 +63,8 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-circadian]) {
     --color-morning-sky: #1b2126;
-    --color-cloud: rgb(32 26 20 / 55%);
-    --color-cloud-strong: rgb(42 34 25 / 70%);
+    --color-cloud: rgb(32 26 20 / 38%);
+    --color-cloud-strong: rgb(42 34 25 / 48%);
     --color-moon: #f3ede1;
 
     --background: #17130f;
@@ -97,14 +97,17 @@
 }
 
 body {
-  /* Soft ambient color wash behind the glass surfaces — derived from the
+  /* Vivid ambient color wash behind the glass surfaces — derived from the
      same circadian-controlled tokens, so it still shifts through the day
      exactly as before, it just now shows through blurred glass cards
-     instead of sitting under a flat fill. */
+     instead of sitting under a flat fill. Wider spread + higher color-mix
+     percentage than a first pass so the glass effect actually reads at a
+     glance instead of disappearing into a similarly-pale background. */
   background:
-    radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--color-morning-sun) 32%, transparent) 0%, transparent 42%),
-    radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--color-river) 26%, transparent) 0%, transparent 48%),
-    radial-gradient(circle at 50% 95%, color-mix(in srgb, var(--color-forest) 22%, transparent) 0%, transparent 52%),
+    radial-gradient(circle at 10% 6%, color-mix(in srgb, var(--color-morning-sun) 58%, transparent) 0%, transparent 62%),
+    radial-gradient(circle at 92% 10%, color-mix(in srgb, var(--color-river) 50%, transparent) 0%, transparent 68%),
+    radial-gradient(circle at 15% 85%, color-mix(in srgb, var(--color-forest) 45%, transparent) 0%, transparent 65%),
+    radial-gradient(circle at 90% 95%, color-mix(in srgb, var(--color-clay) 42%, transparent) 0%, transparent 70%),
     var(--background);
   background-attachment: fixed;
   color: var(--foreground);
@@ -112,20 +115,26 @@ body {
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-/* Glassmorphic UI: frosted-glass blur on every semantic surface token,
-   applied once here so no page/component needed to change — they already
-   use bg-cloud / bg-cloud-strong everywhere instead of raw colors. This is
-   plain (unlayered) CSS, so per CSS cascade-layer rules it always wins over
-   Tailwind's own `@layer utilities`-wrapped classes, without needing
-   `!important` or touching component files. */
+/* Glassmorphic UI: frosted-glass blur + a subtle glass-edge highlight on
+   every semantic surface token, applied once here so no page/component
+   needed to change — they already use bg-cloud / bg-cloud-strong everywhere
+   instead of raw colors. This is plain (unlayered) CSS, so per CSS
+   cascade-layer rules it always wins over Tailwind's own
+   `@layer utilities`-wrapped classes, without needing `!important` or
+   touching component files. `outline` (not `border`) is used for the edge
+   highlight specifically because it's a separate box-model layer that
+   can't collide with each card's own intentional `border-*` color classes
+   (border-clay/30 on incident cards, border-forest/20 on growth cards, etc). */
 .bg-cloud,
 .bg-cloud-strong,
 .bg-cloud\/90,
 .bg-cloud\/95,
 .bg-cloud-strong\/95,
 .bg-cloud-strong\/40 {
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  outline: 1px solid rgb(255 255 255 / 35%);
+  outline-offset: -1px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -145,4 +154,3 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
