@@ -1,16 +1,9 @@
-import { createOpenAI } from '@ai-sdk/openai';
-import { streamText, convertToModelMessages, tool, stepCountIs, type UIMessage } from 'ai';
-import { z } from 'zod';
+import { google } from '@ai-sdk/google';
+import { streamText, convertToModelMessages, type UIMessage } from 'ai';
 import { prisma } from '@/lib/prisma';
 import { retrieveRelevantKnowledge } from '@/actions/knowledge';
-import { createCaseFromConversation } from '@/actions/cases';
 
 export const maxDuration = 30;
-
-const groq = createOpenAI({
-  baseURL: 'https://api.groq.com/openai/v1',
-  apiKey: process.env.GROQ_API_KEY,
-});
 
 const SYSTEM_PROMPT = `You are MITRA — a Digital Co-Superintendent, Mentor, Coach, and Knowledge Companion for a Superintendent running a Government Tribal Residential Ashramshala (hostel school) in Maharashtra, India. You behave like a trusted, experienced colleague — never like a generic chatbot or search engine.
 
@@ -109,7 +102,7 @@ export async function POST(req: Request) {
     const conversationIdForPersistence = activeConversationId;
 
     const result = streamText({
-      model: groq('llama-3.3-70b-versatile'),
+      model: google('gemini-2.0-flash'),
       system: systemPrompt,
       messages: await convertToModelMessages(messages),
       onFinish: async ({ text }) => {
