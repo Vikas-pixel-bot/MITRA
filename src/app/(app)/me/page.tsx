@@ -284,31 +284,34 @@ export default function MePage() {
       </section>
 
       {/* Habit Builder Section */}
-      <section className="rounded-card border border-forest/20 bg-gradient-to-br from-forest/10 via-cloud-strong to-cloud p-4 space-y-3 shadow-xs">
-        <div className="flex items-center justify-between border-b border-forest/10 pb-2">
+      <section className="rounded-card border border-forest/25 bg-gradient-to-br from-forest/15 via-cloud-strong to-cloud p-4 space-y-3.5 shadow-sm">
+        <div className="flex items-center justify-between border-b border-forest/15 pb-2.5">
           <div className="flex items-center gap-2">
-            <HeartHandshake className="h-5 w-5 text-forest" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-forest/20 text-forest">
+              <HeartHandshake className="h-4 w-4" />
+            </div>
             <div>
               <h2 className="text-sm font-bold text-moon">Habit Builder & Streak Tracker</h2>
-              <p className="text-[11px] text-earth">
+              <p className="text-[11px] text-earth font-medium">
                 {completedHabitsCount} of {habits.length} habits completed today
               </p>
             </div>
           </div>
-          <span className="rounded-full bg-forest/15 px-2.5 py-0.5 text-[10px] font-bold text-forest">
+          <span className="rounded-full bg-forest/20 border border-forest/30 px-2.5 py-0.5 text-[10px] font-bold text-forest">
             Daily Rhythm
           </span>
         </div>
 
         <div className="space-y-2">
           {habits.map((h) => (
-            <div
+            <motion.div
               key={h.id}
+              whileTap={{ scale: 0.98 }}
               onClick={() => handleToggleHabit(h.id, h.completedToday)}
-              className={`flex flex-col gap-2 rounded-button p-3 text-xs border transition-colors cursor-pointer ${
+              className={`flex flex-col gap-2 rounded-button p-3 text-xs border transition-all cursor-pointer shadow-xs ${
                 h.completedToday
-                  ? 'bg-forest/15 border-forest/30 text-moon font-medium'
-                  : 'bg-cloud border-moon/10 text-moon hover:border-forest/30'
+                  ? 'bg-forest/15 border-forest/30 text-moon font-semibold'
+                  : 'bg-cloud border-moon/15 text-moon hover:border-forest/40'
               }`}
             >
               <div className="flex items-center justify-between">
@@ -318,16 +321,16 @@ export default function MePage() {
                   ) : (
                     <Square className="h-4 w-4 shrink-0 text-earth/50" />
                   )}
-                  <span className="font-semibold text-moon">{h.name}</span>
+                  <span className="font-bold text-moon">{h.name}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="shrink-0 rounded-full bg-cloud-strong px-2 py-0.5 text-[10px] font-bold text-earth border border-moon/5">
+                  <span className="shrink-0 rounded-full bg-cloud-strong px-2.5 py-0.5 text-[10px] font-bold text-earth border border-moon/10">
                     🔥 {h.streak} / 30 Days
                   </span>
                   <button
                     type="button"
                     onClick={(e) => handleDeleteHabit(e, h.id)}
-                    className="rounded p-1 text-earth hover:bg-emergency/10 hover:text-emergency transition-colors"
+                    className="rounded p-1 text-earth hover:bg-emergency/15 hover:text-emergency transition-colors"
                     title="Delete Habit"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -373,7 +376,7 @@ export default function MePage() {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 

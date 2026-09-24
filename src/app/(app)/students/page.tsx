@@ -197,11 +197,12 @@ export default function StudentsPage() {
               key={student.id}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setActiveStudent(student)}
-              className={`cursor-pointer rounded-card border p-4 transition-all hover:border-morning-sun/40 ${
+              className={`cursor-pointer rounded-card border p-4 transition-all shadow-xs hover:border-morning-sun/50 ${
                 student.riskFlag
-                  ? 'border-clay/30 bg-clay/5'
-                  : 'border-moon/10 bg-cloud-strong'
+                  ? 'border-clay/40 bg-gradient-to-r from-clay/10 to-cloud-strong'
+                  : 'border-moon/15 bg-cloud-strong'
               }`}
             >
               <div className="flex items-start justify-between">

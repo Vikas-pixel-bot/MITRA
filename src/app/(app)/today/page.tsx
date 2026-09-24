@@ -250,49 +250,50 @@ export default function TodayPage() {
 
   return (
     <main className="flex min-h-[100dvh] w-full flex-col gap-5 px-6 pb-28 [padding-top:max(1.5rem,env(safe-area-inset-top))]">
-      {/* Visual Header Banner with Rich Colors */}
+      {/* Visual Header Banner with Rich Colors & Tactile Elevation */}
       <motion.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-card bg-gradient-to-br from-morning-sun/20 via-cloud-strong to-forest/10 p-5 border border-morning-sun/20 shadow-xs"
+        className="relative overflow-hidden rounded-card bg-gradient-to-br from-morning-sun/20 via-cloud-strong to-forest/10 p-5 border border-morning-sun/30 shadow-md space-y-4"
       >
         <div className="flex items-start justify-between">
-          <div className="space-y-1 max-w-[200px]">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-morning-sun/20 px-2.5 py-0.5 text-[11px] font-semibold text-morning-sun-strong">
-              <Sparkles className="h-3 w-3" /> Proactive Companion
+          <div className="space-y-1.5 max-w-[210px]">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-morning-sun/25 border border-morning-sun/40 px-2.5 py-0.5 text-[10px] font-bold text-morning-sun-strong shadow-xs">
+              <Sparkles className="h-3 w-3" /> Digital Co-Superintendent
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-moon">
+            <h1 className="text-xl font-extrabold tracking-tight text-moon leading-tight">
               Namaskar, {addressee}! 🙏
             </h1>
-            <p className="text-xs text-earth">
+            <p className="text-xs text-earth leading-relaxed font-medium">
               I&apos;m right here with you to guide today&apos;s hostel rhythm.
             </p>
           </div>
-          <div className="h-20 w-24 shrink-0 overflow-hidden rounded-card shadow-xs">
+          <div className="h-20 w-24 shrink-0 overflow-hidden rounded-card shadow-sm border border-moon/10">
             <WelcomeIllustration />
           </div>
         </div>
 
-        {/* In-place Mood Check-In Widget (No redirect to chat needed!) */}
-        <div className="mt-4 rounded-button bg-cloud/90 p-3 border border-moon/10 space-y-2">
-          <p className="text-xs font-semibold text-moon flex items-center justify-between">
+        {/* In-place Mood Check-In Widget with Spring Motion Press States */}
+        <div className="rounded-card bg-cloud/95 p-3.5 border border-moon/15 shadow-xs space-y-2">
+          <p className="text-xs font-bold text-moon flex items-center justify-between">
             <span>How are you feeling right now today?</span>
-            {moodSaved && <span className="text-[10px] text-forest font-medium">✓ Mood Logged</span>}
+            {moodSaved && <span className="text-[10px] text-forest font-bold bg-forest/10 px-2 py-0.5 rounded-full border border-forest/20">✓ Logged</span>}
           </p>
           <div className="flex gap-2">
-            {MOODS.map(({ label, icon: Icon, color }) => (
-              <button
+            {MOODS.map(({ label, icon: Icon }) => (
+              <motion.button
                 key={label}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => handleSaveMood(label)}
-                className={`flex-1 flex items-center justify-center gap-1.5 rounded-button py-2 px-2 text-xs font-medium border transition-all ${
+                className={`flex-1 flex items-center justify-center gap-1.5 rounded-button py-2 px-2 text-xs font-bold border transition-all ${
                   selectedMood === label
-                    ? 'border-morning-sun-strong bg-morning-sun/20 font-bold text-moon'
+                    ? 'border-morning-sun-strong bg-morning-sun/20 text-moon shadow-xs ring-2 ring-morning-sun/30'
                     : 'border-moon/10 bg-cloud-strong text-moon hover:bg-moon/5'
                 }`}
               >
                 <Icon className="h-4 w-4 shrink-0 text-morning-sun-strong" />
                 <span>{label}</span>
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
@@ -337,33 +338,52 @@ export default function TodayPage() {
         </motion.section>
       )}
 
-      {/* Today's Checklist & Reminders Section (Night Checkoff) */}
-      <section className="rounded-card border border-moon/10 bg-cloud-strong p-4 space-y-3">
-        <div className="flex items-center justify-between border-b border-moon/10 pb-2">
+      {/* Today's Checklist & Routine Tracker with Progress Bar & Spring Items */}
+      <section className="rounded-card border border-moon/15 bg-cloud-strong p-4 space-y-3.5 shadow-sm">
+        <div className="flex items-center justify-between border-b border-moon/10 pb-2.5">
           <div className="flex items-center gap-2">
-            <CheckSquare className="h-5 w-5 text-morning-sun-strong" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-morning-sun/20 text-morning-sun-strong">
+              <CheckSquare className="h-4 w-4" />
+            </div>
             <div>
               <h2 className="text-sm font-bold text-moon">Today&apos;s Routine Checklist</h2>
-              <p className="text-[11px] text-earth">
+              <p className="text-[11px] text-earth font-medium">
                 {completedCount} of {tasks.length} tasks completed today
               </p>
             </div>
           </div>
-          <span className="rounded-full bg-morning-sun/15 px-2.5 py-0.5 text-[10px] font-bold text-morning-sun-strong">
+          <span className="rounded-full bg-morning-sun/20 border border-morning-sun/30 px-2.5 py-0.5 text-[10px] font-bold text-morning-sun-strong">
             Check off before sleep
           </span>
         </div>
 
-        {/* Task list items */}
+        {/* Visual Task Progress Indicator Bar */}
+        {tasks.length > 0 && (
+          <div className="space-y-1">
+            <div className="flex justify-between text-[9px] font-bold text-earth">
+              <span>Daily Completion Progress</span>
+              <span>{Math.round((completedCount / tasks.length) * 100)}% Done</span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-moon/10">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-forest to-emerald-400 transition-all duration-500"
+                style={{ width: `${(completedCount / tasks.length) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Task list items with Tactile Motion Press States */}
         <div className="space-y-2">
           {tasks.map((t) => (
-            <div
+            <motion.div
               key={t.id}
+              whileTap={{ scale: 0.98 }}
               onClick={() => handleToggleTask(t.id, t.completed)}
-              className={`flex cursor-pointer items-center justify-between rounded-button p-3 text-xs border transition-colors ${
+              className={`flex cursor-pointer items-center justify-between rounded-button p-3 text-xs border transition-all shadow-xs ${
                 t.completed
-                  ? 'bg-forest/10 border-forest/20 text-moon/60 line-through'
-                  : 'bg-cloud border-moon/10 text-moon hover:border-morning-sun/30'
+                  ? 'bg-forest/15 border-forest/30 text-moon/70 line-through font-medium'
+                  : 'bg-cloud border-moon/15 text-moon hover:border-morning-sun/40'
               }`}
             >
               <div className="flex items-center gap-2.5">
@@ -372,28 +392,28 @@ export default function TodayPage() {
                 ) : (
                   <Square className="h-4 w-4 shrink-0 text-earth/50" />
                 )}
-                <span className="font-medium">{t.title}</span>
+                <span className="font-semibold text-moon">{t.title}</span>
               </div>
               <div className="flex items-center gap-2">
                 {t.timeSlot && (
-                  <span className="shrink-0 rounded bg-cloud-strong px-2 py-0.5 text-[10px] text-earth font-mono">
+                  <span className="shrink-0 rounded-full bg-cloud-strong border border-moon/10 px-2.5 py-0.5 text-[10px] text-earth font-bold">
                     {t.timeSlot}
                   </span>
                 )}
                 <button
                   type="button"
                   onClick={(e) => handleDeleteTask(e, t.id)}
-                  className="rounded p-1 text-earth hover:bg-emergency/10 hover:text-emergency transition-colors"
+                  className="rounded p-1 text-earth hover:bg-emergency/15 hover:text-emergency transition-colors"
                   title="Delete Task"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        {/* Add custom routine task input with Time input */}
+        {/* Add custom routine task input */}
         <div className="flex flex-col gap-2 pt-2 border-t border-moon/10 sm:flex-row sm:items-center">
           <input
             type="text"
@@ -406,7 +426,7 @@ export default function TodayPage() {
               }
             }}
             placeholder="Routine task (e.g. Inspect RO Filter)..."
-            className="flex-1 rounded-button border border-moon/10 bg-cloud px-3 py-2 text-xs text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
+            className="flex-1 rounded-button border border-moon/15 bg-cloud px-3.5 py-2 text-xs text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
           />
           <div className="flex items-center gap-2">
             <input
@@ -419,16 +439,17 @@ export default function TodayPage() {
                   handleAddTask();
                 }
               }}
-              placeholder="Time (e.g. 5:30 PM)"
-              className="w-32 rounded-button border border-moon/10 bg-cloud px-3 py-2 text-xs text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
+              placeholder="Time (5:30 PM)"
+              className="w-28 rounded-button border border-moon/15 bg-cloud px-3 py-2 text-xs text-moon placeholder:text-moon/40 focus:border-morning-sun focus:outline-none"
             />
-            <button
+            <motion.button
+              whileTap={{ scale: 0.94 }}
               disabled={addingTask || !newTaskTitle.trim()}
               onClick={handleAddTask}
-              className="flex h-9 min-w-[36px] items-center justify-center rounded-button bg-morning-sun px-3 text-xs font-semibold text-white shadow-xs hover:bg-morning-sun-strong disabled:opacity-40"
+              className="flex h-9 min-w-[36px] items-center justify-center rounded-button bg-morning-sun px-3 text-xs font-bold text-white shadow-xs hover:bg-morning-sun-strong disabled:opacity-40"
             >
               <Plus className="h-4 w-4" />
-            </button>
+            </motion.button>
           </div>
         </div>
       </section>
