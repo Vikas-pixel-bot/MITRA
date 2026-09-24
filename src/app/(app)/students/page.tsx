@@ -158,26 +158,28 @@ export default function StudentsPage() {
         )}
       </div>
 
-      {/* Filter pills */}
-      <div className="w-full overflow-x-auto pb-2 pt-1 scrollbar-none">
-        <div className="flex gap-2 min-w-max px-0.5">
-          {HEALTH_FILTERS.map((filter) => {
-            const isSelected = selectedFilter === filter.id;
-            return (
-              <button
-                key={filter.id}
-                onClick={() => setSelectedFilter(filter.id)}
-                className={`flex shrink-0 items-center gap-1.5 rounded-button px-3.5 py-2 text-xs font-medium transition-all ${
-                  isSelected
-                    ? 'bg-morning-sun text-white shadow-xs'
-                    : 'border border-moon/10 bg-cloud-strong text-moon/80 hover:bg-moon/5'
-                }`}
-              >
-                {filter.icon && <filter.icon className="h-3.5 w-3.5" />}
-                <span>{filter.label}</span>
-              </button>
-            );
-          })}
+      {/* Filter pills with soft right-edge fade mask */}
+      <div className="relative w-full overflow-hidden">
+        <div className="w-full overflow-x-auto pb-2 pt-1 scrollbar-none [mask-image:linear-gradient(to_right,black_85%,transparent_100%)]">
+          <div className="flex gap-2 min-w-max px-0.5">
+            {HEALTH_FILTERS.map((filter) => {
+              const isSelected = selectedFilter === filter.id;
+              return (
+                <button
+                  key={filter.id}
+                  onClick={() => setSelectedFilter(filter.id)}
+                  className={`flex shrink-0 items-center gap-1.5 rounded-button px-3.5 py-2 text-xs font-medium transition-all ${
+                    isSelected
+                      ? 'bg-morning-sun text-white shadow-xs'
+                      : 'border border-moon/10 bg-cloud-strong text-moon/80 hover:bg-moon/5'
+                  }`}
+                >
+                  {filter.icon && <filter.icon className="h-3.5 w-3.5" />}
+                  <span>{filter.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -235,9 +237,17 @@ export default function StudentsPage() {
                 </p>
               )}
 
-              <div className="mt-3 flex items-center justify-between border-t border-moon/5 pt-2 text-[11px] text-earth">
-                <span>{student.casesCount} cases recorded</span>
-                <span className="font-medium text-morning-sun-strong">View Profile &rarr;</span>
+              <div className="mt-3 flex items-center justify-between border-t border-moon/10 pt-2.5 text-[11px] text-earth">
+                <span className="font-semibold">{student.casesCount} cases recorded</span>
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={() => setActiveStudent(student)}
+                    className="rounded-full bg-morning-sun/15 border border-morning-sun/30 px-2.5 py-1 text-[10px] font-bold text-morning-sun-strong hover:bg-morning-sun hover:text-white transition-all"
+                  >
+                    + Note / SOP
+                  </button>
+                  <span className="font-bold text-moon/60">View &rarr;</span>
+                </div>
               </div>
             </motion.div>
           ))}
