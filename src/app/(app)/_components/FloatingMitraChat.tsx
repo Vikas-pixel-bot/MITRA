@@ -257,7 +257,7 @@ export function FloatingMitraChat() {
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="fixed bottom-24 right-4 z-50 max-w-[280px] rounded-card border border-morning-sun/30 bg-cloud/95 p-4 shadow-2xl backdrop-blur-md space-y-2.5"
+            className="fixed bottom-24 right-4 z-50 max-w-[280px] rounded-card border-2 border-morning-sun-strong/40 bg-cloud-strong p-4 shadow-2xl space-y-2.5"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
