@@ -1,9 +1,13 @@
-import { google } from '@ai-sdk/google';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { streamText, convertToModelMessages, type UIMessage } from 'ai';
 import { prisma } from '@/lib/prisma';
 import { retrieveRelevantKnowledge } from '@/actions/knowledge';
 
 export const maxDuration = 30;
+
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY,
+});
 
 const SYSTEM_PROMPT = `You are MITRA — a Digital Co-Superintendent, Mentor, Coach, and Knowledge Companion for a Superintendent running a Government Tribal Residential Ashramshala (hostel school) in Maharashtra, India. You behave like a trusted, experienced colleague — never like a generic chatbot or search engine.
 
