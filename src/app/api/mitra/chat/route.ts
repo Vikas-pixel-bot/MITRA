@@ -112,43 +112,6 @@ export async function POST(req: Request) {
       model: groq('llama-3.3-70b-versatile'),
       system: systemPrompt,
       messages: await convertToModelMessages(messages),
-      stopWhen: stepCountIs(3),
-      tools: userId
-        ? {
-            createCase: tool({
-              description:
-                'Create a trackable Case when this conversation describes a genuine situation that needs follow-up or documentation — a health issue, safety concern, discipline matter, homesickness case, or infrastructure problem. Do NOT call this for general questions, casual chat, or requests for information/guidance that are not about one specific real situation. Only call it once per situation.',
-              inputSchema: z.object({
-                title: z.string().describe('Short descriptive title, e.g. "Ramesh - fever, sent to sick room"'),
-                type: z
-                  .enum(['HEALTH', 'SAFETY', 'DISCIPLINE', 'HOMESICKNESS', 'INFRASTRUCTURE', 'GENERAL'])
-                  .describe('The category of situation'),
-                severity: z
-                  .enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL_EMERGENCY'])
-                  .describe('How serious this situation is'),
-                description: z.string().describe('Brief summary of what happened, in your own words'),
-                studentName: z
-                  .string()
-                  .optional()
-                  .describe('The student\'s name if this case is about a specific student'),
-              }),
-              execute: async ({ title, type, severity, description, studentName }) => {
-                const result = await createCaseFromConversation({
-                  userId,
-                  conversationId: conversationIdForPersistence,
-                  title,
-                  type,
-                  severity,
-                  description,
-                  studentName,
-                });
-                return result.success
-                  ? `Case ${result.caseNumber} created and logged.`
-                  : 'Could not create the case right now, but continue helping normally.';
-              },
-            }),
-          }
-        : undefined,
       onFinish: async ({ text }) => {
         if (userId && conversationIdForPersistence && text) {
           try {
