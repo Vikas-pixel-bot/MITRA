@@ -131,16 +131,47 @@ export async function POST(req: Request) {
 
       return result.toUIMessageStreamResponse();
     } catch (llmError) {
-      console.error('LLM Provider Error:', llmError);
+      console.error('Gemini API Error, falling back to Groq:', llmError);
       
-      // Secondary fallback model if primary model fails
-      const fallbackResult = streamText({
-        model: groq('llama-3.3-70b-versatile'),
-        system: systemPrompt,
-        messages: await convertToModelMessages(messages),
-      });
+      try {
+        const fallbackResult = streamText({
+          model: groq('llama-3.3-70b-versatile'),
+          system: systemPrompt,
+          messages: await convertToModelMessages(messages),
+        });
 
-      return fallbackResult.toUIMessageStreamResponse();
+        return fallbackResult.toUIMessageStreamResponse();
+      } catch (groqError) {
+        console.error('Groq API Error, returning local SOP fallback stream:', groqError);
+
+        // Fallback local response stream ensuring 100% response delivery
+        const lastMsg = messages[messages.length - 1];
+        const userQuery = extractText(lastMsg).toLowerCase();
+        
+        let localReply = "Namaskar Superintendent Sir. I am review your request right now. For urgent medical concerns like injuries, snake bites, or fever, please ensure the student is safely moved to the sick room or nearest PHC immediately while I connect to full SOP guidance.";
+
+        if (userQuery.includes('fall') || userQuery.includes('stair') || userQuery.includes('hurt') || userQuery.includes('injury')) {
+          localReply = "Namaskar Sir. For a student injury or fall from stairs:\n1. Keep the student calm and motionless if head/spine injury is suspected.\n2. Apply immediate first-aid / ice pack for swelling.\n3. Contact the nearest Primary Health Centre (PHC) doctor or call 108 ambulance if severe pain persists.\n4. Log this incident in the Student Health Register and inform parents.";
+        } else if (userQuery.includes('snake') || userQuery.includes('bite')) {
+          localReply = "EMERGENCY PROTOCOL — SNAKE BITE:\n1. Keep the student completely calm and immobilize the bitten limb.\n2. Do NOT cut, suck, or tie tight tourniquets.\n3. Transport immediately to the nearest PHC / District Hospital for Anti-Snake Venom (ASV).\n4. Call 108 Ambulance immediately.";
+        } else if (userQuery.includes('fung') || userQuery.includes('skin') || userQuery.includes('fever')) {
+          localReply = "Namaskar Sir. For student skin infections or illness:\n1. Isolate personal towel and bedding to prevent spread among hostellers.\n2. Apply prescribed antifungal/soothing ointment.\n3. Have the visiting PHC doctor inspect the student during weekly health check-up.";
+        }
+
+        const stream = new ReadableStream({
+          start(controller) {
+            controller.enqueue(new TextEncoder().encode(`0:${JSON.stringify(localReply)}\n`));
+            controller.close();
+          },
+        });
+
+        return new Response(stream, {
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'x-vercel-ai-ui-stream': 'true',
+          },
+        });
+      }
     }
   } catch (error) {
     console.error('Chat API Error:', error);
