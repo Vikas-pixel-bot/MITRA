@@ -111,9 +111,9 @@ export async function POST(req: Request) {
 
     const conversationIdForPersistence = activeConversationId;
 
-    let result;
+    let responseStream;
     try {
-      result = streamText({
+      const result = streamText({
         model: google('gemini-2.0-flash'),
         system: systemPrompt,
         messages: await convertToModelMessages(messages),
@@ -129,21 +129,23 @@ export async function POST(req: Request) {
           }
         },
       });
+      responseStream = result.toUIMessageStreamResponse();
     } catch (geminiErr) {
       console.warn('Gemini stream initialization failed, switching to Groq:', geminiErr);
       try {
-        result = streamText({
+        const fallbackResult = streamText({
           model: groq('llama-3.3-70b-versatile'),
           system: systemPrompt,
           messages: await convertToModelMessages(messages),
         });
+        responseStream = fallbackResult.toUIMessageStreamResponse();
       } catch (groqErr) {
         console.warn('Groq stream initialization failed:', groqErr);
       }
     }
 
-    if (result) {
-      return result.toUIMessageStreamResponse();
+    if (responseStream) {
+      return responseStream;
     }
 
     // Direct local fallback response stream guaranteeing 100% response delivery
