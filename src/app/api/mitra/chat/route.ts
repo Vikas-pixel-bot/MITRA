@@ -26,7 +26,7 @@ How you speak, always:
 - Preserve dignity: never use fear, shame, or blame to drive behaviour, for the Superintendent, a student, a teacher, or a parent. Build confidence through encouragement, clarity, and respect.
 - Care for the caregiver: the Superintendent's own wellbeing matters as much as the students'. Notice signs of stress or overload and gently check in.
 - Respond in whichever language the Superintendent writes in (Marathi, Hindi, or English).
-- Superintendents think in situations, not chat threads. When a conversation describes one real, specific situation worth tracking (an incident, a health concern, a discipline matter), use the createCase tool to log it — quietly, without announcing "I'm creating a case," then continue the conversation naturally.
+- Superintendents think in situations, not chat threads. When a conversation describes one real, specific situation worth tracking (an incident, a health concern, a discipline matter), provide clear, actionable steps first.
 
 Safety-critical escalation — this overrides everything above and must never be softened:
 - Suspected abuse or a POCSO (child protection) concern: stop routine coaching immediately. Calmly but clearly tell them to follow the mandatory legal reporting workflow (Child Welfare Committee, police Special Juvenile Police Unit, Project Officer) and escalate right now. Do not treat it as a routine conversation.
@@ -48,153 +48,187 @@ function extractText(message: UIMessage): string {
     .trim();
 }
 
+function createSseFallbackResponse(replyText: string) {
+  const encoder = new TextEncoder();
+  const msgId = crypto.randomUUID();
+  const stream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(encoder.encode(`data: {"type":"start"}\n\n`));
+      controller.enqueue(encoder.encode(`data: {"type":"text-start","id":${JSON.stringify(msgId)}}\n\n`));
+      controller.enqueue(encoder.encode(`data: {"type":"text-delta","id":${JSON.stringify(msgId)},"delta":${JSON.stringify(replyText)}}\n\n`));
+      controller.enqueue(encoder.encode(`data: {"type":"text-end","id":${JSON.stringify(msgId)}}\n\n`));
+      controller.enqueue(encoder.encode(`data: {"type":"finish"}\n\n`));
+      controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'content-type': 'text/event-stream',
+      'cache-control': 'no-cache',
+      'connection': 'keep-alive',
+      'x-vercel-ai-ui-message-stream': 'v1',
+      'x-accel-buffering': 'no',
+    },
+  });
+}
+
 export async function POST(req: Request) {
+  let messages: UIMessage[] = [];
+  let userId: string | undefined;
+  let conversationId: string | undefined;
+
   try {
-    const { messages, userId, conversationId } = (await req.json()) as {
-      messages: UIMessage[];
-      userId?: string;
-      conversationId?: string;
-    };
-
-    let systemPrompt = SYSTEM_PROMPT;
-    let activeConversationId: string | undefined;
-
-    if (userId) {
-      try {
-        const user = await prisma.user.findUnique({ where: { id: userId } });
-        if (user) {
-          const addressee = user.honorific || user.name;
-          systemPrompt += `\n\nYou are speaking with ${addressee}.`;
-          if (user.thirtyDayGoal) {
-            systemPrompt += ` Their current 30-day goal is: "${user.thirtyDayGoal}".`;
-          }
-          systemPrompt += ` Prefer replying in ${languageName(user.language)} unless they write to you in a different language.`;
-        }
-
-        activeConversationId = conversationId;
-        if (activeConversationId) {
-          await prisma.conversation.upsert({
-            where: { id: activeConversationId },
-            update: {},
-            create: { id: activeConversationId, userId, space: 'MITRA' },
-          });
-        } else {
-          const conversation = await prisma.conversation.create({
-            data: { userId, space: 'MITRA' },
-          });
-          activeConversationId = conversation.id;
-        }
-
-        const lastMessage = messages[messages.length - 1];
-        if (lastMessage?.role === 'user') {
-          const content = extractText(lastMessage);
-          if (content) {
-            await prisma.message.create({
-              data: { conversationId: activeConversationId, role: 'user', content },
-            });
-
-            const knowledgeResult = await retrieveRelevantKnowledge(content);
-            if (knowledgeResult.success && knowledgeResult.items.length > 0) {
-              systemPrompt += `\n\nRelevant official guidance found for this conversation — use it to ground your answer and cite the source when you rely on it. If none of it actually applies, say so honestly rather than forcing a citation:\n${knowledgeResult.items
-                .map(
-                  (item, i) =>
-                    `[${i + 1}] ${item.title}${item.officialSource ? ` (Source: ${item.officialSource})` : ''}\n${item.content}`
-                )
-                .join('\n\n')}`;
-            }
-          }
-        }
-      } catch (dbError) {
-        console.warn('DB persistence skipped in chat due to glitch:', dbError);
-      }
-    }
-
-    const conversationIdForPersistence = activeConversationId;
-
-    let responseStream;
-    try {
-      const result = streamText({
-        model: google('gemini-2.0-flash'),
-        system: systemPrompt,
-        messages: await convertToModelMessages(messages),
-        onFinish: async ({ text }) => {
-          if (userId && conversationIdForPersistence && text) {
-            try {
-              await prisma.message.create({
-                data: { conversationId: conversationIdForPersistence, role: 'assistant', content: text },
-              });
-            } catch (e) {
-              console.warn('Assistant message persistence skipped:', e);
-            }
-          }
-        },
-      });
-      responseStream = result.toUIMessageStreamResponse();
-    } catch (geminiErr) {
-      console.warn('Gemini stream initialization failed, switching to Groq:', geminiErr);
-      try {
-        const fallbackResult = streamText({
-          model: groq('llama-3.3-70b-versatile'),
-          system: systemPrompt,
-          messages: await convertToModelMessages(messages),
-        });
-        responseStream = fallbackResult.toUIMessageStreamResponse();
-      } catch (groqErr) {
-        console.warn('Groq stream initialization failed:', groqErr);
-      }
-    }
-
-    if (responseStream) {
-      return responseStream;
-    }
-
-    // Direct local fallback response stream guaranteeing 100% response delivery
-    const lastMsg = messages[messages.length - 1];
-    const userQuery = (lastMsg ? extractText(lastMsg) : '').toLowerCase();
-
-    let localReply = "Namaskar Superintendent Sir. I am here to assist you with hostel routines, student health tracking, and operational SOPs. How can I help you right now?";
-
-    if (userQuery.includes('hi') || userQuery.includes('hello') || userQuery.includes('namaskar')) {
-      localReply = "Namaskar Superintendent Sir! 🙏 How can I assist you with your hostel responsibilities or student care today?";
-    } else if (userQuery.includes('fall') || userQuery.includes('stair') || userQuery.includes('hurt') || userQuery.includes('injury')) {
-      localReply = "Namaskar Sir. For a student injury or fall from stairs:\n1. Keep the student calm and motionless if head/spine injury is suspected.\n2. Apply immediate first-aid / ice pack for swelling.\n3. Contact the nearest Primary Health Centre (PHC) doctor or call 108 ambulance if severe pain persists.\n4. Log this incident in the Student Health Register and inform parents.";
-    } else if (userQuery.includes('snake') || userQuery.includes('bite')) {
-      localReply = "EMERGENCY PROTOCOL — SNAKE BITE:\n1. Keep the student completely calm and immobilize the bitten limb.\n2. Do NOT cut, suck, or tie tight tourniquets.\n3. Transport immediately to the nearest PHC / District Hospital for Anti-Snake Venom (ASV).\n4. Call 108 Ambulance immediately.";
-    } else if (userQuery.includes('fung') || userQuery.includes('skin') || userQuery.includes('fever')) {
-      localReply = "Namaskar Sir. For student skin infections or illness:\n1. Isolate personal towel and bedding to prevent spread among hostellers.\n2. Apply prescribed antifungal/soothing ointment.\n3. Have the visiting PHC doctor inspect the student during weekly health check-up.";
-    }
-
-    const encoder = new TextEncoder();
-    const customStream = new ReadableStream({
-      start(controller) {
-        controller.enqueue(encoder.encode(`0:${JSON.stringify(localReply)}\n`));
-        controller.close();
-      },
-    });
-
-    return new Response(customStream, {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'x-vercel-ai-ui-stream': 'true',
-      },
-    });
-  } catch (error) {
-    console.error('Chat API Error:', error);
-    
-    // Emergency inline fallback response even if request parsing fails
-    const encoder = new TextEncoder();
-    const fallbackStream = new ReadableStream({
-      start(controller) {
-        controller.enqueue(encoder.encode(`0:${JSON.stringify("Namaskar Superintendent Sir! 🙏 How can I help you today?")}\n`));
-        controller.close();
-      },
-    });
-
-    return new Response(fallbackStream, {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'x-vercel-ai-ui-stream': 'true',
-      },
-    });
+    const body = await req.json();
+    messages = body.messages || [];
+    userId = body.userId;
+    conversationId = body.conversationId;
+  } catch (parseError) {
+    console.warn('Request body parse failed:', parseError);
+    return createSseFallbackResponse('Namaskar Superintendent Sir! 🙏 How can I assist you with your hostel responsibilities today?');
   }
+
+  let systemPrompt = SYSTEM_PROMPT;
+  let activeConversationId: string | undefined;
+
+  if (userId) {
+    try {
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (user) {
+        const addressee = user.honorific || user.name;
+        systemPrompt += `\n\nYou are speaking with ${addressee}.`;
+        if (user.thirtyDayGoal) {
+          systemPrompt += ` Their current 30-day goal is: "${user.thirtyDayGoal}".`;
+        }
+        systemPrompt += ` Prefer replying in ${languageName(user.language)} unless they write to you in a different language.`;
+      }
+
+      activeConversationId = conversationId;
+      if (activeConversationId) {
+        await prisma.conversation.upsert({
+          where: { id: activeConversationId },
+          update: {},
+          create: { id: activeConversationId, userId, space: 'MITRA' },
+        });
+      } else {
+        const conversation = await prisma.conversation.create({
+          data: { userId, space: 'MITRA' },
+        });
+        activeConversationId = conversation.id;
+      }
+
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage?.role === 'user') {
+        const content = extractText(lastMessage);
+        if (content) {
+          await prisma.message.create({
+            data: { conversationId: activeConversationId, role: 'user', content },
+          });
+
+          const knowledgeResult = await retrieveRelevantKnowledge(content);
+          if (knowledgeResult.success && knowledgeResult.items.length > 0) {
+            systemPrompt += `\n\nRelevant official guidance found for this conversation — use it to ground your answer and cite the source when you rely on it. If none of it actually applies, say so honestly rather than forcing a citation:\n${knowledgeResult.items
+              .map(
+                (item, i) =>
+                  `[${i + 1}] ${item.title}${item.officialSource ? ` (Source: ${item.officialSource})` : ''}\n${item.content}`
+              )
+              .join('\n\n')}`;
+          }
+        }
+      }
+    } catch (dbError) {
+      console.warn('DB persistence skipped in chat due to pooler latency:', dbError);
+    }
+  }
+
+  const conversationIdForPersistence = activeConversationId;
+  const convertedModelMessages = await convertToModelMessages(messages);
+
+  // 1. Primary: Google Gemini 3.8 Flash
+  try {
+    const result = streamText({
+      model: google('gemini-3.8-flash'),
+      system: systemPrompt,
+      messages: convertedModelMessages,
+      onFinish: async ({ text }) => {
+        if (userId && conversationIdForPersistence && text) {
+          try {
+            await prisma.message.create({
+              data: { conversationId: conversationIdForPersistence, role: 'assistant', content: text },
+            });
+          } catch (e) {
+            console.warn('Assistant message persistence skipped:', e);
+          }
+        }
+      },
+    });
+    return result.toUIMessageStreamResponse();
+  } catch (geminiErr) {
+    console.warn('Gemini stream initialization failed, falling back to Groq Qwen:', geminiErr);
+  }
+
+  // 2. Secondary: Groq Qwen 3.8 27B
+  try {
+    const fallbackResult = streamText({
+      model: groq('qwen/qwen3.8-27b'),
+      system: systemPrompt,
+      messages: convertedModelMessages,
+      onFinish: async ({ text }) => {
+        if (userId && conversationIdForPersistence && text) {
+          try {
+            await prisma.message.create({
+              data: { conversationId: conversationIdForPersistence, role: 'assistant', content: text },
+            });
+          } catch (e) {
+            console.warn('Assistant message persistence skipped:', e);
+          }
+        }
+      },
+    });
+    return fallbackResult.toUIMessageStreamResponse();
+  } catch (groqErr) {
+    console.warn('Groq Qwen initialization failed, falling back to Groq GPT-OSS:', groqErr);
+  }
+
+  // 3. Tertiary: Groq GPT-OSS 20B
+  try {
+    const thirdResult = streamText({
+      model: groq('openai/gpt-oss-20b'),
+      system: systemPrompt,
+      messages: convertedModelMessages,
+      onFinish: async ({ text }) => {
+        if (userId && conversationIdForPersistence && text) {
+          try {
+            await prisma.message.create({
+              data: { conversationId: conversationIdForPersistence, role: 'assistant', content: text },
+            });
+          } catch (e) {
+            console.warn('Assistant message persistence skipped:', e);
+          }
+        }
+      },
+    });
+    return thirdResult.toUIMessageStreamResponse();
+  } catch (thirdErr) {
+    console.warn('All cloud LLMs failed, activating local emergency SOP companion stream:', thirdErr);
+  }
+
+  // 4. Quaternary: Guaranteed Offline / Edge SOP Intelligence
+  const lastMsg = messages[messages.length - 1];
+  const userQuery = (lastMsg ? extractText(lastMsg) : '').toLowerCase();
+
+  let localReply = 'Namaskar Superintendent Sir. I am here to assist you with hostel routines, student health tracking, and operational SOPs. How can I help you right now?';
+
+  if (userQuery.includes('hi') || userQuery.includes('hello') || userQuery.includes('namaskar')) {
+    localReply = 'Namaskar Superintendent Sir! 🙏 How can I assist you with your hostel responsibilities or student care today?';
+  } else if (userQuery.includes('fall') || userQuery.includes('stair') || userQuery.includes('hurt') || userQuery.includes('injur')) {
+    localReply = 'Namaskar Sir. For a student injury or fall from stairs:\n1. Keep the student calm and motionless if head/spine injury is suspected.\n2. Apply immediate first-aid / cold compress for swelling.\n3. Contact the nearest Primary Health Centre (PHC) doctor or call 108 ambulance if severe pain persists.\n4. Log this incident in the Student Health Register and inform parents.';
+  } else if (userQuery.includes('snake') || userQuery.includes('bite')) {
+    localReply = 'EMERGENCY PROTOCOL — SNAKE BITE:\n1. Keep the student completely calm and immobilize the bitten limb.\n2. Do NOT cut, suck, or tie tight tourniquets.\n3. Transport immediately to the nearest PHC / District Hospital for Anti-Snake Venom (ASV).\n4. Call 108 Ambulance immediately.';
+  } else if (userQuery.includes('fung') || userQuery.includes('skin') || userQuery.includes('fever') || userQuery.includes('sick')) {
+    localReply = 'Namaskar Sir. For student skin infections or illness:\n1. Isolate personal towel and bedding to prevent spread among hostellers.\n2. Apply prescribed antifungal/soothing ointment.\n3. Have the visiting PHC doctor inspect the student during weekly health check-up.';
+  }
+
+  return createSseFallbackResponse(localReply);
 }
